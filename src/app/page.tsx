@@ -8,7 +8,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
           <a href="#" className="flex items-center gap-3">
             <Image
-              src="/logos/fcg-logo.png"
+              src="/logos/fcg-logo-white.png"
               alt="Frontier Consulting Group"
               width={200}
               height={50}
@@ -238,7 +238,7 @@ export default function Home() {
                   alt="FCG"
                   width={80}
                   height={80}
-                  className="h-20 w-auto opacity-80"
+                  className="h-20 w-auto invert brightness-200 opacity-60"
                 />
               </div>
             </div>
@@ -343,11 +343,11 @@ export default function Home() {
             >
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl border border-white/5 bg-white/[0.03]">
                 <Image
-                  src="/logos/fpm-logo.png"
+                  src="/logos/fpm-logo-white.png"
                   alt="Frontier Property Management"
                   width={48}
                   height={48}
-                  className="h-12 w-auto"
+                  className="h-10 w-auto"
                 />
               </div>
               <h3 className="text-xl font-bold">
@@ -377,7 +377,7 @@ export default function Home() {
                   alt="Frontier Photography"
                   width={48}
                   height={48}
-                  className="h-12 w-auto"
+                  className="h-10 w-auto invert brightness-200"
                 />
               </div>
               <h3 className="text-xl font-bold">Frontier Photography</h3>
@@ -501,11 +501,11 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 md:flex-row">
           <div className="flex items-center gap-3">
             <Image
-              src="/logos/fcg-logo.png"
+              src="/logos/fcg-logo-white.png"
               alt="Frontier Consulting Group"
               width={140}
               height={35}
-              className="h-7 w-auto opacity-50"
+              className="h-7 w-auto opacity-40"
             />
           </div>
           <div className="text-xs text-white/30">
