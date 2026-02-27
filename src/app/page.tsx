@@ -12,7 +12,7 @@ export default function Home() {
               alt="Frontier Consulting Group"
               width={200}
               height={50}
-              className="h-10 w-auto"
+              className="h-12 w-auto"
               priority
             />
           </a>
@@ -37,7 +37,7 @@ export default function Home() {
             </a>
             <a
               href="mailto:info@fcgok.com"
-              className="rounded-full bg-gold px-4 py-1.5 text-sm font-medium text-navy transition hover:bg-gold-light"
+              className="rounded-full bg-gold px-5 py-2 text-sm font-medium text-navy transition hover:bg-gold-light"
             >
               Get in Touch
             </a>
@@ -341,13 +341,13 @@ export default function Home() {
               rel="noopener noreferrer"
               className="group overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-8 transition hover:border-white/10 md:p-10"
             >
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl border border-white/5 bg-white/[0.03]">
+              <div className="mb-6">
                 <Image
                   src="/logos/fpm-logo-white.png"
                   alt="Frontier Property Management"
-                  width={48}
-                  height={48}
-                  className="h-10 w-auto"
+                  width={160}
+                  height={60}
+                  className="h-14 w-auto"
                 />
               </div>
               <h3 className="text-xl font-bold">
@@ -371,13 +371,13 @@ export default function Home() {
               rel="noopener noreferrer"
               className="group overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-8 transition hover:border-white/10 md:p-10"
             >
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl border border-white/5 bg-white/[0.03]">
+              <div className="mb-6">
                 <Image
                   src="/logos/fp-logo.png"
                   alt="Frontier Photography"
-                  width={48}
-                  height={48}
-                  className="h-10 w-auto invert brightness-200"
+                  width={160}
+                  height={60}
+                  className="h-12 w-auto invert brightness-200"
                 />
               </div>
               <h3 className="text-xl font-bold">Frontier Photography</h3>
@@ -503,9 +503,9 @@ export default function Home() {
             <Image
               src="/logos/fcg-logo-white.png"
               alt="Frontier Consulting Group"
-              width={140}
-              height={35}
-              className="h-7 w-auto opacity-40"
+              width={180}
+              height={45}
+              className="h-9 w-auto opacity-40"
             />
           </div>
           <div className="text-xs text-white/30">
