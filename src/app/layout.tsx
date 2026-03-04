@@ -5,23 +5,23 @@ import "./globals.css";
 const dmSans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 
 export const metadata: Metadata = {
-  title: "Frontier Consulting Group | Software, Design & Branding",
+  title: "Frontier Consulting Group | Technology & Creative Studio",
   description:
-    "A multi-disciplinary studio in Broken Bow, Oklahoma — software engineering, design, branding, property management, and photography. Led by Hunter Collins.",
+    "A technology and creative studio in Broken Bow, Oklahoma building software, tourism platforms, brands, and media that help local businesses and communities grow.",
   keywords: [
     "Frontier Consulting Group",
     "software development",
-    "web design",
+    "tourism technology",
     "branding",
     "property management",
     "photography",
     "Broken Bow Oklahoma",
-    "startup studio",
+    "Blue Ridge Georgia",
   ],
   openGraph: {
-    title: "Frontier Consulting Group | Software, Design & Branding",
+    title: "Frontier Consulting Group | Technology & Creative Studio",
     description:
-      "A multi-disciplinary studio — software, design, property management, and photography — from Broken Bow, Oklahoma.",
+      "A technology and creative studio in Broken Bow, Oklahoma building software, tourism platforms, brands, and media for growing communities.",
     type: "website",
   },
 };

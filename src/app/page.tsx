@@ -79,9 +79,8 @@ export default function Home() {
               className="animate-fade-up mt-6 max-w-xl text-lg leading-relaxed text-white/50"
               style={{ animationDelay: "0.2s" }}
             >
-              Frontier Consulting Group is a multi-disciplinary studio — software
-              engineering, design, property management, and photography — led by
-              Hunter Collins.
+              A Broken Bow–based studio building technology, brands, and
+              platforms for growing communities and businesses.
             </p>
 
             <div
@@ -127,18 +126,16 @@ export default function Home() {
                 About
               </span>
               <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
-                A startup studio in the heart of{" "}
-                <span className="text-gold">Southeast Oklahoma</span>
+                Technology and creative studio in{" "}
+                <span className="text-gold">Broken Bow, Oklahoma</span>
               </h2>
               <p className="mt-6 text-lg leading-relaxed text-white/50">
-                Frontier Consulting Group LLC operates at the intersection of
-                technology, hospitality, and community. From our base in Broken
-                Bow, we develop software platforms, manage properties, build
-                brands, and capture stories through photography.
-              </p>
-              <p className="mt-4 text-lg leading-relaxed text-white/50">
-                Every division shares one mission: help local businesses and
-                communities grow with modern tools and thoughtful design.
+                Frontier Consulting Group develops software, destination
+                platforms, and media that help local businesses and markets
+                grow. Our work spans tourism technology, property management,
+                brand design, and commercial photography — with projects rooted
+                in Broken Bow, Oklahoma and expanding to markets like Blue
+                Ridge, Georgia.
               </p>
             </div>
 
@@ -177,8 +174,7 @@ export default function Home() {
               Our divisions
             </h2>
             <p className="mt-4 text-lg text-white/50">
-              Each arm of FCG operates with startup speed and enterprise
-              discipline.
+              From software to destination platforms to commercial media.
             </p>
           </div>
 
