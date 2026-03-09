@@ -9,7 +9,7 @@ const dmSans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"
 export const metadata: Metadata = {
   metadataBase: new URL("https://fcgok.com"),
   title: {
-    default: "Frontier Consulting Group | Technology & Creative Studio in Broken Bow, OK",
+    default: "Frontier Consulting Group | Broken Bow, OK Studio",
     template: "%s | Frontier Consulting Group",
   },
   description:

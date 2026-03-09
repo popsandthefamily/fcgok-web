@@ -2,19 +2,19 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Frontier Consulting Group | Technology & Creative Studio in Broken Bow, OK",
+  title: "Frontier Consulting Group | Broken Bow, OK Studio",
   description:
-    "A technology and creative studio in Broken Bow, Oklahoma building software, tourism platforms, brands, and media that help local businesses and communities grow.",
+    "Software, branding, tourism platforms, and media for local businesses in Broken Bow, Oklahoma. Property management, photography, and community platforms for Southeast Oklahoma and beyond.",
   openGraph: {
     title: "Frontier Consulting Group | Technology & Creative Studio",
     description:
-      "A technology and creative studio in Broken Bow, Oklahoma building software, tourism platforms, brands, and media for growing communities.",
+      "Software, branding, and media studio in Broken Bow, Oklahoma helping local businesses and communities grow.",
     url: "https://fcgok.com",
   },
   twitter: {
     title: "Frontier Consulting Group | Technology & Creative Studio",
     description:
-      "A technology and creative studio in Broken Bow, Oklahoma building software, tourism platforms, brands, and media for growing communities.",
+      "Software, branding, and media studio in Broken Bow, Oklahoma helping local businesses and communities grow.",
   },
   alternates: {
     canonical: "https://fcgok.com",
