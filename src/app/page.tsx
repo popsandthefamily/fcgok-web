@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -35,6 +36,12 @@ export default function Home() {
             >
               Contact
             </a>
+            <Link
+              href="/careers"
+              className="text-sm text-white/50 transition hover:text-white"
+            >
+              Careers
+            </Link>
             <a
               href="mailto:info@fcgok.com"
               className="rounded-full bg-gold px-5 py-2 text-sm font-medium text-navy transition hover:bg-gold-light"

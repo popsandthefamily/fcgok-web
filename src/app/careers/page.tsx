@@ -1,0 +1,155 @@
+import Image from "next/image";
+import Link from "next/link";
+
+export const metadata = {
+  title: "Careers — Frontier Consulting Group",
+  description:
+    "Join the Frontier Consulting Group team. See open positions and learn about working with us in Broken Bow, Oklahoma.",
+};
+
+export default function Careers() {
+  return (
+    <div className="min-h-screen bg-slate-dark text-white">
+      {/* Nav */}
+      <nav className="fixed top-0 z-50 w-full border-b border-white/5 bg-slate-dark/80 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              src="/logos/fcg-logo-white.png"
+              alt="Frontier Consulting Group"
+              width={200}
+              height={50}
+              className="h-12 w-auto"
+              priority
+            />
+          </Link>
+          <div className="hidden items-center gap-8 md:flex">
+            <Link
+              href="/#about"
+              className="text-sm text-white/50 transition hover:text-white"
+            >
+              About
+            </Link>
+            <Link
+              href="/#portfolio"
+              className="text-sm text-white/50 transition hover:text-white"
+            >
+              Portfolio
+            </Link>
+            <Link
+              href="/#contact"
+              className="text-sm text-white/50 transition hover:text-white"
+            >
+              Contact
+            </Link>
+            <Link
+              href="/careers"
+              className="text-sm text-white transition"
+            >
+              Careers
+            </Link>
+            <a
+              href="mailto:info@fcgok.com"
+              className="rounded-full bg-gold px-5 py-2 text-sm font-medium text-navy transition hover:bg-gold-light"
+            >
+              Get in Touch
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* Header */}
+      <section className="relative pt-32 pb-20">
+        <div className="dot-grid absolute inset-0" />
+        <div className="absolute left-1/2 top-1/3 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/5 blur-[120px]" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-6">
+          <div className="max-w-3xl">
+            <span className="text-xs font-semibold uppercase tracking-widest text-gold">
+              Careers
+            </span>
+            <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+              Work with us
+            </h1>
+            <p className="mt-6 text-lg leading-relaxed text-white/50">
+              Frontier Consulting Group is a small, flexible team based in
+              Broken Bow, Oklahoma. We value people who are self-starters,
+              genuinely curious, and care about the communities they work in. No
+              corporate red tape — just real work with real impact on local
+              businesses and the people behind them.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Open Positions */}
+      <section className="relative border-t border-white/5 py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <h2 className="mb-12 text-2xl font-bold tracking-tight md:text-3xl">
+            Open positions
+          </h2>
+
+          {/* Job Card */}
+          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-8 md:p-10">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold/20 bg-gold/5 px-3 py-1">
+              <span className="text-xs font-medium text-gold">
+                Part-Time &middot; Commission-Based
+              </span>
+            </div>
+            <h3 className="text-xl font-bold md:text-2xl">
+              Local Community Rep — Hochatown / Broken Bow
+            </h3>
+            <p className="mt-4 max-w-2xl leading-relaxed text-white/50">
+              Frontier Consulting Group is looking for a part-time local
+              community rep in the Hochatown/Broken Bow area. Flexible hours,
+              work on your own schedule. You&apos;ll be connecting with local
+              businesses and property owners on behalf of our clients. Great fit
+              for someone who knows the area, loves talking to people, and wants
+              to earn extra income. Commission-based with bonuses.
+            </p>
+            <div className="mt-8">
+              <a
+                href="mailto:info@fcgok.com?subject=Community%20Rep%20Position%20—%20Interest"
+                className="inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy transition hover:bg-gold-light"
+              >
+                Apply via Email
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/5 py-10">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 md:flex-row">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logos/fcg-logo-white.png"
+              alt="Frontier Consulting Group"
+              width={180}
+              height={45}
+              className="h-9 w-auto opacity-40"
+            />
+          </div>
+          <div className="text-xs text-white/30">
+            &copy; {new Date().getFullYear()} Frontier Consulting Group LLC.
+            All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
