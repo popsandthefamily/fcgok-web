@@ -1,7 +1,10 @@
 export const metadata = {
-  title: "Careers — Frontier Consulting Group",
+  title: "Careers",
   description:
     "Join the Frontier Consulting Group team. See open positions and learn about working with us in Broken Bow, Oklahoma.",
+  alternates: {
+    canonical: "https://fcgok.com/careers",
+  },
 };
 
 export default function Careers() {
