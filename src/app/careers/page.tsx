@@ -1,6 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
-
 export const metadata = {
   title: "Careers — Frontier Consulting Group",
   description:
@@ -10,54 +7,6 @@ export const metadata = {
 export default function Careers() {
   return (
     <div className="min-h-screen bg-slate-dark text-white">
-      {/* Nav */}
-      <nav className="fixed top-0 z-50 w-full border-b border-white/5 bg-slate-dark/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-          <Link href="/" className="flex items-center gap-3">
-            <Image
-              src="/logos/fcg-logo-white.png"
-              alt="Frontier Consulting Group"
-              width={200}
-              height={50}
-              className="h-12 w-auto"
-              priority
-            />
-          </Link>
-          <div className="hidden items-center gap-8 md:flex">
-            <Link
-              href="/#about"
-              className="text-sm text-white/50 transition hover:text-white"
-            >
-              About
-            </Link>
-            <Link
-              href="/#portfolio"
-              className="text-sm text-white/50 transition hover:text-white"
-            >
-              Portfolio
-            </Link>
-            <Link
-              href="/#contact"
-              className="text-sm text-white/50 transition hover:text-white"
-            >
-              Contact
-            </Link>
-            <Link
-              href="/careers"
-              className="text-sm text-white transition"
-            >
-              Careers
-            </Link>
-            <a
-              href="mailto:info@fcgok.com"
-              className="rounded-full bg-gold px-5 py-2 text-sm font-medium text-navy transition hover:bg-gold-light"
-            >
-              Get in Touch
-            </a>
-          </div>
-        </div>
-      </nav>
-
       {/* Header */}
       <section className="relative pt-32 pb-20">
         <div className="dot-grid absolute inset-0" />
@@ -131,25 +80,6 @@ export default function Careers() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 md:flex-row">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/logos/fcg-logo-white.png"
-              alt="Frontier Consulting Group"
-              width={180}
-              height={45}
-              className="h-9 w-auto opacity-40"
-            />
-          </div>
-          <div className="text-xs text-white/30">
-            &copy; {new Date().getFullYear()} Frontier Consulting Group LLC.
-            All rights reserved.
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

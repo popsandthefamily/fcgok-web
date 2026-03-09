@@ -1,57 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-dark text-white">
-      {/* Nav */}
-      <nav className="fixed top-0 z-50 w-full border-b border-white/5 bg-slate-dark/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-          <a href="#" className="flex items-center gap-3">
-            <Image
-              src="/logos/fcg-logo-white.png"
-              alt="Frontier Consulting Group"
-              width={200}
-              height={50}
-              className="h-12 w-auto"
-              priority
-            />
-          </a>
-          <div className="hidden items-center gap-8 md:flex">
-            <a
-              href="#about"
-              className="text-sm text-white/50 transition hover:text-white"
-            >
-              About
-            </a>
-            <a
-              href="#portfolio"
-              className="text-sm text-white/50 transition hover:text-white"
-            >
-              Portfolio
-            </a>
-            <a
-              href="#contact"
-              className="text-sm text-white/50 transition hover:text-white"
-            >
-              Contact
-            </a>
-            <Link
-              href="/careers"
-              className="text-sm text-white/50 transition hover:text-white"
-            >
-              Careers
-            </Link>
-            <a
-              href="mailto:info@fcgok.com"
-              className="rounded-full bg-gold px-5 py-2 text-sm font-medium text-navy transition hover:bg-gold-light"
-            >
-              Get in Touch
-            </a>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero */}
       <section className="relative flex min-h-screen items-center overflow-hidden pt-16">
         <div className="dot-grid absolute inset-0" />
@@ -86,8 +37,9 @@ export default function Home() {
               className="animate-fade-up mt-6 max-w-xl text-lg leading-relaxed text-white/50"
               style={{ animationDelay: "0.2s" }}
             >
-              A Broken Bow–based studio building technology, brands, and
-              platforms for growing communities and businesses.
+              We work with businesses, property owners, and communities across
+              Southeast Oklahoma and beyond — building the tools and brands they
+              need to grow.
             </p>
 
             <div
@@ -127,43 +79,22 @@ export default function Home() {
       {/* About */}
       <section id="about" className="relative border-t border-white/5 py-32">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="grid items-center gap-16 lg:grid-cols-2">
-            <div>
-              <span className="text-xs font-semibold uppercase tracking-widest text-gold">
-                About
-              </span>
-              <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
-                Technology and creative studio in{" "}
-                <span className="text-gold">Broken Bow, Oklahoma</span>
-              </h2>
-              <p className="mt-6 text-lg leading-relaxed text-white/50">
-                Frontier Consulting Group develops software, destination
-                platforms, and media that help local businesses and markets
-                grow. Our work spans tourism technology, property management,
-                brand design, and commercial photography — with projects rooted
-                in Broken Bow, Oklahoma and expanding to markets like Blue
-                Ridge, Georgia.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { value: "5", label: "Active Divisions" },
-                { value: "2", label: "Tourism Platforms" },
-                { value: "OK", label: "Proudly Based" },
-                { value: "24/7", label: "Always Building" },
-              ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="rounded-2xl border border-white/5 bg-white/[0.02] p-6"
-                >
-                  <div className="text-3xl font-bold text-gold">
-                    {stat.value}
-                  </div>
-                  <div className="mt-1 text-sm text-white/40">{stat.label}</div>
-                </div>
-              ))}
-            </div>
+          <div className="max-w-3xl">
+            <span className="text-xs font-semibold uppercase tracking-widest text-gold">
+              About
+            </span>
+            <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+              Technology and creative studio in{" "}
+              <span className="text-gold">Broken Bow, Oklahoma</span>
+            </h2>
+            <p className="mt-6 text-lg leading-relaxed text-white/50">
+              Frontier Consulting Group develops software, destination
+              platforms, and media that help local businesses and markets
+              grow. Our work spans tourism technology, property management,
+              brand design, and commercial photography — with projects rooted
+              in Broken Bow, Oklahoma and expanding to markets like Blue
+              Ridge, Georgia.
+            </p>
           </div>
         </div>
       </section>
@@ -216,24 +147,6 @@ export default function Home() {
                   web applications, mobile apps, SaaS platforms, and the visual
                   identities that tie them together.
                 </p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {[
-                    "Next.js",
-                    "React Native",
-                    "TypeScript",
-                    "Supabase",
-                    "Tailwind",
-                    "Figma",
-                    "Brand Strategy",
-                  ].map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/60"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
               </div>
               <div className="hidden h-40 w-40 items-center justify-center rounded-2xl border border-white/5 bg-white/[0.03] lg:flex">
                 <Image
@@ -419,8 +332,11 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mx-auto mt-16 grid max-w-3xl gap-6 sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center">
+          <div className="mx-auto mt-16 grid max-w-2xl gap-6 sm:grid-cols-2">
+            <a
+              href="mailto:info@fcgok.com"
+              className="group rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center transition hover:border-gold/20"
+            >
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gold/10">
                 <svg
                   className="h-5 w-5 text-gold"
@@ -437,13 +353,10 @@ export default function Home() {
                 </svg>
               </div>
               <div className="text-sm font-medium text-white/80">Email</div>
-              <a
-                href="mailto:info@fcgok.com"
-                className="mt-1 block text-sm text-gold transition hover:text-gold-light"
-              >
+              <span className="mt-1 block text-sm text-gold transition group-hover:text-gold-light">
                 info@fcgok.com
-              </a>
-            </div>
+              </span>
+            </a>
 
             <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center">
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gold/10">
@@ -468,55 +381,12 @@ export default function Home() {
               </div>
               <div className="text-sm font-medium text-white/80">Location</div>
               <p className="mt-1 text-sm text-white/40">
-                3156 Old Broken Bow Hwy
-                <br />
                 Broken Bow, OK 74728
               </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gold/10">
-                <svg
-                  className="h-5 w-5 text-gold"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-                  />
-                </svg>
-              </div>
-              <div className="text-sm font-medium text-white/80">
-                Principal
-              </div>
-              <p className="mt-1 text-sm text-white/40">Hunter Collins</p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 md:flex-row">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/logos/fcg-logo-white.png"
-              alt="Frontier Consulting Group"
-              width={180}
-              height={45}
-              className="h-9 w-auto opacity-40"
-            />
-          </div>
-          <div className="text-xs text-white/30">
-            &copy; {new Date().getFullYear()} Frontier Consulting Group LLC.
-            All rights reserved.
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
