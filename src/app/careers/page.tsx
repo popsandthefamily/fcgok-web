@@ -1,7 +1,20 @@
-export const metadata = {
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
   title: "Careers",
   description:
     "Join the Frontier Consulting Group team. See open positions and learn about working with us in Broken Bow, Oklahoma.",
+  openGraph: {
+    title: "Careers | Frontier Consulting Group",
+    description:
+      "Join the Frontier Consulting Group team. Open positions in Broken Bow, Oklahoma.",
+    url: "https://fcgok.com/careers",
+  },
+  twitter: {
+    title: "Careers | Frontier Consulting Group",
+    description:
+      "Join the Frontier Consulting Group team. Open positions in Broken Bow, Oklahoma.",
+  },
   alternates: {
     canonical: "https://fcgok.com/careers",
   },

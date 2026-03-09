@@ -15,22 +15,12 @@ export const metadata: Metadata = {
   description:
     "A technology and creative studio in Broken Bow, Oklahoma building software, tourism platforms, brands, and media that help local businesses and communities grow.",
   openGraph: {
-    title: "Frontier Consulting Group | Technology & Creative Studio",
-    description:
-      "A technology and creative studio in Broken Bow, Oklahoma building software, tourism platforms, brands, and media for growing communities.",
-    url: "https://fcgok.com",
     siteName: "Frontier Consulting Group",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Frontier Consulting Group | Technology & Creative Studio",
-    description:
-      "A technology and creative studio in Broken Bow, Oklahoma building software, tourism platforms, brands, and media for growing communities.",
-  },
-  alternates: {
-    canonical: "https://fcgok.com",
   },
 };
 
