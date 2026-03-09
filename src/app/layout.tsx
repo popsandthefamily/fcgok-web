@@ -53,6 +53,7 @@ export default function RootLayout({
                 "Technology and creative studio building software, tourism platforms, brands, and media for local businesses.",
               url: "https://fcgok.com",
               email: "info@fcgok.com",
+              telephone: "+1-580-207-7154",
               address: {
                 "@type": "PostalAddress",
                 addressLocality: "Broken Bow",
