@@ -9,11 +9,28 @@ const dmSans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"
 export const metadata: Metadata = {
   metadataBase: new URL("https://fcgok.com"),
   title: {
-    default: "Frontier Consulting Group | Broken Bow, OK Studio",
+    default: "Frontier Consulting Group | Small Business Consulting — Broken Bow & Hochatown",
     template: "%s | Frontier Consulting Group",
   },
   description:
-    "A technology and creative studio in Broken Bow, Oklahoma building software, tourism platforms, brands, and media that help local businesses and communities grow.",
+    "Broken Bow's hometown consulting partner — travel & hospitality software, marketing, property management, and branding for small businesses in the Hochatown and Southeast Oklahoma area.",
+  keywords: [
+    "Frontier Consulting Group",
+    "small business consulting",
+    "Broken Bow Oklahoma",
+    "Hochatown",
+    "travel and hospitality software",
+    "hospitality marketing",
+    "vacation rental management",
+    "tourism marketing Oklahoma",
+    "small business consultant Broken Bow",
+    "web design Broken Bow",
+    "property management Hochatown",
+    "Southeast Oklahoma business",
+    "local business consulting",
+    "cabin rental marketing",
+    "tourism software",
+  ],
   openGraph: {
     siteName: "Frontier Consulting Group",
     locale: "en_US",
@@ -40,7 +57,7 @@ export default function RootLayout({
               "@type": "LocalBusiness",
               name: "Frontier Consulting Group",
               description:
-                "Technology and creative studio building software, tourism platforms, brands, and media for local businesses.",
+                "Small business consulting, travel & hospitality software, marketing, and property management for the Broken Bow and Hochatown area.",
               url: "https://fcgok.com",
               email: "info@fcgok.com",
               telephone: "+1-580-207-7154",

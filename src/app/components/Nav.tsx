@@ -5,8 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 const links = [
-  { href: "/#about", label: "About" },
-  { href: "/#portfolio", label: "Portfolio" },
+  { href: "/#about", label: "Who We Are" },
+  { href: "/#services", label: "What We Do" },
+  { href: "/#ventures", label: "Our Ventures" },
   { href: "/#contact", label: "Contact" },
   { href: "/careers", label: "Careers" },
 ];
@@ -40,10 +41,10 @@ export default function Nav() {
             </Link>
           ))}
           <a
-            href="mailto:info@fcgok.com"
+            href="/#contact"
             className="rounded-full bg-gold px-5 py-2 text-sm font-medium text-navy transition hover:bg-gold-light"
           >
-            Get in Touch
+            Work With Us
           </a>
         </div>
 
@@ -100,10 +101,11 @@ export default function Nav() {
               </Link>
             ))}
             <a
-              href="mailto:info@fcgok.com"
+              href="/#contact"
+              onClick={() => setOpen(false)}
               className="mt-2 rounded-full bg-gold px-5 py-2.5 text-center text-sm font-medium text-navy transition hover:bg-gold-light"
             >
-              Get in Touch
+              Work With Us
             </a>
           </div>
         </div>

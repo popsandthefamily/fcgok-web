@@ -20,13 +20,19 @@ export default function Footer() {
               href="/#about"
               className="text-xs text-white/30 transition hover:text-white/60"
             >
-              About
+              Who We Are
             </Link>
             <Link
-              href="/#portfolio"
+              href="/#services"
               className="text-xs text-white/30 transition hover:text-white/60"
             >
-              Portfolio
+              What We Do
+            </Link>
+            <Link
+              href="/#ventures"
+              className="text-xs text-white/30 transition hover:text-white/60"
+            >
+              Our Ventures
             </Link>
             <Link
               href="/#contact"
@@ -42,7 +48,7 @@ export default function Footer() {
             </Link>
           </div>
           <div className="text-xs text-white/30">
-            &copy; {new Date().getFullYear()} Frontier Consulting Group LLC.
+            &copy; {new Date().getFullYear()} Frontier Consulting Group LLC. Broken Bow, Oklahoma.
           </div>
         </div>
       </div>
