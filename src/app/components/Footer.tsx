@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-slate-dark py-10">
+    <footer className="border-t border-cream/10 bg-forest-dark py-10">
       <div className="mx-auto max-w-7xl px-6">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex items-center gap-3">
@@ -15,39 +15,45 @@ export default function Footer() {
               className="h-9 w-auto opacity-40"
             />
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-6">
             <Link
-              href="/#about"
-              className="text-xs text-white/30 transition hover:text-white/60"
+              href="/about"
+              className="text-xs text-cream/30 transition hover:text-cream/60"
             >
-              Who We Are
+              About
             </Link>
             <Link
-              href="/#services"
-              className="text-xs text-white/30 transition hover:text-white/60"
+              href="/ventures"
+              className="text-xs text-cream/30 transition hover:text-cream/60"
             >
-              What We Do
+              Ventures
             </Link>
             <Link
-              href="/#ventures"
-              className="text-xs text-white/30 transition hover:text-white/60"
+              href="/insights"
+              className="text-xs text-cream/30 transition hover:text-cream/60"
             >
-              Our Ventures
+              Insights
             </Link>
             <Link
-              href="/#contact"
-              className="text-xs text-white/30 transition hover:text-white/60"
+              href="/investors"
+              className="text-xs text-cream/30 transition hover:text-cream/60"
             >
-              Contact
+              For Investors
+            </Link>
+            <Link
+              href="/businesses"
+              className="text-xs text-cream/30 transition hover:text-cream/60"
+            >
+              For Businesses
             </Link>
             <Link
               href="/careers"
-              className="text-xs text-white/30 transition hover:text-white/60"
+              className="text-xs text-cream/30 transition hover:text-cream/60"
             >
               Careers
             </Link>
           </div>
-          <div className="text-xs text-white/30">
+          <div className="text-xs text-cream/30">
             &copy; {new Date().getFullYear()} Frontier Consulting Group LLC. Broken Bow, Oklahoma.
           </div>
         </div>
