@@ -188,7 +188,7 @@ export default function Home() {
 
             {/* Frontier Photography */}
             <a
-              href="https://frontier.photos"
+              href="https://www.frontier.photos/"
               target="_blank"
               rel="noopener noreferrer"
               className="group rounded-2xl border border-cream/5 bg-cream/[0.02] p-6 transition hover:border-copper/20"

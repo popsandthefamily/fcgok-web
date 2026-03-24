@@ -133,7 +133,7 @@ export default function Ventures() {
       <section className="relative border-t border-cream/5 py-20">
         <div className="mx-auto max-w-7xl px-6">
           <a
-            href="https://frontier.photos"
+            href="https://www.frontier.photos/"
             target="_blank"
             rel="noopener noreferrer"
             className="group block rounded-2xl border border-cream/5 bg-cream/[0.02] p-8 transition hover:border-copper/20 md:p-10"
