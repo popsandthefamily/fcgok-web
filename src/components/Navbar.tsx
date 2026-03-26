@@ -32,7 +32,7 @@ export default function Navbar() {
           alt="Frontier Consulting Group"
           width={200}
           height={50}
-          style={{ height: 36, width: 'auto' }}
+          style={{ height: 48, width: 'auto' }}
           priority
         />
       </Link>
