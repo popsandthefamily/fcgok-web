@@ -1,188 +1,99 @@
-import type { Metadata } from "next";
-import Image from "next/image";
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Ventures — What We Build",
-  description:
-    "Our own businesses, built with the same tools and strategies we bring to clients. Tourism software, property management, photography, and more.",
+  title: 'Ventures — What We Build',
+  description: 'hocha.town, Frontier Property Management, and Frontier Photography — businesses built and operated in the Broken Bow and Hochatown market.',
   openGraph: {
-    title: "Ventures | Frontier Consulting Group",
-    description:
-      "Tourism software, property management, photography — built and operated in the Broken Bow market.",
-    url: "https://fcgok.com/ventures",
+    title: 'Ventures | Frontier Consulting Group',
+    description: 'Tourism software, property management, photography — built and operated in the Broken Bow market.',
+    url: 'https://fcgok.com/ventures',
   },
   twitter: {
-    title: "Ventures | Frontier Consulting Group",
-    description:
-      "Tourism software, property management, photography — built and operated in the Broken Bow market.",
+    title: 'Ventures | Frontier Consulting Group',
+    description: 'Tourism software, property management, photography — built and operated in the Broken Bow market.',
   },
-  alternates: {
-    canonical: "https://fcgok.com/ventures",
-  },
+  alternates: { canonical: 'https://fcgok.com/ventures' },
 };
 
-export default function Ventures() {
-  return (
-    <div className="min-h-screen bg-forest-dark text-cream">
-      {/* Header */}
-      <section className="relative pt-32 pb-20">
-        <div className="dot-grid absolute inset-0" />
-        <div className="absolute left-1/2 top-1/3 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-copper/5 blur-[120px]" />
+const VENTURES = [
+  {
+    icon: '🌲',
+    name: 'hocha.town',
+    tag: 'Tourism Platform',
+    href: 'https://hocha.town',
+    body: 'A full-featured tourism platform for Hochatown and Broken Bow. Built with Next.js, Supabase, and Groq/LLaMA — featuring an AI trip planner, real-time burn ban data from Oklahoma Forestry Services, an STR tax calculator, and a native iOS app on the App Store.',
+    detail: 'Two-sided marketplace connecting visitors with cabins, restaurants, and activities. The data layer behind the investor intelligence.',
+  },
+  {
+    icon: '🏡',
+    name: 'Frontier Property Management',
+    tag: 'STR Operations',
+    href: 'https://rentwithfrontier.com',
+    body: 'Full-service vacation rental management in the Broken Bow area. Listing optimization, guest communication, cleaning coordination, and maintenance — operating in the same market we advise on.',
+    detail: "This is the credibility that makes our investor advisory real: we manage properties, so we know what actually performs.",
+  },
+  {
+    icon: '📷',
+    name: 'Frontier Photography',
+    tag: 'Visual Media',
+    href: 'https://frontier.photos',
+    body: 'Real estate, commercial, and event photography across Southeast Oklahoma. Elopements, cabin shoots, family and pet photos in the Beavers Bend area.',
+    detail: 'Great photography is the first impression for every cabin listing, business page, and event in the area.',
+  },
+];
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6">
-          <div className="max-w-3xl">
-            <span className="text-xs font-semibold uppercase tracking-widest text-copper">
-              Our Ventures
-            </span>
-            <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
-              We don&apos;t just consult —{" "}
-              <span className="bg-gradient-to-r from-copper to-copper-light bg-clip-text text-transparent">
-                we build.
-              </span>
-            </h1>
-            <p className="mt-6 text-lg leading-relaxed text-cream/50">
-              These are our own businesses, built with the same tools and
-              strategies we bring to our clients. We operate in the same
-              market we advise on — that&apos;s credibility you can&apos;t
-              fake.
-            </p>
-          </div>
-        </div>
+export default function VenturesPage() {
+  return (
+    <>
+      <section style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
+        <span className="section-label section-label--light">Portfolio</span>
+        <h1 style={{
+          fontFamily: 'var(--font-serif)',
+          fontSize: 'clamp(2.5rem, 4vw, 3.5rem)',
+          color: 'var(--cream)', fontWeight: 400, maxWidth: 600, lineHeight: 1.15,
+        }}>
+          Four businesses. <em>One market.</em> Total conviction.
+        </h1>
       </section>
 
-      {/* hocha.town */}
-      <section className="relative border-t border-cream/5 py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <a
-            href="https://hocha.town"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group block rounded-2xl border border-cream/5 bg-cream/[0.02] p-8 transition hover:border-copper/20 md:p-10"
-          >
-            <div className="flex items-center gap-4">
-              <Image
-                src="/logos/hocha-icon.png"
-                alt="hocha.town"
-                width={64}
-                height={64}
-                className="h-16 w-16 rounded-xl"
-              />
+      <section style={{ padding: '5rem 3rem' }}>
+        <div style={{ display: 'grid', gap: 1, background: 'var(--border)', border: '1px solid var(--border)' }}>
+          {VENTURES.map(({ icon, name, tag, href, body, detail }) => (
+            <div key={name} style={{
+              background: 'var(--warm-white)', padding: '3rem',
+              display: 'grid', gridTemplateColumns: '220px 1fr', gap: '3rem', alignItems: 'start',
+            }}>
               <div>
-                <h2 className="text-2xl font-bold md:text-3xl">hocha.town</h2>
-                <p className="text-sm text-cream/40">
-                  The tourism platform for Hochatown &amp; Broken Bow
-                </p>
+                <div style={{
+                  width: 60, height: 60, background: 'var(--forest)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 24, borderRadius: 2, marginBottom: '1rem',
+                }}>
+                  {icon}
+                </div>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 400, marginBottom: '0.5rem' }}>{name}</h2>
+                <span style={{
+                  display: 'inline-block', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase',
+                  color: 'var(--forest-mid)', background: 'var(--cream)', border: '1px solid var(--border)',
+                  padding: '3px 10px', borderRadius: 2, marginBottom: '1rem',
+                }}>
+                  {tag}
+                </span>
+                <a href={href} target="_blank" rel="noopener noreferrer" style={{
+                  display: 'block', fontSize: 13, color: 'var(--forest-mid)', fontWeight: 500,
+                  textDecoration: 'none', letterSpacing: '0.03em',
+                }}>
+                  Visit site &rarr;
+                </a>
+              </div>
+              <div>
+                <p style={{ fontSize: 16, color: 'var(--text-mid)', lineHeight: 1.8, marginBottom: '1rem' }}>{body}</p>
+                <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.7 }}>{detail}</p>
               </div>
             </div>
-            <p className="mt-6 max-w-2xl text-cream/60">
-              A full-featured tourism platform with an AI-powered trip planner,
-              real-time burn ban widget, STR tax calculator, event listings,
-              and local business directory. Built with custom software and
-              real local knowledge — the features no one else has built for
-              this market.
-            </p>
-            <div className="mt-6 flex items-center gap-2 text-sm font-medium text-copper transition group-hover:text-copper-light">
-              Visit hocha.town
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </div>
-          </a>
+          ))}
         </div>
       </section>
-
-      {/* Frontier Property Management */}
-      <section className="relative border-t border-cream/5 py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <a
-            href="https://rentwithfrontier.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group block rounded-2xl border border-cream/5 bg-cream/[0.02] p-8 transition hover:border-copper/20 md:p-10"
-          >
-            <div className="mb-6">
-              <Image
-                src="/logos/fpm-logo-white.png"
-                alt="Frontier Property Management"
-                width={200}
-                height={60}
-                className="h-14 w-auto"
-              />
-            </div>
-            <h2 className="text-2xl font-bold md:text-3xl">
-              Frontier Property Management
-            </h2>
-            <p className="mt-4 max-w-2xl text-cream/60">
-              Full-service vacation rental management for the Broken Bow and
-              Hochatown area. We manage cabins with the same care and systems
-              we recommend to our consulting clients — because we operate in
-              the same market we advise on. From listing optimization to guest
-              communication, cleaning coordination, and maintenance.
-            </p>
-            <div className="mt-6 flex items-center gap-2 text-sm font-medium text-copper transition group-hover:text-copper-light">
-              Visit rentwithfrontier.com
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </div>
-          </a>
-        </div>
-      </section>
-
-      {/* Frontier Photography */}
-      <section className="relative border-t border-cream/5 py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <a
-            href="https://www.frontier.photos/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group block rounded-2xl border border-cream/5 bg-cream/[0.02] p-8 transition hover:border-copper/20 md:p-10"
-          >
-            <div className="mb-6">
-              <Image
-                src="/logos/fp-logo.png"
-                alt="Frontier Photography"
-                width={200}
-                height={60}
-                className="h-12 w-auto invert brightness-200"
-              />
-            </div>
-            <h2 className="text-2xl font-bold md:text-3xl">
-              Frontier Photography
-            </h2>
-            <p className="mt-4 max-w-2xl text-cream/60">
-              Real estate, commercial, and event photography across Southeast
-              Oklahoma. Elopements, cabin shoots, and commercial work —
-              visual proof we&apos;re embedded in this community. Great photos
-              fill cabins and seats.
-            </p>
-            <div className="mt-6 flex items-center gap-2 text-sm font-medium text-copper transition group-hover:text-copper-light">
-              Visit frontier.photos
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </div>
-          </a>
-        </div>
-      </section>
-
-      {/* SofaOps */}
-      <section className="relative border-t border-cream/5 py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="rounded-2xl border border-cream/5 bg-cream/[0.02] p-8 md:p-10">
-            <div className="mb-4 inline-flex rounded-full border border-copper/20 bg-copper/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-copper">
-              Coming Soon
-            </div>
-            <h2 className="text-2xl font-bold md:text-3xl">SofaOps</h2>
-            <p className="mt-4 max-w-2xl text-cream/60">
-              A family planner app to help busy households coordinate
-              schedules, tasks, and meals. SofaOps extends our product
-              development beyond the local tourism market — proving we can
-              build consumer products at scale.
-            </p>
-          </div>
-        </div>
-      </section>
-    </div>
+    </>
   );
 }

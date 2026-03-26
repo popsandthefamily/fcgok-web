@@ -1,95 +1,61 @@
-import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
-import "./globals.css";
-import Nav from "./components/Nav";
-import Footer from "./components/Footer";
-
-const dmSans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
+import type { Metadata } from 'next';
+import '@/styles/globals.css';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://fcgok.com"),
+  metadataBase: new URL('https://fcgok.com'),
   title: {
-    default: "Frontier Consulting Group | Technology, Consulting & Connections — Broken Bow & Hochatown",
-    template: "%s | Frontier Consulting Group",
+    default: 'Frontier Consulting Group | Technology, Consulting & Connections — Broken Bow & Hochatown',
+    template: '%s | Frontier Consulting Group',
   },
   description:
-    "We build the technology and connections that power Hochatown's next chapter. Local consulting, tourism software, investor advisory, and business growth for Broken Bow and Southeast Oklahoma.",
-  keywords: [
-    "Frontier Consulting Group",
-    "Broken Bow Oklahoma",
-    "Hochatown",
-    "Hochatown consulting",
-    "Broken Bow investor",
-    "Hochatown investment",
-    "Opportunity Zone Oklahoma",
-    "tourism software",
-    "travel and hospitality software",
-    "vacation rental management",
-    "Broken Bow property management",
-    "tourism marketing Oklahoma",
-    "Hochatown business",
-    "Southeast Oklahoma business",
-    "cabin rental marketing",
-    "Broken Bow real estate",
-    "Beavers Bend",
-  ],
+    "Frontier Consulting Group sits at the intersection of technology, tourism, and local knowledge in one of Oklahoma's fastest-moving markets. We connect investors with opportunity and help businesses grow.",
   openGraph: {
-    siteName: "Frontier Consulting Group",
-    locale: "en_US",
-    type: "website",
+    title: 'Frontier Consulting Group',
+    description: 'Technology, consulting, and local market intelligence for Broken Bow & Hochatown.',
+    url: 'https://fcgok.com',
+    siteName: 'Frontier Consulting Group',
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
-    card: "summary_large_image",
+    card: 'summary_large_image',
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${dmSans.className} antialiased`}>
+    <html lang="en">
+      <body>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "LocalBusiness",
-              name: "Frontier Consulting Group",
-              description:
-                "Technology, consulting, and investor connections for the Broken Bow and Hochatown market. Tourism software, marketing, property management, and local market advisory.",
-              url: "https://fcgok.com",
-              email: "info@fcgok.com",
-              telephone: "+1-580-207-7154",
+              '@context': 'https://schema.org',
+              '@type': 'LocalBusiness',
+              name: 'Frontier Consulting Group',
+              description: 'Technology, consulting, and investor connections for the Broken Bow and Hochatown market.',
+              url: 'https://fcgok.com',
+              email: 'info@fcgok.com',
+              telephone: '+1-580-207-7154',
               address: {
-                "@type": "PostalAddress",
-                addressLocality: "Broken Bow",
-                addressRegion: "OK",
-                postalCode: "74728",
-                addressCountry: "US",
+                '@type': 'PostalAddress',
+                addressLocality: 'Broken Bow',
+                addressRegion: 'OK',
+                postalCode: '74728',
+                addressCountry: 'US',
               },
               areaServed: [
-                {
-                  "@type": "Place",
-                  name: "Broken Bow, Oklahoma",
-                },
-                {
-                  "@type": "Place",
-                  name: "Hochatown, Oklahoma",
-                },
-                {
-                  "@type": "Place",
-                  name: "Southeast Oklahoma",
-                },
+                { '@type': 'Place', name: 'Broken Bow, Oklahoma' },
+                { '@type': 'Place', name: 'Hochatown, Oklahoma' },
+                { '@type': 'Place', name: 'Southeast Oklahoma' },
               ],
-              sameAs: [],
             }),
           }}
         />
-        <Nav />
-        {children}
+        <Navbar />
+        <main>{children}</main>
         <Footer />
       </body>
     </html>

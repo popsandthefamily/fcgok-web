@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --forest: #1a3a2a;
+  --forest-mid: #2d5c40;
+  --forest-light: #3d7a56;
+  --sage: #6b9e7a;
+  --sage-light: #a8c9b0;
+  --cream: #f4f1ea;
+  --warm-white: #fafaf7;
+  --text-dark: #0f1f17;
+  --text-mid: #3a4f42;
+  --text-muted: #7a8f80;
+  --gold: #b8860b;
+  --gold-light: #d4a520;
+  --border: rgba(26, 58, 42, 0.12);
+  --border-hover: rgba(26, 58, 42, 0.25);
+
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+}
+
+html {
+  font-family: var(--font-sans);
+  background: var(--warm-white);
+  color: var(--text-dark);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── TYPOGRAPHY ──────────────────────────────────────────────────── */
+.serif { font-family: var(--font-serif); }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+/* ── SECTION LABELS ──────────────────────────────────────────────── */
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.section-label--light {
+  color: var(--sage-light);
+}
+
+/* ── BUTTONS ─────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  background: var(--gold-light);
+  color: var(--forest);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+.btn-primary:hover {
+  background: #e8b822;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--cream);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  border-radius: 2px;
+  border: 1px solid rgba(244, 241, 234, 0.3);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+.btn-outline:hover {
+  border-color: var(--cream);
+}
+
+.btn-outline--dark {
+  color: var(--text-dark);
+  border-color: var(--border);
+}
+.btn-outline--dark:hover {
+  border-color: var(--forest);
+  color: var(--forest);
+}
+
+/* ── FORMS ────────────────────────────────────────────────────────── */
+.form-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-mid);
+  margin-bottom: 6px;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(26, 58, 42, 0.2);
+  border-radius: 2px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  background: white;
+  color: var(--text-dark);
+  transition: border-color 0.2s;
+}
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--forest-light);
+}
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ── MARQUEE ─────────────────────────────────────────────────────── */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  overflow: hidden;
+  white-space: nowrap;
+  background: var(--gold-light);
+  padding: 12px 0;
+}
+
+.marquee-inner {
+  display: inline-block;
+  animation: marquee-scroll 22s linear infinite;
+}
+
+.marquee-item {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forest);
+  padding: 0 2rem;
+}
+
+.marquee-sep {
+  color: rgba(26, 58, 42, 0.35);
+}
+
+/* ── VENTURE CARDS ───────────────────────────────────────────────── */
+.venture-card {
+  border: 1px solid var(--border);
+  background: var(--warm-white);
+  padding: 2rem;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.venture-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--forest-light);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+.venture-card:hover {
+  border-color: var(--sage);
+  transform: translateY(-2px);
+}
+.venture-card:hover::after {
+  transform: scaleX(1);
+}
+
+/* ── TIMELINE ────────────────────────────────────────────────────── */
+.timeline-list {
+  position: relative;
+  padding-left: 2rem;
+  list-style: none;
+}
+.timeline-list::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px; bottom: 8px;
+  width: 1px;
+  background: var(--border);
+}
+
+.timeline-item {
+  position: relative;
+  padding: 0 0 3rem 2rem;
+}
+.timeline-dot {
+  position: absolute;
+  left: -2rem; top: 6px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--forest-light);
+  border: 2px solid var(--warm-white);
+  transform: translateX(-4px);
+}
+.timeline-dot--gold {
+  background: var(--gold-light);
+}
+
+/* ── PILLAR / SERVICE CARDS ──────────────────────────────────────── */
+.pillar {
+  background: var(--warm-white);
+  padding: 2.5rem;
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+.pillar:hover {
+  border-color: var(--sage);
+}
+
+.pillar-num {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+/* ── STACK CHIP ──────────────────────────────────────────────────── */
+.stack-chip {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(244, 241, 234, 0.85);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* ── DISCLAIMER ──────────────────────────────────────────────────── */
+.disclaimer {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  padding: 1rem;
+  background: var(--cream);
+  border-left: 3px solid var(--sage);
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+
+  nav {
+    padding: 0 1.5rem !important;
+  }
+  nav > div:last-child {
+    display: none;
+  }
+}
