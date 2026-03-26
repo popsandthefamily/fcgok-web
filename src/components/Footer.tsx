@@ -6,50 +6,55 @@ export default function Footer() {
     <>
       <footer style={{
         background: '#0f1f17',
-        padding: '4rem 3rem 0',
-        display: 'grid',
-        gridTemplateColumns: '1.5fr 1fr 1fr 1fr',
-        gap: '3rem',
+        padding: '4rem 3rem 2rem',
       }}>
-        {/* Brand */}
-        <div>
-          <div style={{ marginBottom: '1rem' }}>
-            <Image
-              src="/logos/fcg-logo-white.png"
-              alt="Frontier Consulting Group"
-              width={180}
-              height={45}
-              style={{ height: 32, width: 'auto', opacity: 0.7 }}
-            />
+        <div style={{
+          maxWidth: 1200,
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: '1.5fr 1fr 1fr 1fr',
+          gap: '3rem',
+        }}>
+          {/* Brand */}
+          <div>
+            <div style={{ marginBottom: '1rem' }}>
+              <Image
+                src="/logos/fcg-logo-white.png"
+                alt="Frontier Consulting Group"
+                width={180}
+                height={45}
+                style={{ height: 32, width: 'auto', opacity: 0.7 }}
+              />
+            </div>
+            <p style={{ fontSize: 13, color: 'rgba(244,241,234,0.4)', lineHeight: 1.7, maxWidth: 240 }}>
+              Technology, consulting, and local market intelligence for investors and businesses
+              in Broken Bow and Hochatown, Oklahoma.
+            </p>
           </div>
-          <p style={{ fontSize: 13, color: 'rgba(244,241,234,0.4)', lineHeight: 1.7, maxWidth: 240 }}>
-            Technology, consulting, and local market intelligence for investors and businesses
-            in Broken Bow and Hochatown, Oklahoma.
-          </p>
+
+          {/* Company */}
+          <FooterCol title="Company">
+            <FooterLink href="/about/hunter">Hunter Collins</FooterLink>
+            <FooterLink href="/ventures">Our Ventures</FooterLink>
+            <FooterLink href="/careers">Careers</FooterLink>
+          </FooterCol>
+
+          {/* Work */}
+          <FooterCol title="Work With Us">
+            <FooterLink href="/investors">For Investors</FooterLink>
+            <FooterLink href="/businesses">For Businesses</FooterLink>
+            <FooterLink href="https://rentwithfrontier.com">Property Management</FooterLink>
+          </FooterCol>
+
+          {/* Contact */}
+          <FooterCol title="Contact">
+            <FooterLink href="mailto:info@fcgok.com">info@fcgok.com</FooterLink>
+            <FooterLink href="tel:+15802077154">(580) 207-7154</FooterLink>
+            <span style={{ display: 'block', fontSize: 14, color: 'rgba(244,241,234,0.55)', marginBottom: 8 }}>
+              Broken Bow, OK 74728
+            </span>
+          </FooterCol>
         </div>
-
-        {/* Company */}
-        <FooterCol title="Company">
-          <FooterLink href="/about/hunter">Hunter Collins</FooterLink>
-          <FooterLink href="/ventures">Our Ventures</FooterLink>
-          <FooterLink href="/careers">Careers</FooterLink>
-        </FooterCol>
-
-        {/* Work */}
-        <FooterCol title="Work With Us">
-          <FooterLink href="/investors">For Investors</FooterLink>
-          <FooterLink href="/businesses">For Businesses</FooterLink>
-          <FooterLink href="https://rentwithfrontier.com">Property Management</FooterLink>
-        </FooterCol>
-
-        {/* Contact */}
-        <FooterCol title="Contact">
-          <FooterLink href="mailto:info@fcgok.com">info@fcgok.com</FooterLink>
-          <FooterLink href="tel:+15802077154">(580) 207-7154</FooterLink>
-          <span style={{ display: 'block', fontSize: 14, color: 'rgba(244,241,234,0.55)', marginBottom: 8 }}>
-            Broken Bow, OK 74728
-          </span>
-        </FooterCol>
       </footer>
 
       {/* Bottom bar */}
@@ -57,14 +62,20 @@ export default function Footer() {
         background: '#0f1f17',
         borderTop: '1px solid rgba(255,255,255,0.06)',
         padding: '1.25rem 3rem',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
-        <p style={{ fontSize: 12, color: 'rgba(244,241,234,0.3)' }}>
-          &copy; 2026 Frontier Consulting Group LLC. Broken Bow, Oklahoma.
-        </p>
-        <p style={{ fontSize: 12, color: 'rgba(244,241,234,0.2)' }}>
-          Not a registered broker-dealer or financial advisor.
-        </p>
+        <div style={{
+          maxWidth: 1200,
+          margin: '0 auto',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          flexWrap: 'wrap', gap: '0.5rem',
+        }}>
+          <p style={{ fontSize: 12, color: 'rgba(244,241,234,0.3)' }}>
+            &copy; 2026 Frontier Consulting Group LLC. Broken Bow, Oklahoma.
+          </p>
+          <p style={{ fontSize: 12, color: 'rgba(244,241,234,0.2)' }}>
+            Not a registered broker-dealer or financial advisor.
+          </p>
+        </div>
       </div>
     </>
   );
