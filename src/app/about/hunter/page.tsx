@@ -63,55 +63,23 @@ export default function HunterPage() {
       {/* ── HERO ───────────────────────────────────────────────────── */}
       <section style={{
         background: 'var(--forest)',
-        padding: '6rem 3rem 0',
-        display: 'grid',
-        gridTemplateColumns: '1fr 400px',
-        gap: '4rem',
-        alignItems: 'end',
+        padding: '5rem 3rem',
       }}>
-        <div>
-          <span className="section-label section-label--light">Founder &amp; Principal</span>
-          <h1 style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: 'clamp(2.5rem, 4vw, 3.8rem)',
-            color: 'var(--cream)', fontWeight: 400, lineHeight: 1.15,
-            marginBottom: '1.5rem',
-          }}>
-            Hunter Collins
-          </h1>
-          <p style={{ color: 'rgba(244,241,234,0.75)', fontSize: 17, lineHeight: 1.8, fontWeight: 300, maxWidth: 520, marginBottom: '2rem' }}>
-            Entrepreneur, software builder, and Hochatown local. Founded Frontier Consulting Group
-            to connect the capital and technology flowing into this market with the ground-level
-            knowledge only someone who lives here can provide.
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link href="/investors" className="btn-primary">Work With Us</Link>
-          </div>
-        </div>
-
-        {/* Headshot placeholder */}
-        <div style={{
-          width: '100%', aspectRatio: '3/4',
-          background: 'var(--forest-mid)',
-          borderRadius: '4px 4px 0 0',
-          overflow: 'hidden',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        <span className="section-label section-label--light">Founder &amp; Principal</span>
+        <h1 style={{
+          fontFamily: 'var(--font-serif)',
+          fontSize: 'clamp(2.5rem, 4vw, 3.8rem)',
+          color: 'var(--cream)', fontWeight: 400, lineHeight: 1.15,
+          marginBottom: '1.5rem',
         }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{
-              width: 100, height: 100, borderRadius: '50%',
-              background: 'var(--sage)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-serif)', fontSize: '2rem', color: 'var(--cream)',
-              border: '3px solid rgba(255,255,255,0.15)', margin: '0 auto 12px',
-            }}>
-              HC
-            </div>
-            <div style={{ fontSize: 13, color: 'rgba(244,241,234,0.4)', letterSpacing: '0.1em' }}>
-              Photo coming soon
-            </div>
-          </div>
-        </div>
+          Hunter Collins
+        </h1>
+        <p style={{ color: 'rgba(244,241,234,0.75)', fontSize: 17, lineHeight: 1.8, fontWeight: 300, maxWidth: 580, marginBottom: '2rem' }}>
+          Entrepreneur, software builder, and Hochatown local. Founded Frontier Consulting Group
+          to connect the capital and technology flowing into this market with the ground-level
+          knowledge only someone who lives here can provide.
+        </p>
+        <Link href="/investors" className="btn-primary">Work With Us</Link>
       </section>
 
       {/* ── STAT BAR ───────────────────────────────────────────────── */}
