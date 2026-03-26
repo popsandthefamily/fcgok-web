@@ -42,12 +42,12 @@ export default function Investors() {
               </span>
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-cream/50">
-              I&apos;m Hunter Collins, founder of Frontier Consulting Group
-              and Broken Bow native. The money is coming from Dallas, Tulsa,
-              and OKC — but the investors who win here are the ones with
-              someone local in their corner. Someone who knows which builders
-              deliver, which locations actually rent, and how this market
-              really works.
+              Frontier Consulting Group is led by Hunter Collins, a Broken
+              Bow native who operates in this market daily. The capital is
+              coming from Dallas, Tulsa, and OKC — but the investors who
+              win here are the ones with a trusted local partner. Someone
+              who knows which builders deliver, which locations actually
+              rent, and how this market really works.
             </p>
           </div>
         </div>

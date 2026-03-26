@@ -59,11 +59,11 @@ export default function Home() {
               className="animate-fade-up mt-6 max-w-xl text-lg leading-relaxed text-cream/50"
               style={{ animationDelay: "0.2s" }}
             >
-              I&apos;m Hunter Collins, founder of FCG and Broken Bow native.
-              We sit at the intersection of technology, tourism, and local
-              knowledge in one of Oklahoma&apos;s fastest-moving markets —
-              connecting investors with opportunity and helping businesses
-              grow.
+              Founded by Hunter Collins in Broken Bow, Oklahoma, Frontier
+              Consulting Group sits at the intersection of technology,
+              tourism, and local knowledge in one of Oklahoma&apos;s
+              fastest-moving markets — connecting investors with opportunity
+              and helping businesses grow.
             </p>
 
             <div
