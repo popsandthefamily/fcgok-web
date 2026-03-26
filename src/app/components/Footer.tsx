@@ -29,12 +29,6 @@ export default function Footer() {
               Ventures
             </Link>
             <Link
-              href="/insights"
-              className="text-xs text-cream/30 transition hover:text-cream/60"
-            >
-              Insights
-            </Link>
-            <Link
               href="/investors"
               className="text-xs text-cream/30 transition hover:text-cream/60"
             >

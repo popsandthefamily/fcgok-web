@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import InvestorSignup from "../components/InvestorSignup";
 
 export const metadata: Metadata = {
-  title: "For Investors — Broken Bow & Hochatown Market Advisory",
+  title: "Broken Bow & Hochatown Investment Advisory",
   description:
-    "Exploring investment opportunities in Broken Bow and Hochatown, Oklahoma? Local market intelligence, builder connections, and operational support from the team that lives and builds here.",
+    "Exploring Broken Bow Oklahoma investment or Hochatown STR opportunities? Local market intelligence, builder connections, and real estate consulting from a team that lives and builds here.",
   openGraph: {
-    title: "For Investors | Frontier Consulting Group",
+    title: "Broken Bow & Hochatown Investment Advisory | Frontier Consulting Group",
     description:
-      "Local market intelligence and connections for investors exploring the Broken Bow and Hochatown, Oklahoma market.",
+      "Local market intelligence for investors exploring the Broken Bow and Hochatown, Oklahoma STR and real estate market.",
     url: "https://fcgok.com/investors",
   },
   twitter: {
-    title: "For Investors | Frontier Consulting Group",
+    title: "Broken Bow & Hochatown Investment Advisory | Frontier Consulting Group",
     description:
-      "Local market intelligence and connections for investors exploring the Broken Bow and Hochatown, Oklahoma market.",
+      "Local market intelligence for investors exploring the Broken Bow and Hochatown, Oklahoma STR and real estate market.",
   },
   alternates: {
     canonical: "https://fcgok.com/investors",
@@ -41,10 +42,12 @@ export default function Investors() {
               </span>
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-cream/50">
-              The money is coming from Dallas, Tulsa, and OKC. But the
-              investors who win here are the ones who have someone local in
-              their corner — someone who knows which builders deliver, which
-              locations actually rent, and how this market really works.
+              I&apos;m Hunter Collins, founder of Frontier Consulting Group
+              and Broken Bow native. The money is coming from Dallas, Tulsa,
+              and OKC — but the investors who win here are the ones with
+              someone local in their corner. Someone who knows which builders
+              deliver, which locations actually rent, and how this market
+              really works.
             </p>
           </div>
         </div>
@@ -221,11 +224,30 @@ export default function Investors() {
         </div>
       </section>
 
+      {/* Investor List Opt-In */}
+      <section className="relative border-t border-cream/5 py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mx-auto max-w-2xl rounded-2xl border border-copper/20 bg-copper/5 p-8 md:p-10">
+            <h2 className="text-2xl font-bold md:text-3xl">
+              Stay close to the market.
+            </h2>
+            <p className="mt-4 text-cream/60">
+              Get occasional notes on the Broken Bow market — deals, data,
+              what&apos;s moving. No spam, no pitch deck. Just local
+              intelligence from someone on the ground.
+            </p>
+            <div className="mt-6">
+              <InvestorSignup />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="relative border-t border-cream/5 py-20">
         <div className="mx-auto max-w-7xl px-6 text-center">
           <h2 className="text-2xl font-bold md:text-3xl">
-            Exploring the Broken Bow market?
+            Ready to talk specifics?
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-cream/50">
             Tell me what you&apos;re looking at. I&apos;ll give you a

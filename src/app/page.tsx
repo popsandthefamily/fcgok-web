@@ -4,19 +4,19 @@ import Link from "next/link";
 import ContactForm from "./components/ContactForm";
 
 export const metadata: Metadata = {
-  title: "Frontier Consulting Group | Technology, Consulting & Connections — Broken Bow & Hochatown",
+  title: "Frontier Consulting Group | Broken Bow & Hochatown",
   description:
-    "We build the technology and connections that power Hochatown's next chapter. Local consulting, tourism software, investor advisory, and business growth for Broken Bow and Southeast Oklahoma.",
+    "Frontier Consulting Group — local tech, consulting, and market intelligence for investors and businesses in Broken Bow and Hochatown, Oklahoma. Tourism software, property management, and investor advisory.",
   openGraph: {
-    title: "Frontier Consulting Group | Technology, Consulting & Connections — Broken Bow & Hochatown",
+    title: "Frontier Consulting Group | Technology & Consulting in Broken Bow",
     description:
-      "We build the technology and connections that power Hochatown's next chapter. Local consulting, tourism software, and investor advisory for Broken Bow.",
+      "Local tech, consulting, and market intelligence for investors and businesses in Broken Bow and Hochatown, Oklahoma.",
     url: "https://fcgok.com",
   },
   twitter: {
-    title: "Frontier Consulting Group | Technology, Consulting & Connections — Broken Bow & Hochatown",
+    title: "Frontier Consulting Group | Technology & Consulting in Broken Bow",
     description:
-      "We build the technology and connections that power Hochatown's next chapter. Local consulting, tourism software, and investor advisory for Broken Bow.",
+      "Local tech, consulting, and market intelligence for investors and businesses in Broken Bow and Hochatown, Oklahoma.",
   },
   alternates: {
     canonical: "https://fcgok.com",
@@ -59,10 +59,11 @@ export default function Home() {
               className="animate-fade-up mt-6 max-w-xl text-lg leading-relaxed text-cream/50"
               style={{ animationDelay: "0.2s" }}
             >
-              Frontier Consulting Group sits at the intersection of technology,
-              tourism, and local knowledge in one of Oklahoma&apos;s
-              fastest-moving markets. We connect investors with opportunity
-              and help businesses grow.
+              I&apos;m Hunter Collins, founder of FCG and Broken Bow native.
+              We sit at the intersection of technology, tourism, and local
+              knowledge in one of Oklahoma&apos;s fastest-moving markets —
+              connecting investors with opportunity and helping businesses
+              grow.
             </p>
 
             <div
@@ -111,10 +112,10 @@ export default function Home() {
               and how the market really works.
             </p>
             <Link
-              href="/insights"
+              href="/investors"
               className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-copper transition hover:text-copper-light"
             >
-              Read our latest insights
+              Learn more about the opportunity
               <ArrowIcon />
             </Link>
           </div>

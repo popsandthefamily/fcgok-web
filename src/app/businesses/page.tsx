@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "For Businesses — Software, Marketing & Growth in Broken Bow",
+  title: "Cabin Websites, Property Management & Marketing — Broken Bow",
   description:
-    "Custom tourism software, marketing, property management, and branding for businesses in Broken Bow and Hochatown. Get more bookings, show up on Google, and grow with a team that knows this market.",
+    "Broken Bow cabin website design, Hochatown property management, and local SEO for tourism businesses. Custom booking sites, Google optimization, and marketing from the team behind hocha.town.",
   openGraph: {
     title: "For Businesses | Frontier Consulting Group",
     description:
-      "Software, marketing, and growth services for businesses in the Broken Bow and Hochatown market.",
+      "Cabin websites, property management, and local SEO for businesses in the Broken Bow and Hochatown market.",
     url: "https://fcgok.com/businesses",
   },
   twitter: {
     title: "For Businesses | Frontier Consulting Group",
     description:
-      "Software, marketing, and growth services for businesses in the Broken Bow and Hochatown market.",
+      "Cabin websites, property management, and local SEO for businesses in the Broken Bow and Hochatown market.",
   },
   alternates: {
     canonical: "https://fcgok.com/businesses",
@@ -63,7 +63,9 @@ export default function Businesses() {
               <p className="mt-3 text-sm text-cream/50">
                 Custom booking websites, guest experience apps, and tourism
                 platforms built specifically for cabins, resorts, outfitters,
-                and local attractions in the Broken Bow area.
+                and local attractions in the Broken Bow area. Built on the
+                same stack as hocha.town — full-stack software with AI,
+                real-time data, and a native mobile app.
               </p>
             </div>
 
