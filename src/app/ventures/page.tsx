@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Ventures — What We Build',
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 
 const VENTURES = [
   {
-    icon: '🌲',
+    logo: '/logos/hocha-icon.png',
     name: 'hocha.town',
     tag: 'Tourism Platform',
     href: 'https://hocha.town',
@@ -25,7 +26,7 @@ const VENTURES = [
     detail: 'Two-sided marketplace connecting visitors with cabins, restaurants, and activities. The data layer behind the investor intelligence.',
   },
   {
-    icon: '🏡',
+    logo: '/logos/fpm-logo.png',
     name: 'Frontier Property Management',
     tag: 'STR Operations',
     href: 'https://rentwithfrontier.com',
@@ -33,7 +34,7 @@ const VENTURES = [
     detail: "This is the credibility that makes our investor advisory real: we manage properties, so we know what actually performs.",
   },
   {
-    icon: '📷',
+    logo: '/logos/fp-logo.png',
     name: 'Frontier Photography',
     tag: 'Visual Media',
     href: 'https://frontier.photos',
@@ -58,18 +59,19 @@ export default function VenturesPage() {
 
       <section style={{ padding: '5rem 3rem' }}>
         <div style={{ display: 'grid', gap: 1, background: 'var(--border)', border: '1px solid var(--border)' }}>
-          {VENTURES.map(({ icon, name, tag, href, body, detail }) => (
+          {VENTURES.map(({ logo, name, tag, href, body, detail }) => (
             <div key={name} style={{
               background: 'var(--warm-white)', padding: '3rem',
               display: 'grid', gridTemplateColumns: '220px 1fr', gap: '3rem', alignItems: 'start',
             }}>
               <div>
                 <div style={{
-                  width: 60, height: 60, background: 'var(--forest)',
+                  width: 60, height: 60, background: 'var(--cream)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 24, borderRadius: 2, marginBottom: '1rem',
+                  borderRadius: 4, marginBottom: '1rem', border: '1px solid var(--border)',
+                  padding: 8,
                 }}>
-                  {icon}
+                  <Image src={logo} alt={name} width={48} height={48} style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
                 </div>
                 <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 400, marginBottom: '0.5rem' }}>{name}</h2>
                 <span style={{

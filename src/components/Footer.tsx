@@ -1,11 +1,5 @@
+import Image from 'next/image';
 import Link from 'next/link';
-
-const LOGO_MARK = (
-  <div style={{
-    width: 28, height: 28, background: 'var(--gold-light)', flexShrink: 0,
-    clipPath: 'polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%)',
-  }} />
-);
 
 export default function Footer() {
   return (
@@ -19,11 +13,14 @@ export default function Footer() {
       }}>
         {/* Brand */}
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1rem' }}>
-            {LOGO_MARK}
-            <span style={{ fontFamily: 'var(--font-serif)', fontSize: 14, color: 'rgba(244,241,234,0.9)' }}>
-              Frontier Consulting Group
-            </span>
+          <div style={{ marginBottom: '1rem' }}>
+            <Image
+              src="/logos/fcg-logo-white.png"
+              alt="Frontier Consulting Group"
+              width={180}
+              height={45}
+              style={{ height: 32, width: 'auto', opacity: 0.7 }}
+            />
           </div>
           <p style={{ fontSize: 13, color: 'rgba(244,241,234,0.4)', lineHeight: 1.7, maxWidth: 240 }}>
             Technology, consulting, and local market intelligence for investors and businesses

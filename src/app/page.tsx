@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import MarqueeStrip from '@/components/MarqueeStrip';
 
@@ -157,13 +158,13 @@ export default function HomePage() {
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
           {[
-            { icon: '🌲', name: 'hocha.town', desc: 'The tourism platform for Hochatown & Broken Bow — AI trip planner, burn ban widget, STR tax calculator, and native iOS app.', tag: 'Live Platform', href: 'https://hocha.town' },
-            { icon: '🏡', name: 'Frontier Property Management', desc: 'Full-service vacation rental management in the Broken Bow area. We operate in the same market we advise on.', tag: 'Active', href: 'https://rentwithfrontier.com' },
-            { icon: '📷', name: 'Frontier Photography', desc: 'Real estate, commercial, and event photography across Southeast Oklahoma. Elopements, cabin shoots, family sessions.', tag: 'Active', href: 'https://frontier.photos' },
-          ].map(({ icon, name, desc, tag, href }) => (
+            { logo: '/logos/hocha-icon.png', name: 'hocha.town', desc: 'The tourism platform for Hochatown & Broken Bow — AI trip planner, burn ban widget, STR tax calculator, and native iOS app.', tag: 'Live Platform', href: 'https://hocha.town' },
+            { logo: '/logos/fpm-logo-white.png', name: 'Frontier Property Management', desc: 'Full-service vacation rental management in the Broken Bow area. We operate in the same market we advise on.', tag: 'Active', href: 'https://rentwithfrontier.com', dark: true },
+            { logo: '/logos/fp-logo.png', name: 'Frontier Photography', desc: 'Real estate, commercial, and event photography across Southeast Oklahoma. Elopements, cabin shoots, family sessions.', tag: 'Active', href: 'https://frontier.photos', dark: true },
+          ].map(({ logo, name, desc, tag, href, dark }) => (
             <a key={name} href={href} target="_blank" rel="noopener noreferrer" className="venture-card">
-              <div style={{ width: 44, height: 44, background: 'var(--cream)', border: '1px solid var(--border)', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', fontSize: 20 }}>
-                {icon}
+              <div style={{ width: 48, height: 48, background: dark ? 'var(--forest)' : 'var(--cream)', border: '1px solid var(--border)', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', padding: 6 }}>
+                <Image src={logo} alt={name} width={40} height={40} style={{ height: 28, width: 'auto', objectFit: 'contain' }} />
               </div>
               <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 18, fontWeight: 400, marginBottom: '0.5rem' }}>{name}</h3>
               <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '1rem' }}>{desc}</p>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -11,15 +12,6 @@ const links = [
   { href: '/investors', label: 'For Investors' },
   { href: '/businesses', label: 'For Businesses' },
 ];
-
-const LOGO_MARK = (
-  <div style={{
-    width: 32, height: 32,
-    background: 'var(--gold-light)',
-    clipPath: 'polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%)',
-    flexShrink: 0,
-  }} />
-);
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -35,13 +27,14 @@ export default function Navbar() {
     }}>
       {/* Logo */}
       <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-        {LOGO_MARK}
-        <span style={{
-          fontFamily: 'var(--font-serif)', fontSize: 15,
-          color: 'var(--cream)', letterSpacing: '0.04em',
-        }}>
-          Frontier Consulting Group
-        </span>
+        <Image
+          src="/logos/fcg-logo-white.png"
+          alt="Frontier Consulting Group"
+          width={200}
+          height={50}
+          style={{ height: 36, width: 'auto' }}
+          priority
+        />
       </Link>
 
       {/* Desktop links */}
