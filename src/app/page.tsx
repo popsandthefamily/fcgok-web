@@ -163,8 +163,8 @@ export default function HomePage() {
             { logo: '/logos/fp-logo.png', name: 'Frontier Photography', desc: 'Real estate, commercial, and event photography across Southeast Oklahoma. Elopements, cabin shoots, family sessions.', tag: 'Active', href: 'https://frontier.photos', dark: true },
           ].map(({ logo, name, desc, tag, href, dark }) => (
             <a key={name} href={href} target="_blank" rel="noopener noreferrer" className="venture-card">
-              <div style={{ width: 48, height: 48, background: dark ? 'var(--forest)' : 'var(--cream)', border: '1px solid var(--border)', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', padding: 6 }}>
-                <Image src={logo} alt={name} width={40} height={40} style={{ height: 28, width: 'auto', objectFit: 'contain' }} />
+              <div style={{ height: 48, background: dark ? 'var(--forest)' : 'var(--cream)', border: '1px solid var(--border)', borderRadius: 4, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', padding: '6px 12px' }}>
+                <Image src={logo} alt={name} width={120} height={40} style={{ height: 24, width: 'auto', objectFit: 'contain' }} />
               </div>
               <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 18, fontWeight: 400, marginBottom: '0.5rem' }}>{name}</h3>
               <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '1rem' }}>{desc}</p>

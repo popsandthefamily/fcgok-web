@@ -66,12 +66,12 @@ export default function VenturesPage() {
             }}>
               <div>
                 <div style={{
-                  width: 60, height: 60, background: 'var(--cream)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  height: 60, background: 'var(--forest)',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   borderRadius: 4, marginBottom: '1rem', border: '1px solid var(--border)',
-                  padding: 8,
+                  padding: '8px 16px',
                 }}>
-                  <Image src={logo} alt={name} width={48} height={48} style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
+                  <Image src={logo} alt={name} width={120} height={48} style={{ height: 32, width: 'auto', objectFit: 'contain' }} />
                 </div>
                 <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 400, marginBottom: '0.5rem' }}>{name}</h2>
                 <span style={{
