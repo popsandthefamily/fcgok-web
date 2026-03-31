@@ -63,8 +63,7 @@ export default function HomePage() {
             color: 'var(--cream)', fontWeight: 400, lineHeight: 1.15,
             marginBottom: '1.5rem',
           }}>
-            We build the technology<br />
-            and connections that power<br />
+            Helping build<br />
             <em style={{ fontStyle: 'italic', color: 'var(--sage-light)' }}>
               Hochatown&apos;s next chapter.
             </em>
@@ -158,12 +157,12 @@ export default function HomePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
           {[
             { logo: '/logos/hocha-icon.png', name: 'hocha.town', desc: 'The tourism platform for Hochatown & Broken Bow — AI trip planner, burn ban widget, STR tax calculator, and native iOS app.', tag: 'Live Platform', href: 'https://hocha.town' },
-            { logo: '/logos/fpm-logo-white.png', name: 'Frontier Property Management', desc: 'Full-service vacation rental management in the Broken Bow area. We operate in the same market we advise on.', tag: 'Active', href: 'https://rentwithfrontier.com', dark: true },
-            { logo: '/logos/fp-logo.png', name: 'Frontier Photography', desc: 'Real estate, commercial, and event photography across Southeast Oklahoma. Elopements, cabin shoots, family sessions.', tag: 'Active', href: 'https://frontier.photos', dark: true },
-          ].map(({ logo, name, desc, tag, href, dark }) => (
+            { logo: '/logos/fpm-logo.png', name: 'Frontier Property Management', desc: 'Full-service vacation rental management in the Broken Bow area. We operate in the same market we advise on.', tag: 'Active', href: 'https://rentwithfrontier.com' },
+            { logo: '/logos/fp-logo.png', name: 'Frontier Photography', desc: 'Real estate, commercial, and event photography across Southeast Oklahoma. Elopements, cabin shoots, family sessions.', tag: 'Active', href: 'https://frontier.photos' },
+          ].map(({ logo, name, desc, tag, href }) => (
             <a key={name} href={href} target="_blank" rel="noopener noreferrer" className="venture-card">
-              <div style={{ height: 48, background: dark ? 'var(--forest)' : 'var(--cream)', border: '1px solid var(--border)', borderRadius: 4, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', padding: '6px 12px' }}>
-                <Image src={logo} alt={name} width={120} height={40} style={{ height: 24, width: 'auto', objectFit: 'contain' }} />
+              <div style={{ height: 56, background: 'var(--cream)', border: '1px solid var(--border)', borderRadius: 4, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', padding: '8px 16px' }}>
+                <Image src={logo} alt={name} width={140} height={48} style={{ height: 32, width: 'auto', objectFit: 'contain' }} />
               </div>
               <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 18, fontWeight: 400, marginBottom: '0.5rem' }}>{name}</h3>
               <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '1rem' }}>{desc}</p>

@@ -32,7 +32,7 @@ export default function Navbar() {
           width={200}
           height={101}
           unoptimized
-          style={{ height: 36, width: 'auto' }}
+          style={{ height: 48, width: 'auto' }}
           priority
         />
       </Link>

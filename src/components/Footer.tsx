@@ -24,7 +24,7 @@ export default function Footer() {
                 width={180}
                 height={91}
                 unoptimized
-                style={{ height: 28, width: 'auto', opacity: 0.7 }}
+                style={{ height: 40, width: 'auto', opacity: 0.7 }}
               />
             </div>
             <p style={{ fontSize: 13, color: 'rgba(244,241,234,0.4)', lineHeight: 1.7, maxWidth: 240 }}>
