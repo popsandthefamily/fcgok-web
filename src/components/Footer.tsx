@@ -22,8 +22,9 @@ export default function Footer() {
                 src="/logos/fcg-logo-white.png"
                 alt="Frontier Consulting Group"
                 width={180}
-                height={45}
-                style={{ height: 32, width: 'auto', opacity: 0.7 }}
+                height={91}
+                unoptimized
+                style={{ height: 28, width: 'auto', opacity: 0.7 }}
               />
             </div>
             <p style={{ fontSize: 13, color: 'rgba(244,241,234,0.4)', lineHeight: 1.7, maxWidth: 240 }}>

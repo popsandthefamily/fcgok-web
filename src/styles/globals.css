@@ -17,8 +17,8 @@
   --text-dark: #0f1f17;
   --text-mid: #3a4f42;
   --text-muted: #7a8f80;
-  --gold: #b8860b;
-  --gold-light: #d4a520;
+  --gold: #c49a1c;
+  --gold-light: #dbb532;
   --border: rgba(26, 58, 42, 0.12);
   --border-hover: rgba(26, 58, 42, 0.25);
 
@@ -82,7 +82,7 @@ h1, h2, h3, h4 {
   transition: background 0.2s, transform 0.2s;
 }
 .btn-primary:hover {
-  background: #e8b822;
+  background: #e6c23a;
   transform: translateY(-1px);
 }
 

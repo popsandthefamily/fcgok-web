@@ -30,8 +30,9 @@ export default function Navbar() {
           src="/logos/fcg-logo-white.png"
           alt="Frontier Consulting Group"
           width={200}
-          height={50}
-          style={{ height: 48, width: 'auto' }}
+          height={101}
+          unoptimized
+          style={{ height: 36, width: 'auto' }}
           priority
         />
       </Link>
@@ -43,8 +44,8 @@ export default function Navbar() {
           return (
             <Link key={href} href={href} style={{
               color: active ? 'var(--cream)' : 'rgba(244,241,234,0.65)',
-              fontSize: 13, fontWeight: 400, letterSpacing: '0.05em',
-              textTransform: 'uppercase', padding: '0 1.1rem',
+              fontSize: 12, fontWeight: 400, letterSpacing: '0.1em',
+              textTransform: 'uppercase', padding: '0 1.4rem',
               height: 64, display: 'flex', alignItems: 'center',
               textDecoration: 'none',
               borderBottom: active ? '2px solid var(--gold-light)' : '2px solid transparent',
@@ -58,11 +59,12 @@ export default function Navbar() {
 
       {/* Desktop CTA */}
       <Link href="/investors#contact" className="hide-mobile" style={{
-        background: 'var(--gold-light)', color: 'var(--forest)',
-        fontSize: 12, fontWeight: 500, letterSpacing: '0.08em',
+        background: 'transparent', color: 'rgba(244,241,234,0.7)',
+        fontSize: 12, fontWeight: 400, letterSpacing: '0.08em',
         textTransform: 'uppercase', padding: '8px 20px',
         borderRadius: 2, textDecoration: 'none',
-        transition: 'background 0.2s',
+        border: '1px solid rgba(244,241,234,0.25)',
+        transition: 'border-color 0.2s, color 0.2s',
       }}>
         Get in Touch
       </Link>
