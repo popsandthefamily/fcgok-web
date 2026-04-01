@@ -30,7 +30,7 @@ export default function HomePage() {
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
-        padding: '6rem 3rem 180px',
+        padding: '3rem 3rem 160px',
       }}>
         <div style={{
           position: 'absolute', inset: 0,
@@ -45,23 +45,11 @@ export default function HomePage() {
         }} />
 
         <div style={{ maxWidth: 760, position: 'relative', zIndex: 2 }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 10,
-            background: 'rgba(184,134,11,0.15)',
-            border: '1px solid rgba(212,165,32,0.3)',
-            color: 'var(--gold-light)', fontSize: 11, fontWeight: 500,
-            letterSpacing: '0.12em', textTransform: 'uppercase',
-            padding: '6px 14px', borderRadius: 2, marginBottom: '2.5rem',
-          }}>
-            <div style={{ width: 6, height: 6, background: 'var(--gold-light)', borderRadius: '50%' }} />
-            Broken Bow &amp; Hochatown, Oklahoma
-          </div>
-
           <h1 style={{
             fontFamily: 'var(--font-serif)',
             fontSize: 'clamp(2.8rem, 5vw, 4.2rem)',
             color: 'var(--cream)', fontWeight: 400, lineHeight: 1.15,
-            marginBottom: '1.5rem',
+            marginBottom: '1.2rem',
           }}>
             Helping build<br />
             <em style={{ fontStyle: 'italic', color: 'var(--sage-light)' }}>
@@ -71,7 +59,7 @@ export default function HomePage() {
 
           <p style={{
             fontSize: 17, color: 'rgba(244,241,234,0.82)', lineHeight: 1.7,
-            maxWidth: 520, marginBottom: '2.5rem', fontWeight: 400,
+            maxWidth: 520, marginBottom: '2rem', fontWeight: 400,
           }}>
             Frontier Consulting Group sits at the intersection of technology, tourism,
             and local knowledge — connecting investors with opportunity and helping
@@ -86,7 +74,7 @@ export default function HomePage() {
 
         {/* Stat bar */}
         <div style={{
-          position: 'absolute', bottom: '3rem', left: '3rem', right: '3rem',
+          position: 'absolute', bottom: '2.5rem', left: '3rem', right: '3rem',
           display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 0, borderTop: '1px solid rgba(255,255,255,0.08)', zIndex: 2,
         }}>
