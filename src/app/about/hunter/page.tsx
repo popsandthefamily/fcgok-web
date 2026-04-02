@@ -4,15 +4,15 @@ import Link from 'next/link';
 
 const TIMELINE = [
   {
-    year: '2024–Present',
-    title: 'Founder — Frontier Consulting Group',
-    body: 'Launched FCG as the umbrella for technology consulting, investor advisory, property management, and photography across Southeast Oklahoma. Currently building the investor portal to connect outside capital with local opportunity.',
+    year: '2026',
+    title: 'Builder — hocha.town',
+    body: 'Built and shipped a full-stack tourism platform for Hochatown and Broken Bow: AI trip planner (Groq/LLaMA), real-time burn ban data via ArcGIS API, STR tax calculator, push notifications, and a native iOS app on the App Store via Capacitor.',
     gold: true,
   },
   {
-    year: '2024–Present',
-    title: 'Builder — hocha.town',
-    body: 'Built and shipped a full-stack tourism platform for Hochatown and Broken Bow: AI trip planner (Groq/LLaMA), real-time burn ban data via ArcGIS API, STR tax calculator, push notifications, and a native iOS app on the App Store via Capacitor.',
+    year: '2023–Present',
+    title: 'Founder — Frontier Consulting Group',
+    body: 'Launched FCG as the umbrella for technology consulting, investor advisory, property management, and photography across Southeast Oklahoma. Connecting outside capital with local opportunity.',
     gold: true,
   },
   {
@@ -22,15 +22,15 @@ const TIMELINE = [
     gold: false,
   },
   {
-    year: '2023–Present',
+    year: '2020–Present',
     title: 'Founder — Frontier Photography',
     body: 'Real estate, commercial, and event photography across Southeast Oklahoma, including elopements, cabin shoots, and family sessions in the Beavers Bend area.',
     gold: false,
   },
   {
     year: 'Prior',
-    title: 'Technical Career & Background',
-    body: 'Professional background in technology and operations, including hands-on development experience that predates the FCG ventures. Comfortable at every layer of the stack and every stage of a business.',
+    title: 'Enterprise Technology & Program Management',
+    body: 'Over a decade in financial services and enterprise IT — program management, M&A technology integration, product management, and technical operations at major institutions.',
     gold: false,
   },
 ];
