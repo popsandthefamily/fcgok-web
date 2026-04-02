@@ -2,17 +2,17 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Broken Bow & Hochatown Investment Advisory',
+  title: 'Invest in Broken Bow & Hochatown — Local Advisory',
   description:
-    'Local market intelligence, builder connections, and STR data for investors exploring the Broken Bow, Oklahoma market. Federal Opportunity Zone. Choctaw casino development.',
+    'Local market intelligence, builder connections, and STR data for investors exploring the Broken Bow, Oklahoma market. Federal Opportunity Zone with 2.2M annual visitors.',
   openGraph: {
-    title: 'Broken Bow & Hochatown Investment Advisory | Frontier Consulting Group',
-    description: 'Local market intelligence for investors exploring the Broken Bow and Hochatown, Oklahoma STR and real estate market.',
+    title: 'Invest in Broken Bow & Hochatown',
+    description: 'Local advisory for investors exploring the Broken Bow and Hochatown market. Federal Opportunity Zone, 2.2M annual visitors, and a trusted local guide.',
     url: 'https://fcgok.com/investors',
   },
   twitter: {
-    title: 'Broken Bow & Hochatown Investment Advisory | Frontier Consulting Group',
-    description: 'Local market intelligence for investors exploring the Broken Bow and Hochatown, Oklahoma STR and real estate market.',
+    title: 'Invest in Broken Bow & Hochatown',
+    description: 'Local advisory for investors exploring the Broken Bow and Hochatown market. Federal Opportunity Zone, 2.2M annual visitors, and a trusted local guide.',
   },
   alternates: { canonical: 'https://fcgok.com/investors' },
 };

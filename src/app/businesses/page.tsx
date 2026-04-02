@@ -2,17 +2,17 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Cabin Websites, Property Management & Marketing — Broken Bow',
+  title: 'Broken Bow Business Services — Websites, SEO & Property Management',
   description:
-    "Broken Bow cabin website design, Hochatown property management, and local SEO for tourism businesses. Custom booking sites, Google optimization, and marketing from the team behind hocha.town.",
+    'Cabin website design, local SEO, property management, and marketing for tourism businesses in Broken Bow and Hochatown, Oklahoma. Built by the team behind hocha.town.',
   openGraph: {
-    title: 'For Businesses | Frontier Consulting Group',
-    description: 'Cabin websites, property management, and local SEO for businesses in the Broken Bow and Hochatown market.',
+    title: 'Business Services — Broken Bow & Hochatown',
+    description: 'Cabin websites, local SEO, property management, and marketing for tourism businesses in Broken Bow and Hochatown.',
     url: 'https://fcgok.com/businesses',
   },
   twitter: {
-    title: 'For Businesses | Frontier Consulting Group',
-    description: 'Cabin websites, property management, and local SEO for businesses in the Broken Bow and Hochatown market.',
+    title: 'Business Services — Broken Bow & Hochatown',
+    description: 'Cabin websites, local SEO, property management, and marketing for tourism businesses in Broken Bow and Hochatown.',
   },
   alternates: { canonical: 'https://fcgok.com/businesses' },
 };

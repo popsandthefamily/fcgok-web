@@ -2,12 +2,16 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'About — Frontier Consulting Group',
+  title: 'About Frontier Consulting Group — Broken Bow, Oklahoma',
   description: 'Rooted in the Broken Bow area for 50+ years through the Fogg and Camp families. Technology, investor connections, and business growth for the Hochatown corridor.',
   openGraph: {
-    title: 'About | Frontier Consulting Group',
-    description: 'Rooted in Broken Bow for 50+ years. Technology, investor connections, and business growth for the Hochatown corridor.',
+    title: 'About Frontier Consulting Group',
+    description: '50+ years of local roots. Technology consulting, investor connections, and business growth in Broken Bow and Hochatown, Oklahoma.',
     url: 'https://fcgok.com/about',
+  },
+  twitter: {
+    title: 'About Frontier Consulting Group',
+    description: '50+ years of local roots. Technology consulting, investor connections, and business growth in Broken Bow and Hochatown, Oklahoma.',
   },
   alternates: { canonical: 'https://fcgok.com/about' },
 };

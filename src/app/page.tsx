@@ -4,17 +4,17 @@ import Link from 'next/link';
 import MarqueeStrip from '@/components/MarqueeStrip';
 
 export const metadata: Metadata = {
-  title: 'Frontier Consulting Group | Broken Bow & Hochatown',
+  title: 'Frontier Consulting Group | Broken Bow & Hochatown Consulting',
   description:
-    'Frontier Consulting Group — local tech, consulting, and market intelligence for investors and businesses in Broken Bow and Hochatown, Oklahoma. Tourism software, property management, and investor advisory.',
+    'Technology consulting, investor advisory, and tourism software for Broken Bow and Hochatown, Oklahoma. Connecting investors with opportunity and helping local businesses grow.',
   openGraph: {
-    title: 'Frontier Consulting Group | Technology & Consulting in Broken Bow',
-    description: 'Local tech, consulting, and market intelligence for investors and businesses in Broken Bow and Hochatown, Oklahoma.',
+    title: 'Frontier Consulting Group — Broken Bow & Hochatown',
+    description: 'Technology consulting, investor advisory, and tourism software for Broken Bow and Hochatown, Oklahoma.',
     url: 'https://fcgok.com',
   },
   twitter: {
-    title: 'Frontier Consulting Group | Technology & Consulting in Broken Bow',
-    description: 'Local tech, consulting, and market intelligence for investors and businesses in Broken Bow and Hochatown, Oklahoma.',
+    title: 'Frontier Consulting Group — Broken Bow & Hochatown',
+    description: 'Technology consulting, investor advisory, and tourism software for Broken Bow and Hochatown, Oklahoma.',
   },
   alternates: { canonical: 'https://fcgok.com' },
 };

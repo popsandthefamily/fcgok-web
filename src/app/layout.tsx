@@ -6,14 +6,14 @@ import Footer from '@/components/Footer';
 export const metadata: Metadata = {
   metadataBase: new URL('https://fcgok.com'),
   title: {
-    default: 'Frontier Consulting Group | Technology, Consulting & Connections — Broken Bow & Hochatown',
+    default: 'Frontier Consulting Group | Broken Bow & Hochatown Consulting',
     template: '%s | Frontier Consulting Group',
   },
   description:
-    "Frontier Consulting Group sits at the intersection of technology, tourism, and local knowledge in one of Oklahoma's fastest-moving markets. We connect investors with opportunity and help businesses grow.",
+    'Frontier Consulting Group connects investors with opportunity and helps businesses grow in Broken Bow and Hochatown, Oklahoma. Tourism software, property management, and local market intelligence.',
   openGraph: {
     title: 'Frontier Consulting Group',
-    description: 'Technology, consulting, and local market intelligence for Broken Bow & Hochatown.',
+    description: 'Technology, consulting, and local market intelligence for Broken Bow & Hochatown, Oklahoma.',
     url: 'https://fcgok.com',
     siteName: 'Frontier Consulting Group',
     locale: 'en_US',

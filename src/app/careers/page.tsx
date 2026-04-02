@@ -1,12 +1,16 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Careers — Jobs in Hochatown & Broken Bow',
-  description: 'Now hiring: part-time community rep in the Hochatown/Broken Bow area. Flexible hours, commission-based with bonuses.',
+  title: 'Careers at Frontier Consulting Group — Broken Bow Jobs',
+  description: 'Join the Frontier team in Broken Bow and Hochatown, Oklahoma. Currently hiring a part-time community representative with flexible hours and commission-based pay.',
   openGraph: {
-    title: 'Careers | Frontier Consulting Group',
-    description: 'Now hiring in Hochatown/Broken Bow. Part-time community rep — flexible hours, commission-based with bonuses.',
+    title: 'Careers — Frontier Consulting Group',
+    description: 'Join the Frontier team in Broken Bow and Hochatown. Currently hiring a part-time community representative.',
     url: 'https://fcgok.com/careers',
+  },
+  twitter: {
+    title: 'Careers — Frontier Consulting Group',
+    description: 'Join the Frontier team in Broken Bow and Hochatown. Currently hiring a part-time community representative.',
   },
   alternates: { canonical: 'https://fcgok.com/careers' },
 };

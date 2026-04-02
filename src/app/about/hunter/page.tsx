@@ -48,12 +48,16 @@ const STATS = [
 ];
 
 export const metadata: Metadata = {
-  title: 'Hunter Collins — Founder & Principal',
-  description: 'Entrepreneur, software builder, and Hochatown local. Founder of Frontier Consulting Group, hocha.town, Frontier Property Management, and Frontier Photography.',
+  title: 'Hunter Collins — Founder of Frontier Consulting Group',
+  description: 'Software builder, entrepreneur, and Broken Bow local. Founder of Frontier Consulting Group, hocha.town, Frontier Property Management, and Frontier Photography.',
   openGraph: {
-    title: 'Hunter Collins | Frontier Consulting Group',
-    description: 'Founder of Frontier Consulting Group. Software builder and local operator in the Broken Bow market.',
+    title: 'Hunter Collins — Frontier Consulting Group',
+    description: 'Software builder and Broken Bow local. Founder of Frontier Consulting Group, hocha.town, and Frontier Property Management.',
     url: 'https://fcgok.com/about/hunter',
+  },
+  twitter: {
+    title: 'Hunter Collins — Frontier Consulting Group',
+    description: 'Software builder and Broken Bow local. Founder of Frontier Consulting Group, hocha.town, and Frontier Property Management.',
   },
   alternates: { canonical: 'https://fcgok.com/about/hunter' },
 };

@@ -2,16 +2,16 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: 'Ventures — What We Build',
-  description: 'hocha.town, Frontier Property Management, and Frontier Photography — businesses built and operated in the Broken Bow and Hochatown market.',
+  title: 'Our Ventures — hocha.town, Property Management & Photography',
+  description: 'hocha.town tourism platform, Frontier Property Management, and Frontier Photography — businesses we built and operate in the Broken Bow and Hochatown market.',
   openGraph: {
-    title: 'Ventures | Frontier Consulting Group',
-    description: 'Tourism software, property management, photography — built and operated in the Broken Bow market.',
+    title: 'Ventures — Frontier Consulting Group',
+    description: 'hocha.town, Frontier Property Management, and Frontier Photography. Businesses built and operated in Broken Bow and Hochatown.',
     url: 'https://fcgok.com/ventures',
   },
   twitter: {
-    title: 'Ventures | Frontier Consulting Group',
-    description: 'Tourism software, property management, photography — built and operated in the Broken Bow market.',
+    title: 'Ventures — Frontier Consulting Group',
+    description: 'hocha.town, Frontier Property Management, and Frontier Photography. Businesses built and operated in Broken Bow and Hochatown.',
   },
   alternates: { canonical: 'https://fcgok.com/ventures' },
 };
