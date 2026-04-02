@@ -37,7 +37,7 @@ const VENTURES = [
     logo: '/logos/fp-logo.png',
     name: 'Frontier Photography',
     tag: 'Visual Media',
-    href: 'https://frontier.photos',
+    href: 'https://www.frontier.photos/',
     body: 'Real estate, commercial, and event photography across Southeast Oklahoma. Elopements, cabin shoots, family and pet photos in the Beavers Bend area.',
     detail: 'Great photography is the first impression for every cabin listing, business page, and event in the area.',
   },

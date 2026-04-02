@@ -146,7 +146,7 @@ export default function HomePage() {
           {[
             { logo: '/logos/hocha-icon.png', name: 'hocha.town', desc: 'The tourism platform for Hochatown & Broken Bow — AI trip planner, burn ban widget, STR tax calculator, and native iOS app.', tag: 'Live Platform', href: 'https://hocha.town' },
             { logo: '/logos/fpm-logo.png', name: 'Frontier Property Management', desc: 'Full-service vacation rental management in the Broken Bow area. We operate in the same market we advise on.', tag: 'Active', href: 'https://rentwithfrontier.com' },
-            { logo: '/logos/fp-logo.png', name: 'Frontier Photography', desc: 'Real estate, commercial, and event photography across Southeast Oklahoma. Elopements, cabin shoots, family sessions.', tag: 'Active', href: 'https://frontier.photos' },
+            { logo: '/logos/fp-logo.png', name: 'Frontier Photography', desc: 'Real estate, commercial, and event photography across Southeast Oklahoma. Elopements, cabin shoots, family sessions.', tag: 'Active', href: 'https://www.frontier.photos/' },
           ].map(({ logo, name, desc, tag, href }) => (
             <a key={name} href={href} target="_blank" rel="noopener noreferrer" className="venture-card">
               <div style={{ height: 56, background: 'var(--cream)', border: '1px solid var(--border)', borderRadius: 4, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', padding: '8px 16px' }}>

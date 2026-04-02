@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const TIMELINE = [
@@ -87,28 +88,20 @@ export default function HunterPage() {
           <Link href="/investors" className="btn-primary">Work With Us</Link>
         </div>
 
-        {/* Headshot placeholder */}
+        {/* Headshot */}
         <div style={{
-          width: '100%', aspectRatio: '1',
-          background: 'var(--forest-mid)',
+          width: '100%', aspectRatio: '4 / 5',
           borderRadius: 4,
           overflow: 'hidden',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative',
         }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{
-              width: 100, height: 100, borderRadius: '50%',
-              background: 'var(--sage)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-serif)', fontSize: '2rem', color: 'var(--cream)',
-              border: '3px solid rgba(255,255,255,0.15)', margin: '0 auto 12px',
-            }}>
-              HC
-            </div>
-            <div style={{ fontSize: 13, color: 'rgba(244,241,234,0.4)', letterSpacing: '0.1em' }}>
-              Photo coming soon
-            </div>
-          </div>
+          <Image
+            src="/portrait.webp"
+            alt="Hunter Collins — Founder of Frontier Consulting Group"
+            fill
+            style={{ objectFit: 'cover', objectPosition: 'center top' }}
+            priority
+          />
         </div>
       </section>
 

@@ -144,15 +144,14 @@ export default function InvestorsPage() {
         <div>
           <span className="section-label section-label--light">How It Works</span>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: 'var(--cream)', fontWeight: 400, marginBottom: '1.5rem' }}>
-            This is informal advisory, not a brokerage.
+            Local advisory, not a brokerage.
           </h2>
           <p style={{ color: 'rgba(244,241,234,0.7)', lineHeight: 1.8, fontWeight: 300, marginBottom: '1.5rem' }}>
-            You&apos;re not signing a retainer or getting a pitch deck. You&apos;re getting a phone call with someone who lives
-            in the market, operates in the market, and can give you a straight answer about whether your investment
-            thesis makes sense here.
+            We work on a retainer basis — you get ongoing access to someone who lives in the market, operates
+            in the market, and can give you a straight answer about whether your investment thesis makes sense here.
           </p>
           <p style={{ color: 'rgba(244,241,234,0.7)', lineHeight: 1.8, fontWeight: 300 }}>
-            If the opportunity is real, we connect you with the right people to execute — builders, property managers,
+            When the opportunity is real, we connect you with the right people to execute — builders, property managers,
             attorneys, anyone you need. And if you need help with marketing, tech, or operations after you invest,
             that&apos;s what Frontier Consulting Group does.
           </p>
