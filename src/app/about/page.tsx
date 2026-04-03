@@ -92,7 +92,7 @@ export default function AboutPage() {
             {[
               { title: 'The ecosystem connector', body: 'We know the cabin owners, property managers, builders, restaurant owners, investors, and visitors. Nobody else in this market has relationships across all those layers.' },
               { title: 'The technical founder', body: "We don't just advise — we build software. Hocha.town is a working tourism platform with AI, real-time data feeds, payments, and a native iOS app. That's a different caliber than social media management." },
-              { title: 'The investor bridge', body: "We're not a broker or financial advisor. We connect capital with local opportunity — and then help execute with software, marketing, and property management." },
+              { title: 'The investor bridge', body: "We connect capital with local opportunity through strategic consulting — then help execute with software, marketing, and property management." },
             ].map(({ title, body }) => (
               <div key={title}>
                 <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', color: 'var(--gold-light)', marginBottom: '0.5rem' }}>{title}</h3>

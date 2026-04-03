@@ -123,7 +123,7 @@ export default function InvestorsPage() {
           fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
           fontWeight: 400, marginBottom: '3rem',
         }}>
-          Not a broker. A <em style={{ color: 'var(--forest-mid)' }}>guide.</em>
+          Your strategic partner <em style={{ color: 'var(--forest-mid)' }}>on the ground.</em>
         </h2>
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
@@ -144,7 +144,7 @@ export default function InvestorsPage() {
         <div>
           <span className="section-label section-label--light">How It Works</span>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: 'var(--cream)', fontWeight: 400, marginBottom: '1.5rem' }}>
-            Local advisory, not a brokerage.
+            Strategic consulting, on retainer.
           </h2>
           <p style={{ color: 'rgba(244,241,234,0.7)', lineHeight: 1.8, fontWeight: 300, marginBottom: '1.5rem' }}>
             We work on a retainer basis — you get ongoing access to someone who lives in the market, operates
