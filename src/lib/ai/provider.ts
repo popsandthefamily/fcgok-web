@@ -1,4 +1,4 @@
-// Unified AI provider — Anthropic primary, Gemini fallback on error
+// Unified AI provider — tries Anthropic → Groq → Gemini in order
 
 async function tryAnthropic(system: string, userMessage: string, maxTokens: number): Promise<string> {
   const Anthropic = (await import('@anthropic-ai/sdk')).default;
@@ -10,6 +10,20 @@ async function tryAnthropic(system: string, userMessage: string, maxTokens: numb
     messages: [{ role: 'user', content: userMessage }],
   });
   return response.content[0].type === 'text' ? response.content[0].text : '';
+}
+
+async function tryGroq(system: string, userMessage: string, maxTokens: number): Promise<string> {
+  const Groq = (await import('groq-sdk')).default;
+  const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  const response = await client.chat.completions.create({
+    model: 'llama-3.3-70b-versatile',
+    max_tokens: maxTokens,
+    messages: [
+      { role: 'system', content: system },
+      { role: 'user', content: userMessage },
+    ],
+  });
+  return response.choices[0]?.message?.content ?? '';
 }
 
 async function tryGemini(system: string, userMessage: string): Promise<string> {
@@ -28,27 +42,25 @@ export async function generateText(
   userMessage: string,
   maxTokens = 2048,
 ): Promise<string> {
-  const hasAnthropic = !!process.env.ANTHROPIC_API_KEY;
-  const hasGemini = !!process.env.GEMINI_API_KEY;
+  const providers = [
+    { name: 'Anthropic', available: !!process.env.ANTHROPIC_API_KEY, fn: () => tryAnthropic(system, userMessage, maxTokens) },
+    { name: 'Groq', available: !!process.env.GROQ_API_KEY, fn: () => tryGroq(system, userMessage, maxTokens) },
+    { name: 'Gemini', available: !!process.env.GEMINI_API_KEY, fn: () => tryGemini(system, userMessage) },
+  ].filter((p) => p.available);
 
-  if (!hasAnthropic && !hasGemini) {
-    throw new Error('No AI provider configured');
+  if (providers.length === 0) {
+    throw new Error('No AI provider configured (ANTHROPIC_API_KEY, GROQ_API_KEY, or GEMINI_API_KEY)');
   }
 
-  // Try Anthropic first if available
-  if (hasAnthropic) {
+  let lastError: Error | null = null;
+  for (const provider of providers) {
     try {
-      return await tryAnthropic(system, userMessage, maxTokens);
+      return await provider.fn();
     } catch (err) {
-      console.warn('Anthropic failed, falling back to Gemini:', err instanceof Error ? err.message : err);
-      if (!hasGemini) throw err;
+      console.warn(`${provider.name} failed, trying next:`, err instanceof Error ? err.message : err);
+      lastError = err instanceof Error ? err : new Error(String(err));
     }
   }
 
-  // Fall back to Gemini (or use it as primary if no Anthropic)
-  if (hasGemini) {
-    return tryGemini(system, userMessage);
-  }
-
-  throw new Error('All AI providers failed');
+  throw lastError ?? new Error('All AI providers failed');
 }
