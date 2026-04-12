@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { TrackedEntity, IntelItem } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ export default async function EntityDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
 
   // Fetch entity
   const { data: entity } = await supabase

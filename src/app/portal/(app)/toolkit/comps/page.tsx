@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { IntelItem } from '@/lib/types';
 import Link from 'next/link';
 import CompsFilters from './CompsFilters';
@@ -21,7 +21,7 @@ export default async function CompsPage({
   const dateFrom = params.from ?? '';
   const dateTo = params.to ?? '';
 
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
 
   let query = supabase
     .from('intel_items')

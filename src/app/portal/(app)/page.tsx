@@ -1,8 +1,10 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PortalDashboard() {
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
 
   // Fetch high-priority items (relevance > 0.8, last 7 days)
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();

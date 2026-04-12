@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { IntelSource } from '@/lib/types';
 
 const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec', 'linkedin', 'biggerpockets', 'podcast'];
@@ -13,7 +13,7 @@ interface SourceHealth {
 }
 
 export default async function SourcesPage() {
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();

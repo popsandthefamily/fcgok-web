@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { TrackedEntity, EntityStatus, EntityType } from '@/lib/types';
 import Link from 'next/link';
 
@@ -14,7 +14,7 @@ export default async function InvestorRadarPage({
   const activeStatus = params.status ?? null;
   const activeType = params.type ?? null;
 
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
 
   let query = supabase
     .from('tracked_entities')

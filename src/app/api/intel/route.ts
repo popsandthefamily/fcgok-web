@@ -1,14 +1,18 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 
 export async function GET(request: Request) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Verify user is authenticated
+  const authClient = await createClient();
+  const { data: { user } } = await authClient.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  // Use service client for queries (bypasses RLS for admin data)
+  const supabase = await createServiceClient();
+
   const url = new URL(request.url);
-  const source = url.searchParams.get('source');
-  const category = url.searchParams.get('category');
+  const sources = url.searchParams.get('source')?.split(',').filter(Boolean);
+  const categories = url.searchParams.get('category')?.split(',').filter(Boolean);
   const curated = url.searchParams.get('curated');
   const minRelevance = url.searchParams.get('min_relevance');
   const search = url.searchParams.get('search');
@@ -18,14 +22,16 @@ export async function GET(request: Request) {
   let query = supabase
     .from('intel_items')
     .select('*', { count: 'exact' })
-    .order('published_at', { ascending: false })
+    .order('published_at', { ascending: false, nullsFirst: false })
     .range(offset, offset + limit - 1);
 
-  if (source) query = query.eq('source', source);
-  if (category) query = query.eq('category', category);
+  if (sources && sources.length > 0) query = query.in('source', sources);
+  if (categories && categories.length > 0) query = query.in('category', categories);
   if (curated === 'true') query = query.eq('is_curated', true);
   if (minRelevance) query = query.gte('relevance_score', parseFloat(minRelevance));
-  if (search) query = query.textSearch('title', search, { type: 'websearch' });
+  if (search) {
+    query = query.or(`title.ilike.%${search}%,summary.ilike.%${search}%,body.ilike.%${search}%`);
+  }
 
   const { data, count, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

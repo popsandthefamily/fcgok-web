@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import type { IntelItem, IntelSource, IntelCategory, Sentiment } from '@/lib/types';
 
 const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec', 'linkedin', 'biggerpockets', 'podcast'];
@@ -20,32 +19,32 @@ export default function FeedPage() {
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
-    const supabase = createClient();
-    let query = supabase
-      .from('intel_items')
-      .select('*')
-      .order('published_at', { ascending: false })
-      .limit(50);
+    const params = new URLSearchParams();
+    if (sourceFilter.length > 0) params.set('source', sourceFilter.join(','));
+    if (categoryFilter.length > 0) params.set('category', categoryFilter.join(','));
+    if (curatedOnly) params.set('curated', 'true');
+    if (relevanceMin > 0) params.set('min_relevance', relevanceMin.toString());
+    if (search.trim()) params.set('search', search.trim());
 
-    if (sourceFilter.length > 0) query = query.in('source', sourceFilter);
-    if (categoryFilter.length > 0) query = query.in('category', categoryFilter);
-    if (curatedOnly) query = query.eq('is_curated', true);
-    if (relevanceMin > 0) query = query.gte('relevance_score', relevanceMin);
-    if (search) query = query.or(`title.ilike.%${search}%,summary.ilike.%${search}%,body.ilike.%${search}%`);
+    try {
+      const res = await fetch(`/api/intel?${params.toString()}`);
+      const data = await res.json();
+      let filtered: IntelItem[] = data.items ?? [];
 
-    const { data } = await query;
-    let filtered = (data as IntelItem[]) ?? [];
+      // Client-side sentiment filter (stored in JSONB)
+      if (sentimentFilter.length > 0) {
+        filtered = filtered.filter((i) => {
+          const s = (i.ai_analysis as { sentiment?: string } | null)?.sentiment;
+          return s && sentimentFilter.includes(s as Sentiment);
+        });
+      }
 
-    // Client-side sentiment filter (stored in JSONB)
-    if (sentimentFilter.length > 0) {
-      filtered = filtered.filter((i) => {
-        const s = (i.ai_analysis as { sentiment?: string } | null)?.sentiment;
-        return s && sentimentFilter.includes(s as Sentiment);
-      });
+      setItems(filtered);
+    } catch {
+      setItems([]);
+    } finally {
+      setLoading(false);
     }
-
-    setItems(filtered);
-    setLoading(false);
   }, [sourceFilter, categoryFilter, sentimentFilter, curatedOnly, relevanceMin, search]);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);

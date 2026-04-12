@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { Organization, UserProfile } from '@/lib/types';
 
 interface OrgWithUsers extends Organization {
@@ -6,7 +6,7 @@ interface OrgWithUsers extends Organization {
 }
 
 export default async function ClientsPage() {
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
 
   // Fetch all organizations
   const { data: orgs } = await supabase

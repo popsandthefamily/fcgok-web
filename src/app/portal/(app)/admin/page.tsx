@@ -1,10 +1,10 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { IntelSource } from '@/lib/types';
 
 const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec', 'linkedin', 'biggerpockets', 'podcast'];
 
 export default async function AdminOverview() {
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
 
   const now = new Date();
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();

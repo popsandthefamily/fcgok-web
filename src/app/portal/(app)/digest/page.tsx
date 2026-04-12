@@ -1,11 +1,11 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { WeeklyDigest } from '@/lib/types';
 import DigestToggle from './DigestToggle';
 
 export const metadata = { title: 'Weekly Digest' };
 
 export default async function DigestPage() {
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
   const { data: digests } = await supabase
     .from('weekly_digests')
     .select('*')
