@@ -1,23 +1,23 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { urlHash } from '@/lib/utils/dedup';
 
-// Self-storage and CRE podcast RSS feeds
+// Self-storage and CRE podcast RSS feeds (verified working)
 const PODCAST_FEEDS = [
   {
-    name: 'The Storage Investor Show',
-    url: 'https://feeds.buzzsprout.com/1867632.rss',
+    name: 'Self Storage Investing',
+    url: 'https://rss.buzzsprout.com/726468.rss',
   },
   {
-    name: 'Inside Self-Storage Podcast',
-    url: 'https://feeds.megaphone.fm/ISS5123456789',
+    name: 'Storage Nerds',
+    url: 'https://feeds.podetize.com/rss/SdiCXCOOT0',
   },
   {
     name: 'Self Storage Income',
-    url: 'https://feeds.captivate.fm/self-storage-income/',
+    url: 'https://app.kajabi.com/podcasts/2147504576/feed',
   },
   {
-    name: 'BiggerPockets Real Estate Podcast',
-    url: 'https://feeds.simplecast.com/5Io7GCzb',
+    name: 'The Storage Investor Show',
+    url: 'https://rss.buzzsprout.com/1332250.rss',
   },
 ];
 
