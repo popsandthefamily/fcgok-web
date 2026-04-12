@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/server';
 import { analyzeIntelItem } from '@/lib/ai/analyze-intel';
 
+export const maxDuration = 60;
+
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -11,19 +13,19 @@ export async function GET(request: Request) {
   try {
     const supabase = await createServiceClient();
 
-    // Fetch unprocessed items
     const { data: items, error: fetchError } = await supabase
       .from('intel_items')
       .select('*')
       .is('ai_analysis', null)
       .order('ingested_at', { ascending: true })
-      .limit(20);
+      .limit(5);
 
     if (fetchError) throw fetchError;
     if (!items || items.length === 0) {
-      return NextResponse.json({ ok: true, processed: 0 });
+      return NextResponse.json({ ok: true, processed: 0, message: 'No items to process' });
     }
 
+    const results: Array<{ id: string; status: string; error?: string }> = [];
     let processed = 0;
     let errors = 0;
 
@@ -49,13 +51,19 @@ export async function GET(request: Request) {
           .eq('id', item.id);
 
         processed++;
+        results.push({ id: item.id, status: 'ok' });
       } catch (err) {
         console.error(`Failed to analyze item ${item.id}:`, err);
         errors++;
+        results.push({
+          id: item.id,
+          status: 'error',
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
     }
 
-    return NextResponse.json({ ok: true, processed, errors });
+    return NextResponse.json({ ok: true, processed, errors, results });
   } catch (error) {
     console.error('Process intel failed:', error);
     return NextResponse.json(
