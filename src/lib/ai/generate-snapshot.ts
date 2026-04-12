@@ -14,7 +14,9 @@ export async function generateMarketSnapshot(location: string, recentIntel: stri
 4. **Competitive Landscape** — major operators, recent transactions
 5. **Investment Thesis** — why this market is attractive (or not) for self-storage development
 
-Use specific numbers where possible. Be analytical, not promotional. Flag any risks.`,
+Use specific numbers where possible. Be analytical, not promotional. Flag any risks. Use markdown with ## for section headings and - for bullet points.`,
     `Generate a market snapshot for: ${location}${context}`,
+    2048,
+    'speed', // Prefer Groq/Llama for fast snapshots
   );
 }

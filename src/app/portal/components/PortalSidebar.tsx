@@ -31,8 +31,8 @@ const ADMIN_SECTION = {
     { href: '/portal/admin', label: 'Overview', icon: '⬢' },
     { href: '/portal/admin/curate', label: 'Curate Intel', icon: '✦' },
     { href: '/portal/admin/entities', label: 'Manage Entities', icon: '◈' },
-    { href: '/portal/admin/sources', label: 'Source Health', icon: '◇' },
     { href: '/portal/admin/clients', label: 'Clients', icon: '◆' },
+    { href: '/portal/admin/sources', label: 'Source Health', icon: '◇' },
   ],
 };
 
@@ -81,13 +81,21 @@ export default function PortalSidebar({
       ))}
 
       <div style={{ marginTop: 'auto', padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ fontSize: 13, color: 'rgba(244,241,234,0.6)' }}>{userName}</div>
-        <Link
-          href="/portal/logout"
-          style={{ fontSize: 12, color: 'rgba(244,241,234,0.3)', textDecoration: 'none' }}
-        >
-          Sign out
-        </Link>
+        <div style={{ fontSize: 13, color: 'rgba(244,241,234,0.6)', marginBottom: 4 }}>{userName}</div>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <Link
+            href="/portal/settings"
+            style={{ fontSize: 12, color: 'rgba(244,241,234,0.3)', textDecoration: 'none' }}
+          >
+            Settings
+          </Link>
+          <Link
+            href="/portal/logout"
+            style={{ fontSize: 12, color: 'rgba(244,241,234,0.3)', textDecoration: 'none' }}
+          >
+            Sign out
+          </Link>
+        </div>
       </div>
     </aside>
   );

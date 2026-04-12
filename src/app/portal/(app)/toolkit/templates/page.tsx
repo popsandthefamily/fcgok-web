@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
 
 interface Template {
   id: string;
@@ -97,9 +98,40 @@ Best regards,
   },
 ];
 
+function applyPersonalization(templates: Template[], name: string, company: string): Template[] {
+  return templates.map((t) => ({
+    ...t,
+    body: t.body
+      .replace(/\{\{sender_name\}\}/g, name)
+      .replace(/720 Companies/g, company),
+    subject: t.subject.replace(/720 Companies/g, company),
+  }));
+}
+
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>(DEFAULT_TEMPLATES);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    async function loadProfile() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('full_name, organizations(name)')
+        .eq('id', user.id)
+        .single();
+
+      const name = profile?.full_name ?? user.email?.split('@')[0] ?? 'Your Name';
+      const orgRaw = profile?.organizations as unknown;
+      const org = orgRaw as { name: string } | null;
+      const orgName = org?.name ?? '720 Companies';
+      setTemplates(applyPersonalization(DEFAULT_TEMPLATES, name, orgName));
+    }
+    loadProfile();
+  }, []);
 
   function updateBody(id: string, newBody: string) {
     setTemplates((prev) =>

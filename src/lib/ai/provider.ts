@@ -37,16 +37,28 @@ async function tryGemini(system: string, userMessage: string): Promise<string> {
   return result.response.text();
 }
 
+export type ProviderPreference = 'quality' | 'speed';
+
 export async function generateText(
   system: string,
   userMessage: string,
   maxTokens = 2048,
+  preference: ProviderPreference = 'quality',
 ): Promise<string> {
-  const providers = [
+  const all = [
     { name: 'Anthropic', available: !!process.env.ANTHROPIC_API_KEY, fn: () => tryAnthropic(system, userMessage, maxTokens) },
     { name: 'Groq', available: !!process.env.GROQ_API_KEY, fn: () => tryGroq(system, userMessage, maxTokens) },
     { name: 'Gemini', available: !!process.env.GEMINI_API_KEY, fn: () => tryGemini(system, userMessage) },
-  ].filter((p) => p.available);
+  ];
+
+  // "speed" prefers Groq first (Llama 3.3 70B, ~5s), then falls back to Anthropic/Gemini
+  const order = preference === 'speed'
+    ? ['Groq', 'Anthropic', 'Gemini']
+    : ['Anthropic', 'Groq', 'Gemini'];
+
+  const providers = order
+    .map((name) => all.find((p) => p.name === name)!)
+    .filter((p) => p.available);
 
   if (providers.length === 0) {
     throw new Error('No AI provider configured (ANTHROPIC_API_KEY, GROQ_API_KEY, or GEMINI_API_KEY)');
