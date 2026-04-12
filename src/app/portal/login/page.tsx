@@ -26,13 +26,18 @@ function LoginForm() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-    } else {
-      router.push('/portal');
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setError(error.message);
+      } else {
+        window.location.href = '/portal';
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed. Check your connection.');
+    } finally {
+      setLoading(false);
     }
   }
 
