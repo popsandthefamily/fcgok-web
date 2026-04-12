@@ -25,18 +25,18 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Refresh the session — this reads auth cookies and refreshes if needed
+  const { data: { session } } = await supabase.auth.getSession();
 
   // Protect /portal routes — redirect to login if not authenticated
-  if (!user && request.nextUrl.pathname.startsWith('/portal')) {
+  if (
+    !session &&
+    request.nextUrl.pathname.startsWith('/portal') &&
+    request.nextUrl.pathname !== '/portal/login'
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = '/portal/login';
-    // Allow the login page itself
-    if (request.nextUrl.pathname !== '/portal/login') {
-      return NextResponse.redirect(url);
-    }
+    return NextResponse.redirect(url);
   }
 
   return supabaseResponse;
