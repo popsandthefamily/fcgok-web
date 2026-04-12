@@ -1,14 +1,20 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+
+type AuthMode = 'password' | 'magic-link';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [mode, setMode] = useState<AuthMode>('password');
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     if (searchParams.get('error') === 'auth_failed') {
@@ -16,17 +22,39 @@ function LoginForm() {
     }
   }, [searchParams]);
 
-  async function handleLogin(e: React.FormEvent) {
+  async function handlePasswordLogin(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    setLoading(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+    } else {
+      router.push('/portal');
+    }
+  }
+
+  async function handleMagicLink(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: `${window.location.origin}/portal/auth/callback` },
     });
+    setLoading(false);
     if (error) setError(error.message);
     else setSent(true);
   }
+
+  const inputStyle = {
+    width: '100%', padding: '10px 12px',
+    border: '1px solid #d1d5db', borderRadius: 4,
+    fontSize: 14, marginBottom: '1rem',
+  };
 
   return (
     <div style={{
@@ -67,8 +95,8 @@ function LoginForm() {
               We sent a magic link to <strong>{email}</strong>. Click the link to sign in.
             </p>
           </div>
-        ) : (
-          <form onSubmit={handleLogin}>
+        ) : mode === 'password' ? (
+          <form onSubmit={handlePasswordLogin}>
             <label style={{
               display: 'block', fontSize: 12, fontWeight: 500,
               color: '#374151', marginBottom: 6, textTransform: 'uppercase',
@@ -82,23 +110,79 @@ function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@company.com"
-              style={{
-                width: '100%', padding: '10px 12px',
-                border: '1px solid #d1d5db', borderRadius: 4,
-                fontSize: 14, marginBottom: '1rem',
-              }}
+              style={inputStyle}
+            />
+            <label style={{
+              display: 'block', fontSize: 12, fontWeight: 500,
+              color: '#374151', marginBottom: 6, textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}>
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Enter your password"
+              style={inputStyle}
             />
             {error && (
               <p style={{ fontSize: 13, color: '#dc2626', marginBottom: '1rem' }}>{error}</p>
             )}
             <button
               type="submit"
+              disabled={loading}
               className="portal-btn portal-btn-primary"
-              style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
+              style={{ width: '100%', justifyContent: 'center', padding: '12px', opacity: loading ? 0.7 : 1 }}
             >
-              Send Magic Link
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
+        ) : (
+          <form onSubmit={handleMagicLink}>
+            <label style={{
+              display: 'block', fontSize: 12, fontWeight: 500,
+              color: '#374151', marginBottom: 6, textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}>
+              Email Address
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="you@company.com"
+              style={inputStyle}
+            />
+            {error && (
+              <p style={{ fontSize: 13, color: '#dc2626', marginBottom: '1rem' }}>{error}</p>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="portal-btn portal-btn-primary"
+              style={{ width: '100%', justifyContent: 'center', padding: '12px', opacity: loading ? 0.7 : 1 }}
+            >
+              {loading ? 'Sending...' : 'Send Magic Link'}
+            </button>
+          </form>
+        )}
+
+        {!sent && (
+          <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+            <button
+              onClick={() => { setMode(mode === 'password' ? 'magic-link' : 'password'); setError(''); }}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: 13, color: '#1a3a2a', textDecoration: 'underline',
+                textUnderlineOffset: 3,
+              }}
+            >
+              {mode === 'password' ? 'Use magic link instead' : 'Use password instead'}
+            </button>
+          </div>
         )}
 
         <p style={{
