@@ -1,9 +1,10 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { IntelItem } from '@/lib/types';
 
-const anthropic = new Anthropic();
-
 export async function generateWeeklyDigest(items: IntelItem[]): Promise<string> {
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
   const summaries = items
     .filter((i) => i.summary)
     .map(
@@ -12,10 +13,9 @@ export async function generateWeeklyDigest(items: IntelItem[]): Promise<string> 
     )
     .join('\n\n');
 
-  const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 2048,
-    system: `You are the intelligence analyst for Frontier Consulting Group, a capital introduction and real estate consulting firm focused on self-storage development.
+  const result = await model.generateContent({
+    contents: [{ role: 'user', parts: [{ text: summaries }] }],
+    systemInstruction: `You are the intelligence analyst for Frontier Consulting Group, a capital introduction and real estate consulting firm focused on self-storage development.
 
 Given the following ${items.length} intelligence items from the past 7 days, write a concise weekly briefing for a self-storage developer who is actively raising capital. Structure as:
 
@@ -26,8 +26,7 @@ Given the following ${items.length} intelligence items from the past 7 days, wri
 5. **Action Items for This Week** (2-4 specific, concrete next steps)
 
 Be direct and analytical. No filler. Every sentence should contain actionable information or a specific data point. Write for someone who makes decisions based on this briefing.`,
-    messages: [{ role: 'user', content: summaries }],
   });
 
-  return response.content[0].type === 'text' ? response.content[0].text : '';
+  return result.response.text();
 }

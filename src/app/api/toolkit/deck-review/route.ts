@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: 'AI features require ANTHROPIC_API_KEY to be configured.' }, { status: 503 });
+  if (!process.env.GEMINI_API_KEY) {
+    return NextResponse.json({ error: 'AI features require GEMINI_API_KEY to be configured.' }, { status: 503 });
   }
 
   const supabase = await createClient();
