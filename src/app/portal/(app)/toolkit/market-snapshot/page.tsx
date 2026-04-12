@@ -30,7 +30,7 @@ export default function MarketSnapshotPage() {
       }
 
       const data = await res.json();
-      setResult(data.content ?? data.markdown ?? '');
+      setResult(data.snapshot ?? data.content ?? '');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {

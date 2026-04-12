@@ -31,7 +31,7 @@ export default function FeedPage() {
     if (categoryFilter.length > 0) query = query.in('category', categoryFilter);
     if (curatedOnly) query = query.eq('is_curated', true);
     if (relevanceMin > 0) query = query.gte('relevance_score', relevanceMin);
-    if (search) query = query.textSearch('title', search, { type: 'websearch' });
+    if (search) query = query.or(`title.ilike.%${search}%,summary.ilike.%${search}%,body.ilike.%${search}%`);
 
     const { data } = await query;
     let filtered = (data as IntelItem[]) ?? [];
