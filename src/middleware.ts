@@ -6,5 +6,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/portal/:path*'],
+  matcher: [
+    '/portal',
+    '/portal/((?!login|logout).*)',
+  ],
 };
