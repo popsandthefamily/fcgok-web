@@ -25,15 +25,21 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
+  const pathname = request.nextUrl.pathname;
+
+  // These portal routes don't require auth
+  const publicPortalRoutes = ['/portal/login', '/portal/logout', '/portal/auth/callback'];
+  const isPublicRoute = publicPortalRoutes.some((route) => pathname.startsWith(route));
+
+  if (isPublicRoute) {
+    return supabaseResponse;
+  }
+
   // Refresh the session — this reads auth cookies and refreshes if needed
   const { data: { session } } = await supabase.auth.getSession();
 
   // Protect /portal routes — redirect to login if not authenticated
-  if (
-    !session &&
-    request.nextUrl.pathname.startsWith('/portal') &&
-    request.nextUrl.pathname !== '/portal/login'
-  ) {
+  if (!session && pathname.startsWith('/portal')) {
     const url = request.nextUrl.clone();
     url.pathname = '/portal/login';
     return NextResponse.redirect(url);
