@@ -8,6 +8,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/portal',
-    '/portal/((?!login|logout).*)',
+    '/portal/((?!login|logout|auth).*)',
   ],
 };

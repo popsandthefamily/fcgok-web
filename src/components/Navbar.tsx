@@ -57,17 +57,28 @@ export default function Navbar() {
         })}
       </div>
 
-      {/* Desktop CTA */}
-      <Link href="/investors#contact" className="hide-mobile" style={{
-        background: 'transparent', color: 'rgba(244,241,234,0.7)',
-        fontSize: 12, fontWeight: 400, letterSpacing: '0.08em',
-        textTransform: 'uppercase', padding: '8px 20px',
-        borderRadius: 2, textDecoration: 'none',
-        border: '1px solid rgba(244,241,234,0.25)',
-        transition: 'border-color 0.2s, color 0.2s',
-      }}>
-        Get in Touch
-      </Link>
+      {/* Desktop CTAs */}
+      <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Link href="/portal" style={{
+          color: 'rgba(244,241,234,0.45)',
+          fontSize: 12, fontWeight: 400, letterSpacing: '0.08em',
+          textTransform: 'uppercase', padding: '8px 12px',
+          textDecoration: 'none',
+          transition: 'color 0.2s',
+        }}>
+          Client Portal
+        </Link>
+        <Link href="/investors#contact" style={{
+          background: 'transparent', color: 'rgba(244,241,234,0.7)',
+          fontSize: 12, fontWeight: 400, letterSpacing: '0.08em',
+          textTransform: 'uppercase', padding: '8px 20px',
+          borderRadius: 2, textDecoration: 'none',
+          border: '1px solid rgba(244,241,234,0.25)',
+          transition: 'border-color 0.2s, color 0.2s',
+        }}>
+          Get in Touch
+        </Link>
+      </div>
 
       {/* Mobile toggle */}
       <button
