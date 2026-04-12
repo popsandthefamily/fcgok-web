@@ -1,21 +1,14 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateText } from './provider';
 import type { IntelItem } from '@/lib/types';
 
 export async function generateWeeklyDigest(items: IntelItem[]): Promise<string> {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-
   const summaries = items
     .filter((i) => i.summary)
-    .map(
-      (i) =>
-        `[${i.source.toUpperCase()}] (relevance: ${i.relevance_score?.toFixed(2)}) ${i.title}\n${i.summary}`,
-    )
+    .map((i) => `[${i.source.toUpperCase()}] (relevance: ${i.relevance_score?.toFixed(2)}) ${i.title}\n${i.summary}`)
     .join('\n\n');
 
-  const result = await model.generateContent({
-    contents: [{ role: 'user', parts: [{ text: summaries }] }],
-    systemInstruction: `You are the intelligence analyst for Frontier Consulting Group, a capital introduction and real estate consulting firm focused on self-storage development.
+  return generateText(
+    `You are the intelligence analyst for Frontier Consulting Group, a capital introduction and real estate consulting firm focused on self-storage development.
 
 Given the following ${items.length} intelligence items from the past 7 days, write a concise weekly briefing for a self-storage developer who is actively raising capital. Structure as:
 
@@ -25,8 +18,7 @@ Given the following ${items.length} intelligence items from the past 7 days, wri
 4. **Entities to Watch** (people/companies showing increased activity that could be outreach targets)
 5. **Action Items for This Week** (2-4 specific, concrete next steps)
 
-Be direct and analytical. No filler. Every sentence should contain actionable information or a specific data point. Write for someone who makes decisions based on this briefing.`,
-  });
-
-  return result.response.text();
+Be direct and analytical. No filler. Every sentence should contain actionable information or a specific data point.`,
+    summaries,
+  );
 }

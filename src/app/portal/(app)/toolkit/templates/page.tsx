@@ -16,10 +16,10 @@ const DEFAULT_TEMPLATES: Template[] = [
     id: 'cold-lp',
     category: 'Cold Outreach (LP)',
     title: 'Initial LP Introduction',
-    subject: 'Self-Storage Opportunity in {{market}} - FCG Capital',
+    subject: 'Self-Storage Opportunity in {{market}} - 720 Companies',
     body: `Hi {{first_name}},
 
-I came across {{company_name}} and your focus on {{investment_focus}}. FCG Capital is actively pursuing self-storage acquisitions in {{market}}, and I believe there may be alignment with your allocation strategy.
+I came across {{company_name}} and your focus on {{investment_focus}}. 720 Companies is actively pursuing self-storage acquisitions in {{market}}, and I believe there may be alignment with your allocation strategy.
 
 We are targeting {{deal_size}} deals with {{return_profile}} returns, backed by strong demographic tailwinds and operational upside.
 
@@ -27,7 +27,7 @@ Would you be open to a brief call this week to explore potential fit?
 
 Best regards,
 {{sender_name}}
-FCG Capital`,
+720 Companies`,
   },
   {
     id: 'follow-up',
@@ -48,7 +48,7 @@ Please let me know if you have any questions or would like to schedule a follow-
 
 Best regards,
 {{sender_name}}
-FCG Capital`,
+720 Companies`,
   },
   {
     id: 'intro-request',
@@ -59,13 +59,13 @@ FCG Capital`,
 
 I hope this message finds you well. I am reaching out because I noticed your connection to {{target_name}} at {{target_company}}.
 
-FCG Capital is expanding its self-storage portfolio in {{market}} and I believe {{target_company}} could be a strong capital partner given their focus on {{target_focus}}.
+720 Companies is expanding its self-storage portfolio in {{market}} and I believe {{target_company}} could be a strong capital partner given their focus on {{target_focus}}.
 
 Would you be comfortable making a brief introduction? I am happy to draft a forwardable blurb if that makes it easier.
 
 Thank you in advance,
 {{sender_name}}
-FCG Capital`,
+720 Companies`,
   },
   {
     id: 'deal-update',
@@ -93,7 +93,7 @@ Full financials are available in the investor portal. Please reach out with any 
 
 Best regards,
 {{sender_name}}
-FCG Capital`,
+720 Companies`,
   },
 ];
 

@@ -79,7 +79,7 @@ function LoginForm() {
       }}>
         <div style={{ marginBottom: '2rem' }}>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 400, marginBottom: 8 }}>
-            Capital Intelligence Portal
+            Frontier Intelligence
           </h1>
           <p style={{ fontSize: 14, color: '#6b7280' }}>
             Frontier Consulting Group — Invite-only access

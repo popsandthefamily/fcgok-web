@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
-  if (!process.env.GEMINI_API_KEY) {
-    return NextResponse.json({ error: 'AI features require GEMINI_API_KEY to be configured.' }, { status: 503 });
+  if (!process.env.ANTHROPIC_API_KEY && !process.env.GEMINI_API_KEY) {
+    return NextResponse.json({ error: 'AI features require an API key (ANTHROPIC_API_KEY or GEMINI_API_KEY).' }, { status: 503 });
   }
 
   const { text } = await request.json();

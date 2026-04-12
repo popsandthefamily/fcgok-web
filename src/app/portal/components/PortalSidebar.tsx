@@ -52,7 +52,7 @@ export default function PortalSidebar({
   return (
     <aside className="portal-sidebar">
       <div className="portal-sidebar-brand">
-        <h2>FCG Portal</h2>
+        <h2>Frontier Intelligence</h2>
         <span>{orgName}</span>
       </div>
 
