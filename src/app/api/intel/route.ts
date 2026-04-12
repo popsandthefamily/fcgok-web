@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 
 export async function GET(request: Request) {
-  // Verify user is authenticated
-  const authClient = await createClient();
-  const { data: { user } } = await authClient.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  // Use service client for queries (bypasses RLS for admin data)
   const supabase = await createServiceClient();
 
   const url = new URL(request.url);
