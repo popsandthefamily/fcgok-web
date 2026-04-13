@@ -112,23 +112,42 @@ ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE portal_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE weekly_digests ENABLE ROW LEVEL SECURITY;
 
+-- SECURITY DEFINER helpers — bypass RLS on user_profiles/organizations so
+-- that policies referencing those tables don't recurse through their own
+-- USING clauses.
+CREATE OR REPLACE FUNCTION public.auth_user_role()
+RETURNS TEXT LANGUAGE SQL STABLE SECURITY DEFINER SET search_path = public
+AS $$ SELECT role FROM user_profiles WHERE id = auth.uid() $$;
+
+CREATE OR REPLACE FUNCTION public.auth_user_org_id()
+RETURNS UUID LANGUAGE SQL STABLE SECURITY DEFINER SET search_path = public
+AS $$ SELECT organization_id FROM user_profiles WHERE id = auth.uid() $$;
+
+CREATE OR REPLACE FUNCTION public.auth_user_org_slug()
+RETURNS TEXT LANGUAGE SQL STABLE SECURITY DEFINER SET search_path = public
+AS $$
+  SELECT o.slug FROM organizations o
+  JOIN user_profiles p ON p.organization_id = o.id
+  WHERE p.id = auth.uid()
+$$;
+
+GRANT EXECUTE ON FUNCTION public.auth_user_role() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.auth_user_org_id() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.auth_user_org_slug() TO authenticated;
+
 -- Intel items: visible to all authenticated users (scoped by client_visibility)
 CREATE POLICY "Users see items visible to their org or all"
   ON intel_items FOR SELECT TO authenticated
   USING (
     'all' = ANY(client_visibility)
-    OR (
-      SELECT slug FROM organizations
-      WHERE id = (SELECT organization_id FROM user_profiles WHERE id = auth.uid())
-    ) = ANY(client_visibility)
+    OR public.auth_user_org_slug() = ANY(client_visibility)
   );
 
 -- Admin can insert/update/delete intel items
 CREATE POLICY "Admins manage intel items"
   ON intel_items FOR ALL TO authenticated
-  USING (
-    (SELECT role FROM user_profiles WHERE id = auth.uid()) = 'admin'
-  );
+  USING (public.auth_user_role() = 'admin')
+  WITH CHECK (public.auth_user_role() = 'admin');
 
 -- Tracked entities: all authenticated can read
 CREATE POLICY "All authenticated read entities"
@@ -137,9 +156,8 @@ CREATE POLICY "All authenticated read entities"
 
 CREATE POLICY "Admins manage entities"
   ON tracked_entities FOR ALL TO authenticated
-  USING (
-    (SELECT role FROM user_profiles WHERE id = auth.uid()) = 'admin'
-  );
+  USING (public.auth_user_role() = 'admin')
+  WITH CHECK (public.auth_user_role() = 'admin');
 
 -- Entity links: all authenticated can read
 CREATE POLICY "All authenticated read entity links"
@@ -148,16 +166,15 @@ CREATE POLICY "All authenticated read entity links"
 
 CREATE POLICY "Admins manage entity links"
   ON entity_intel_links FOR ALL TO authenticated
-  USING (
-    (SELECT role FROM user_profiles WHERE id = auth.uid()) = 'admin'
-  );
+  USING (public.auth_user_role() = 'admin')
+  WITH CHECK (public.auth_user_role() = 'admin');
 
 -- Organizations: users see their own org
 CREATE POLICY "Users see own org"
   ON organizations FOR SELECT TO authenticated
   USING (
-    id = (SELECT organization_id FROM user_profiles WHERE id = auth.uid())
-    OR (SELECT role FROM user_profiles WHERE id = auth.uid()) = 'admin'
+    id = public.auth_user_org_id()
+    OR public.auth_user_role() = 'admin'
   );
 
 -- User profiles: users see own profile, admins see all
@@ -165,7 +182,7 @@ CREATE POLICY "Users see own profile"
   ON user_profiles FOR SELECT TO authenticated
   USING (
     id = auth.uid()
-    OR (SELECT role FROM user_profiles WHERE id = auth.uid()) = 'admin'
+    OR public.auth_user_role() = 'admin'
   );
 
 -- Portal events: users see own events
@@ -184,9 +201,8 @@ CREATE POLICY "All authenticated read digests"
 
 CREATE POLICY "Admins manage digests"
   ON weekly_digests FOR ALL TO authenticated
-  USING (
-    (SELECT role FROM user_profiles WHERE id = auth.uid()) = 'admin'
-  );
+  USING (public.auth_user_role() = 'admin')
+  WITH CHECK (public.auth_user_role() = 'admin');
 
 -- ── Seed: FCG org + Hunter as admin ──────────────────────────
 -- Run this after creating Hunter's auth user in Supabase dashboard:

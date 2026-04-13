@@ -1,24 +1,13 @@
 import { NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 
 export async function GET(request: Request) {
-  // Require authenticated user
-  const authClient = await createClient();
-  const { data: { user } } = await authClient.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await getAuthedUser();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const supabase = await createServiceClient();
-
-  // Get the user's org slug for scoping
-  const { data: profile } = await supabase
-    .from('user_profiles')
-    .select('organization_id, organizations(slug)')
-    .eq('id', user.id)
-    .single();
-
-  const orgRaw = profile?.organizations as unknown;
-  const org = orgRaw as { slug: string } | null;
-  const orgSlug = org?.slug;
+  const orgSlug = auth.orgSlug;
 
   const url = new URL(request.url);
   const sources = url.searchParams.get('source')?.split(',').filter(Boolean);
