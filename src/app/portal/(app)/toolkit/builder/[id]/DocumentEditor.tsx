@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { PortalDocument, DocumentSection, SectionLayout } from '@/lib/types/documents';
 import { DOCUMENT_TYPE_LABELS } from '@/lib/types/documents';
@@ -77,6 +78,7 @@ function renderMarkdown(text: string): string {
 }
 
 export default function DocumentEditor({ documentId }: { documentId: string }) {
+  const router = useRouter();
   const [doc, setDoc] = useState<PortalDocument | null>(null);
   const [branding, setBranding] = useState<OrgBranding | null>(null);
   const [loading, setLoading] = useState(true);
@@ -85,6 +87,7 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
   const [uploadingHero, setUploadingHero] = useState(false);
   const [uploadingSectionId, setUploadingSectionId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
 
   const loadDoc = useCallback(async () => {
@@ -208,6 +211,23 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
 
   function handlePrint() { window.print(); }
 
+  async function handleDelete() {
+    if (!doc) return;
+    if (!confirm(`Delete "${doc.deal_name}"? This can't be undone.`)) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/documents/${documentId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? 'Delete failed');
+      }
+      router.push('/portal/toolkit/builder');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Delete failed');
+      setDeleting(false);
+    }
+  }
+
   if (loading) return <p style={{ fontSize: 14, color: '#9ca3af' }}>Loading document...</p>;
   if (!doc) return <p style={{ fontSize: 14, color: '#9ca3af' }}>Document not found.</p>;
 
@@ -306,6 +326,93 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
               padding-top: 6px;
               color: ${primaryColor};
             }
+            /* Inline floated images (text wraps around) */
+            .doc-content .inline-img,
+            .rich-editor .inline-img {
+              display: block;
+              max-width: 100%;
+              border-radius: 4px;
+              margin: 4px 0;
+            }
+            .doc-content .inline-img-right,
+            .rich-editor .inline-img-right {
+              float: right;
+              width: 40%;
+              margin: 6px 0 12px 20px;
+            }
+            .doc-content .inline-img-left,
+            .rich-editor .inline-img-left {
+              float: left;
+              width: 40%;
+              margin: 6px 20px 12px 0;
+            }
+            .doc-content .inline-img-full,
+            .rich-editor .inline-img-full {
+              width: 100%;
+              float: none;
+              margin: 16px 0;
+              clear: both;
+            }
+            .rich-editor .inline-img {
+              cursor: pointer;
+              outline: 2px solid transparent;
+              transition: outline-color 0.15s;
+            }
+            .rich-editor .inline-img:hover {
+              outline-color: ${accentColor};
+            }
+            /* Icon button style for section toolbars */
+            .section-tool-btn {
+              display: inline-flex;
+              align-items: center;
+              gap: 4px;
+              padding: 5px 10px;
+              font-size: 11px;
+              font-weight: 500;
+              color: #374151;
+              background: white;
+              border: 1px solid #d1d5db;
+              border-radius: 3px;
+              cursor: pointer;
+              text-decoration: none;
+              line-height: 1;
+              transition: border-color 0.15s, background 0.15s, color 0.15s;
+            }
+            .section-tool-btn:hover {
+              border-color: ${primaryColor};
+              color: ${primaryColor};
+              background: #f9fafb;
+            }
+            .section-tool-btn.is-primary {
+              background: ${primaryColor};
+              color: white;
+              border-color: ${primaryColor};
+            }
+            .section-tool-btn.is-primary:hover {
+              background: ${accentColor};
+              color: ${primaryColor};
+              border-color: ${accentColor};
+            }
+            .section-tool-btn.is-danger:hover {
+              border-color: #dc2626;
+              color: #dc2626;
+              background: #fef2f2;
+            }
+            .section-tool-select {
+              padding: 5px 8px;
+              font-size: 11px;
+              border: 1px solid #d1d5db;
+              border-radius: 3px;
+              background: white;
+              color: #374151;
+              cursor: pointer;
+            }
+            @media print {
+              .doc-content .inline-img-right,
+              .doc-content .inline-img-left {
+                width: 40%;
+              }
+            }
           `,
         }}
       />
@@ -323,6 +430,15 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
           {doc.status}
         </span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+          <button
+            className="portal-btn portal-btn-ghost"
+            onClick={handleDelete}
+            disabled={deleting}
+            style={{ color: '#dc2626', borderColor: '#fca5a5' }}
+            title="Delete this document"
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
           {!hasSections || doc.status === 'draft' ? (
             <button className="portal-btn portal-btn-primary" onClick={generateSections} disabled={generating}>
               {generating ? 'Generating...' : hasSections ? 'Regenerate' : 'Generate Sections with AI'}
@@ -567,20 +683,26 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
                         </h2>
                       </div>
 
-                      <div className="no-print" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <div className="no-print" style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
                         {section.edited && (
-                          <span style={{ fontSize: 10, color: '#9ca3af', textTransform: 'uppercase' }}>edited</span>
+                          <span style={{ fontSize: 9, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: 4 }}>
+                            edited
+                          </span>
                         )}
                         <label
-                          style={{
-                            fontSize: 11,
-                            color: '#6b7280',
-                            cursor: uploadingSectionId === section.id ? 'wait' : 'pointer',
-                            textDecoration: 'underline',
-                            textUnderlineOffset: 2,
-                          }}
+                          className="section-tool-btn"
+                          style={{ cursor: uploadingSectionId === section.id ? 'wait' : 'pointer' }}
                         >
-                          {uploadingSectionId === section.id ? 'uploading...' : section.image_url ? 'replace img' : '+ image'}
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="9" cy="9" r="2" />
+                            <path d="M21 15l-5-5L5 21" />
+                          </svg>
+                          {uploadingSectionId === section.id
+                            ? 'Uploading…'
+                            : section.image_url
+                            ? 'Replace'
+                            : 'Add Image'}
                           <input
                             type="file"
                             accept="image/*"
@@ -594,27 +716,49 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
                         {section.image_url && (
                           <>
                             <select
+                              className="section-tool-select"
                               value={layout}
                               onChange={(e) => changeSectionLayout(section, e.target.value as SectionLayout)}
-                              style={{ fontSize: 11, border: '1px solid #d1d5db', borderRadius: 3, padding: '2px 4px' }}
+                              title="Image layout"
                             >
-                              <option value="hero">Hero</option>
-                              <option value="side-left">Left</option>
-                              <option value="side-right">Right</option>
+                              <option value="hero">Hero (full)</option>
+                              <option value="side-left">Side left</option>
+                              <option value="side-right">Side right</option>
                             </select>
                             <button
+                              className="section-tool-btn is-danger"
                               onClick={() => removeSectionImage(section)}
-                              style={{ background: 'none', border: 'none', fontSize: 11, color: '#dc2626', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 2 }}
+                              title="Remove image"
                             >
-                              remove img
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 6h18" />
+                                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                              </svg>
                             </button>
                           </>
                         )}
                         <button
+                          className={`section-tool-btn${editingId === section.id ? '' : ' is-primary'}`}
                           onClick={() => setEditingId(editingId === section.id ? null : section.id)}
-                          style={{ background: 'none', border: 'none', color: '#1a3a2a', fontSize: 11, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 2, fontWeight: 500 }}
                         >
-                          {editingId === section.id ? 'cancel' : 'edit'}
+                          {editingId === section.id ? (
+                            <>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M18 6L6 18" />
+                                <path d="M6 6l12 12" />
+                              </svg>
+                              Cancel
+                            </>
+                          ) : (
+                            <>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                              Edit
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>
@@ -635,6 +779,7 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
                         onSave={(html) => saveSection(section, html)}
                         onCancel={() => setEditingId(null)}
                         saving={saving}
+                        documentId={documentId}
                       />
                     ) : (
                       <div

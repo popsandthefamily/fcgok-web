@@ -9,6 +9,7 @@ const DOC_TYPES: DocumentType[] = ['om', 'prospectus', 'pitch_deck'];
 export default function BuilderLandingPage() {
   const [documents, setDocuments] = useState<PortalDocument[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -24,6 +25,21 @@ export default function BuilderLandingPage() {
     }
     load();
   }, []);
+
+  async function handleDelete(e: React.MouseEvent, doc: PortalDocument) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm(`Delete "${doc.deal_name}"? This can't be undone.`)) return;
+    setDeletingId(doc.id);
+    try {
+      const res = await fetch(`/api/documents/${doc.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
+      }
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   return (
     <>
@@ -89,29 +105,62 @@ export default function BuilderLandingPage() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: '#f3f4f6', borderRadius: 4, overflow: 'hidden' }}>
             {documents.map((doc) => (
-              <Link
+              <div
                 key={doc.id}
-                href={`/portal/toolkit/builder/${doc.id}`}
+                className="doc-row"
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   padding: '0.85rem 1rem',
                   background: 'white',
-                  textDecoration: 'none',
-                  color: 'inherit',
+                  position: 'relative',
                 }}
               >
-                <div>
+                <Link
+                  href={`/portal/toolkit/builder/${doc.id}`}
+                  style={{ flex: 1, textDecoration: 'none', color: 'inherit' }}
+                >
                   <div style={{ fontSize: 14, fontWeight: 500, color: '#111827' }}>{doc.deal_name}</div>
                   <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
                     {DOCUMENT_TYPE_LABELS[doc.type]} · updated {new Date(doc.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </div>
+                </Link>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <span className={`status-badge status-${doc.status === 'ready' ? 'active' : doc.status === 'generating' ? 'watching' : 'passed'}`}>
+                    {doc.status}
+                  </span>
+                  <button
+                    onClick={(e) => handleDelete(e, doc)}
+                    disabled={deletingId === doc.id}
+                    title="Delete document"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: deletingId === doc.id ? 'wait' : 'pointer',
+                      padding: 6,
+                      color: '#9ca3af',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      borderRadius: 3,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#dc2626';
+                      e.currentTarget.style.background = '#fef2f2';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#9ca3af';
+                      e.currentTarget.style.background = 'none';
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 6h18" />
+                      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    </svg>
+                  </button>
                 </div>
-                <span className={`status-badge status-${doc.status === 'ready' ? 'active' : doc.status === 'generating' ? 'watching' : 'passed'}`}>
-                  {doc.status}
-                </span>
-              </Link>
+              </div>
             ))}
           </div>
         )}
