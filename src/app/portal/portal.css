@@ -67,12 +67,26 @@ body:has(.portal-layout) > main {
 .portal-nav-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 1.25rem;
-  font-size: 14px;
-  color: rgba(244,241,234,0.55);
+  gap: 11px;
+  padding: 9px 1.25rem;
+  font-size: 15px;
+  color: rgba(244,241,234,0.6);
   text-decoration: none;
   transition: color 0.15s, background 0.15s;
+}
+
+.portal-nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  opacity: 0.75;
+}
+
+.portal-nav-link:hover .portal-nav-icon,
+.portal-nav-link.active .portal-nav-icon {
+  opacity: 1;
 }
 
 .portal-nav-link:hover {

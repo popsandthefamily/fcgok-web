@@ -25,7 +25,10 @@ export default function SettingsPage() {
     async function load() {
       try {
         const res = await fetch('/api/profile');
-        if (!res.ok) throw new Error('Failed to load profile');
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error ?? `Failed to load profile (${res.status})`);
+        }
         const { user, profile } = await res.json();
 
         setUserEmail(user.email ?? '');

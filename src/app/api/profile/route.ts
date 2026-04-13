@@ -1,20 +1,30 @@
 import { NextResponse } from 'next/server';
-import { createServiceClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { getAuthedUser } from '@/lib/supabase/auth-helper';
 
 export async function GET() {
-  const auth = await getAuthedUser();
-  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-  const supabase = await createServiceClient();
-  const { data: profile } = await supabase
+  const service = await createServiceClient();
+  const { data: profile, error: profileError } = await service
     .from('user_profiles')
     .select('*, organizations(*)')
-    .eq('id', auth.id)
-    .single();
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    return NextResponse.json(
+      { error: `Profile query failed: ${profileError.message}` },
+      { status: 500 },
+    );
+  }
 
   return NextResponse.json({
-    user: { id: auth.id, email: auth.email },
+    user: { id: user.id, email: user.email ?? null },
     profile,
   });
 }
