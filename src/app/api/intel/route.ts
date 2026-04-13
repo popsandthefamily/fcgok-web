@@ -17,6 +17,7 @@ export async function GET(request: Request) {
   const search = url.searchParams.get('search');
   const limit = parseInt(url.searchParams.get('limit') ?? '50');
   const offset = parseInt(url.searchParams.get('offset') ?? '0');
+  const includeHidden = url.searchParams.get('include_hidden') === 'true';
 
   let query = supabase
     .from('intel_items')
@@ -37,6 +38,10 @@ export async function GET(request: Request) {
   if (minRelevance) query = query.gte('relevance_score', parseFloat(minRelevance));
   if (search) {
     query = query.or(`title.ilike.%${search}%,summary.ilike.%${search}%,body.ilike.%${search}%`);
+  }
+  // Hide items admin has marked as hidden unless explicitly requested
+  if (!includeHidden) {
+    query = query.not('metadata->>hidden', 'eq', 'true');
   }
 
   const { data, count, error } = await query;

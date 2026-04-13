@@ -7,15 +7,49 @@ const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec', 'linkedin', 'big
 const CATEGORIES: IntelCategory[] = ['market_intel', 'investor_activity', 'deal_flow', 'regulatory', 'competitive', 'operational'];
 const SENTIMENTS: Sentiment[] = ['bullish', 'bearish', 'neutral', 'mixed'];
 
+type AdminAction = 'pin' | 'unpin' | 'hide' | 'boost' | 'lower';
+
 export default function FeedPage() {
   const [items, setItems] = useState<IntelItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState<IntelSource[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<IntelCategory[]>([]);
   const [sentimentFilter, setSentimentFilter] = useState<Sentiment[]>([]);
   const [curatedOnly, setCuratedOnly] = useState(false);
   const [relevanceMin, setRelevanceMin] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/profile');
+        if (res.ok) {
+          const { profile } = await res.json();
+          setIsAdmin(profile?.role === 'admin');
+        }
+      } catch {}
+    })();
+  }, []);
+
+  async function runAction(itemId: string, action: AdminAction) {
+    try {
+      const res = await fetch(`/api/intel/${itemId}/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      if (!res.ok) throw new Error('Action failed');
+      const { item: updated } = await res.json();
+      if (action === 'hide') {
+        setItems((prev) => prev.filter((i) => i.id !== itemId));
+      } else {
+        setItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, ...updated } : i)));
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Action failed');
+    }
+  }
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -140,7 +174,12 @@ export default function FeedPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {items.map((item) => (
-            <IntelCard key={item.id} item={item} />
+            <IntelCard
+              key={item.id}
+              item={item}
+              isAdmin={isAdmin}
+              onAction={(action) => runAction(item.id, action)}
+            />
           ))}
         </div>
       )}
@@ -148,7 +187,15 @@ export default function FeedPage() {
   );
 }
 
-function IntelCard({ item }: { item: IntelItem }) {
+function IntelCard({
+  item,
+  isAdmin,
+  onAction,
+}: {
+  item: IntelItem;
+  isAdmin: boolean;
+  onAction: (action: AdminAction) => void;
+}) {
   const analysis = item.ai_analysis;
   const relevance = item.relevance_score ?? 0;
   const barColor = relevance > 0.8 ? '#22c55e' : relevance > 0.5 ? '#f59e0b' : '#9ca3af';
@@ -213,7 +260,7 @@ function IntelCard({ item }: { item: IntelItem }) {
       )}
 
       {/* Footer */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: '#9ca3af' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: '#9ca3af', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span>Relevance:</span>
           <span className="relevance-bar">
@@ -226,8 +273,109 @@ function IntelCard({ item }: { item: IntelItem }) {
             View original &rarr;
           </a>
         )}
+
+        {isAdmin && (
+          <div className="intel-admin-actions" style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+            <ActionButton
+              title={item.is_curated ? 'Unpin from highlights' : 'Pin to highlights'}
+              active={!!item.is_curated}
+              onClick={() => onAction(item.is_curated ? 'unpin' : 'pin')}
+              icon={
+                <svg width="12" height="12" viewBox="0 0 24 24" fill={item.is_curated ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 17v5" />
+                  <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" />
+                </svg>
+              }
+            />
+            <ActionButton
+              title="Boost relevance +0.1"
+              onClick={() => onAction('boost')}
+              icon={
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M7 14l5-5 5 5" />
+                </svg>
+              }
+            />
+            <ActionButton
+              title="Lower relevance -0.1"
+              onClick={() => onAction('lower')}
+              icon={
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M7 10l5 5 5-5" />
+                </svg>
+              }
+            />
+            <ActionButton
+              title="Hide from feed"
+              danger
+              onClick={() => {
+                if (confirm('Hide this item from the feed? You can still find it via admin tools.')) {
+                  onAction('hide');
+                }
+              }}
+              icon={
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-11-8-11-8a19 19 0 0 1 4.22-5.17" />
+                  <path d="M1 1l22 22" />
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                </svg>
+              }
+            />
+          </div>
+        )}
       </div>
     </div>
+  );
+}
+
+function ActionButton({
+  title,
+  icon,
+  onClick,
+  active,
+  danger,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  onClick: () => void;
+  active?: boolean;
+  danger?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onClick={onClick}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 26,
+        height: 26,
+        border: '1px solid',
+        borderColor: active ? '#1a3a2a' : '#d1d5db',
+        background: active ? '#1a3a2a' : 'white',
+        color: active ? 'white' : danger ? '#dc2626' : '#6b7280',
+        borderRadius: 3,
+        cursor: 'pointer',
+        padding: 0,
+        transition: 'all 0.15s',
+      }}
+      onMouseEnter={(e) => {
+        if (!active) {
+          e.currentTarget.style.borderColor = danger ? '#dc2626' : '#1a3a2a';
+          e.currentTarget.style.background = danger ? '#fef2f2' : '#f9fafb';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!active) {
+          e.currentTarget.style.borderColor = '#d1d5db';
+          e.currentTarget.style.background = 'white';
+        }
+      }}
+    >
+      {icon}
+    </button>
   );
 }
 
