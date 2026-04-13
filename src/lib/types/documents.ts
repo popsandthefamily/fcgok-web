@@ -48,8 +48,12 @@ export interface DocumentSection {
   id: string;
   title: string;
   order: number;
-  content: string; // markdown or HTML (both supported)
-  content_format?: 'markdown' | 'html';
+  // Content can be stored in one of three formats:
+  // - "blocks": BlockNote JSON document (preferred for edited sections)
+  // - "markdown": AI-generated markdown (legacy and fresh generations)
+  // - "html": Legacy rich editor HTML output
+  content: string;
+  content_format?: 'markdown' | 'html' | 'blocks';
   image_url?: string;
   image_layout?: SectionLayout;
   image_caption?: string;

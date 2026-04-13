@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { PortalDocument, DocumentSection, SectionLayout } from '@/lib/types/documents';
 import { DOCUMENT_TYPE_LABELS } from '@/lib/types/documents';
-import RichEditor from './RichEditor';
+import BlockEditorClient from './BlockEditorClient';
 
 interface OrgBranding {
   name: string;
@@ -774,12 +774,14 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
 
                     {/* Content (with optional side layout) */}
                     {editingId === section.id ? (
-                      <RichEditor
-                        initialHtml={renderMarkdown(section.content)}
+                      <BlockEditorClient
+                        initialContent={section.content}
+                        initialFormat={section.content_format ?? 'markdown'}
+                        documentId={documentId}
+                        primaryColor={primaryColor}
                         onSave={(html) => saveSection(section, html)}
                         onCancel={() => setEditingId(null)}
                         saving={saving}
-                        documentId={documentId}
                       />
                     ) : (
                       <div
