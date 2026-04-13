@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import type { TrackedEntity, EntityType, EntityCategory, EntityStatus } from '@/lib/types';
 
 const ENTITY_TYPES: EntityType[] = ['company', 'person', 'fund'];
@@ -31,13 +30,11 @@ export default function EntitiesPage() {
 
   const fetchEntities = useCallback(async () => {
     setLoading(true);
-    const supabase = createClient();
-    const { data } = await supabase
-      .from('tracked_entities')
-      .select('*')
-      .order('name', { ascending: true });
-
-    setEntities((data as TrackedEntity[]) ?? []);
+    const res = await fetch('/api/entities');
+    const json = await res.json();
+    const list = (json.entities as TrackedEntity[] | undefined) ?? [];
+    list.sort((a, b) => a.name.localeCompare(b.name));
+    setEntities(list);
     setLoading(false);
   }, []);
 
@@ -54,7 +51,6 @@ export default function EntitiesPage() {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const supabase = createClient();
 
     const payload = {
       name: form.name.trim(),
@@ -69,13 +65,18 @@ export default function EntitiesPage() {
       website: form.website.trim() || null,
     };
 
-    const { error } = await supabase.from('tracked_entities').insert(payload);
+    const res = await fetch('/api/entities', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-    if (!error) {
+    if (res.ok) {
       setForm({ ...EMPTY_FORM });
       await fetchEntities();
     } else {
-      alert('Error creating entity: ' + error.message);
+      const json = await res.json().catch(() => ({}));
+      alert('Error creating entity: ' + (json.error ?? res.statusText));
     }
     setSaving(false);
   }
@@ -98,7 +99,6 @@ export default function EntitiesPage() {
 
   async function handleUpdate(id: string) {
     setSaving(true);
-    const supabase = createClient();
 
     const payload = {
       name: editForm.name.trim(),
@@ -113,23 +113,30 @@ export default function EntitiesPage() {
       website: editForm.website.trim() || null,
     };
 
-    const { error } = await supabase.from('tracked_entities').update(payload).eq('id', id);
+    const res = await fetch(`/api/entities/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-    if (!error) {
+    if (res.ok) {
       setEditingId(null);
       await fetchEntities();
     } else {
-      alert('Error updating entity: ' + error.message);
+      const json = await res.json().catch(() => ({}));
+      alert('Error updating entity: ' + (json.error ?? res.statusText));
     }
     setSaving(false);
   }
 
   async function handleDelete(id: string) {
     if (!confirm('Delete this entity? This cannot be undone.')) return;
-    const supabase = createClient();
-    const { error } = await supabase.from('tracked_entities').delete().eq('id', id);
-    if (!error) {
+    const res = await fetch(`/api/entities/${id}`, { method: 'DELETE' });
+    if (res.ok) {
       setEntities((prev) => prev.filter((e) => e.id !== id));
+    } else {
+      const json = await res.json().catch(() => ({}));
+      alert('Error deleting entity: ' + (json.error ?? res.statusText));
     }
   }
 

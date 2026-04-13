@@ -17,6 +17,7 @@ const NAV_SECTIONS = [
     title: 'Tools',
     links: [
       { href: '/portal/toolkit', label: 'Deal Toolkit', icon: '⬡' },
+      { href: '/portal/toolkit/builder', label: 'Document Builder', icon: '✎' },
       { href: '/portal/toolkit/market-snapshot', label: 'Market Snapshot', icon: '▦' },
       { href: '/portal/toolkit/comps', label: 'Comps Tracker', icon: '▥' },
       { href: '/portal/toolkit/templates', label: 'Outreach Templates', icon: '▧' },

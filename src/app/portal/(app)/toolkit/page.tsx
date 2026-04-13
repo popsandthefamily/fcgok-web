@@ -4,6 +4,12 @@ export const metadata = { title: 'Deal Toolkit' };
 
 const TOOLS = [
   {
+    href: '/portal/toolkit/builder',
+    title: 'Document Builder',
+    description:
+      'Generate branded Offering Memoranda, Prospectuses, and Pitch Decks with AI. Edit and export to PDF.',
+  },
+  {
     href: '/portal/toolkit/market-snapshot',
     title: 'Market Snapshot Generator',
     description:
