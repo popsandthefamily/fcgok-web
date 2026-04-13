@@ -23,8 +23,8 @@ export default async function CompsPage() {
     <>
       <div className="portal-header">
         <h1>Comparable Transactions</h1>
-        <Link href="/portal/toolkit" className="portal-btn portal-btn-ghost">
-          &larr; Toolkit
+        <Link href="/portal" className="portal-btn portal-btn-ghost">
+          &larr; Dashboard
         </Link>
       </div>
       <CompsClient items={items} />

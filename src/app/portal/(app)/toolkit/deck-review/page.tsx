@@ -49,8 +49,8 @@ export default function DeckReviewPage() {
     <>
       <div className="portal-header">
         <h1>Pitch Deck Review</h1>
-        <Link href="/portal/toolkit" className="portal-btn portal-btn-ghost">
-          &larr; Toolkit
+        <Link href="/portal" className="portal-btn portal-btn-ghost">
+          &larr; Dashboard
         </Link>
       </div>
 

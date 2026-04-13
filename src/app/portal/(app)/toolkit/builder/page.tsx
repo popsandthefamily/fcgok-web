@@ -45,7 +45,7 @@ export default function BuilderLandingPage() {
     <>
       <div className="portal-header">
         <h1>Document Builder</h1>
-        <Link href="/portal/toolkit" className="portal-btn portal-btn-ghost">&larr; Toolkit</Link>
+        <Link href="/portal" className="portal-btn portal-btn-ghost">&larr; Dashboard</Link>
       </div>
 
       <p style={{ fontSize: 13, color: '#6b7280', marginBottom: '1.5rem', lineHeight: 1.6 }}>

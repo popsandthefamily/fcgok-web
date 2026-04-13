@@ -201,7 +201,6 @@ const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Tools',
     links: [
-      { href: '/portal/toolkit', label: 'Deal Toolkit', icon: 'toolbox' },
       { href: '/portal/toolkit/builder', label: 'Document Builder', icon: 'document' },
       { href: '/portal/toolkit/market-snapshot', label: 'Market Snapshot', icon: 'chart' },
       { href: '/portal/toolkit/comps', label: 'Comps Tracker', icon: 'comps' },

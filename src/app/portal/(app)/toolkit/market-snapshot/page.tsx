@@ -127,15 +127,21 @@ export default function MarketSnapshotPage() {
           @media print {
             @page { margin: 0.75in 0.65in; size: letter; }
             html, body { background: white !important; }
-            body > *:not(.snapshot-print-wrapper),
-            .portal-sidebar,
-            .portal-header,
-            .portal-main > *:not(.snapshot-print-wrapper) {
-              display: none !important;
+            /* Hide everything via visibility so ancestors of the print wrapper
+               don't collapse it. Then re-show the wrapper + its descendants. */
+            body * { visibility: hidden !important; }
+            .snapshot-print-wrapper,
+            .snapshot-print-wrapper * { visibility: visible !important; }
+            .snapshot-print-wrapper .no-print { display: none !important; }
+            .snapshot-print-wrapper {
+              position: absolute !important;
+              left: 0 !important;
+              top: 0 !important;
+              width: 100% !important;
+              padding: 0 !important;
+              margin: 0 !important;
+              background: white !important;
             }
-            .portal-layout { display: block !important; }
-            .portal-main { padding: 0 !important; background: white !important; display: block !important; }
-            .snapshot-print-wrapper { display: block !important; }
             .snapshot-print {
               box-shadow: none !important;
               border: none !important;
@@ -177,7 +183,7 @@ export default function MarketSnapshotPage() {
 
       <div className="portal-header">
         <h1>Market Snapshot Generator</h1>
-        <Link href="/portal/toolkit" className="portal-btn portal-btn-ghost">&larr; Toolkit</Link>
+        <Link href="/portal" className="portal-btn portal-btn-ghost">&larr; Dashboard</Link>
       </div>
 
       {/* Input */}

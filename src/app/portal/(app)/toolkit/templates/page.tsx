@@ -327,8 +327,8 @@ export default function TemplatesPage() {
           >
             {creating ? 'Creating...' : '+ New Template'}
           </button>
-          <Link href="/portal/toolkit" className="portal-btn portal-btn-ghost">
-            &larr; Toolkit
+          <Link href="/portal" className="portal-btn portal-btn-ghost">
+            &larr; Dashboard
           </Link>
         </div>
       </div>
