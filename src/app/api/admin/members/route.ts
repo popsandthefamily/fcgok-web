@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
-import { createServiceClient } from '@/lib/supabase/server';
-import { getAuthedUser } from '@/lib/supabase/auth-helper';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { sendInviteEmail } from '@/lib/email/invite';
 import type { UserRole } from '@/lib/types';
+
+export const dynamic = 'force-dynamic';
 
 const EXPIRY_DAYS = 7;
 
@@ -13,26 +14,53 @@ interface InviteBody {
   fullName?: string;
 }
 
-// GET — list members of the calling admin's organization
+// Resolve the authenticated admin and their org without using the
+// custom auth-helper (which has been flaky in route handlers).
+// Mirrors the pattern in /api/profile that's confirmed working.
+async function resolveAdmin() {
+  const sb = await createClient();
+  const { data: { user }, error } = await sb.auth.getUser();
+  if (error || !user) return { error: 'Unauthorized', status: 401 as const };
+
+  const service = await createServiceClient();
+  const { data: profile } = await service
+    .from('user_profiles')
+    .select('id, role, organization_id, full_name, email')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (!profile) return { error: 'Profile not found', status: 404 as const };
+  if (profile.role !== 'admin') return { error: 'Admin access required', status: 403 as const };
+  if (!profile.organization_id) return { error: 'No organization', status: 400 as const };
+
+  return {
+    user: {
+      id: profile.id as string,
+      email: profile.email as string,
+      orgId: profile.organization_id as string,
+      role: profile.role as UserRole,
+    },
+  };
+}
+
+// GET — list members + pending invites for the calling admin's organization
 export async function GET() {
-  const auth = await getAuthedUser();
-  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (auth.role !== 'admin') {
-    return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+  const result = await resolveAdmin();
+  if ('error' in result) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
   }
-  if (!auth.orgId) return NextResponse.json({ error: 'No organization' }, { status: 400 });
 
   const supabase = await createServiceClient();
   const [profilesRes, invitesRes] = await Promise.all([
     supabase
       .from('user_profiles')
       .select('*')
-      .eq('organization_id', auth.orgId)
+      .eq('organization_id', result.user.orgId)
       .order('created_at', { ascending: true }),
     supabase
       .from('invitations')
       .select('id, email, role, expires_at, consumed_at, created_at')
-      .eq('organization_id', auth.orgId)
+      .eq('organization_id', result.user.orgId)
       .is('consumed_at', null)
       .gte('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false }),
@@ -44,16 +72,13 @@ export async function GET() {
   });
 }
 
-// POST — invite a NEW user to the calling admin's existing organization
+// POST — invite a new user to the calling admin's existing organization
 export async function POST(request: Request) {
-  const auth = await getAuthedUser();
-  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (auth.role !== 'admin') {
-    return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+  const result = await resolveAdmin();
+  if ('error' in result) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
   }
-  if (!auth.orgId) {
-    return NextResponse.json({ error: 'No organization associated' }, { status: 400 });
-  }
+  const { user: admin } = result;
 
   const body = (await request.json()) as InviteBody;
   const email = body.email?.toLowerCase().trim();
@@ -66,28 +91,27 @@ export async function POST(request: Request) {
 
   const supabase = await createServiceClient();
 
-  // Get the org name for the email subject + anchor
   const { data: org } = await supabase
     .from('organizations')
     .select('name')
-    .eq('id', auth.orgId)
+    .eq('id', admin.orgId)
     .single();
-
   const orgName = (org?.name as string) ?? 'Frontier Intelligence';
 
-  // Reject if a user with this email already belongs to this org
+  // Reject duplicates within this org
   const { data: existing } = await supabase
     .from('user_profiles')
     .select('id')
     .eq('email', email)
-    .eq('organization_id', auth.orgId)
+    .eq('organization_id', admin.orgId)
     .maybeSingle();
-
   if (existing) {
-    return NextResponse.json({ error: 'That email is already a member of this workspace' }, { status: 409 });
+    return NextResponse.json(
+      { error: 'That email is already a member of this workspace' },
+      { status: 409 },
+    );
   }
 
-  // Generate invite token + persist
   const token = randomBytes(32).toString('base64url');
   const expiresAt = new Date(Date.now() + EXPIRY_DAYS * 24 * 60 * 60 * 1000);
 
@@ -96,9 +120,9 @@ export async function POST(request: Request) {
     .insert({
       token,
       email,
-      organization_id: auth.orgId,
+      organization_id: admin.orgId,
       role,
-      invited_by: auth.id,
+      invited_by: admin.id,
       expires_at: expiresAt.toISOString(),
     })
     .select()
@@ -111,7 +135,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Generate Supabase magic link
   const origin = new URL(request.url).origin;
   const redirectTo = `${origin}/portal/invite/callback?token=${token}`;
 
@@ -120,7 +143,7 @@ export async function POST(request: Request) {
     email,
     options: {
       redirectTo,
-      data: { organization_id: auth.orgId, role, org_name: orgName },
+      data: { organization_id: admin.orgId, role, org_name: orgName },
     },
   });
 
@@ -132,7 +155,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Send branded email via Resend
   try {
     await sendInviteEmail({
       to: email,

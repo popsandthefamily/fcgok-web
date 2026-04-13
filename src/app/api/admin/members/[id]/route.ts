@@ -1,13 +1,39 @@
 import { NextResponse } from 'next/server';
-import { createServiceClient } from '@/lib/supabase/server';
-import { getAuthedUser } from '@/lib/supabase/auth-helper';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import type { UserRole } from '@/lib/types';
 
-// PUT — update a member's role (admin only, scoped to own org)
+export const dynamic = 'force-dynamic';
+
+async function resolveAdmin() {
+  const sb = await createClient();
+  const { data: { user }, error } = await sb.auth.getUser();
+  if (error || !user) return { error: 'Unauthorized', status: 401 as const };
+
+  const service = await createServiceClient();
+  const { data: profile } = await service
+    .from('user_profiles')
+    .select('id, role, organization_id')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (!profile) return { error: 'Profile not found', status: 404 as const };
+  if (profile.role !== 'admin') return { error: 'Admin access required', status: 403 as const };
+  if (!profile.organization_id) return { error: 'No organization', status: 400 as const };
+
+  return {
+    user: {
+      id: profile.id as string,
+      orgId: profile.organization_id as string,
+    },
+  };
+}
+
+// PUT — update a member's role (scoped to admin's own org)
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await getAuthedUser();
-  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (auth.role !== 'admin') return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+  const result = await resolveAdmin();
+  if ('error' in result) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
+  }
 
   const { id } = await params;
   const body = (await request.json()) as { role?: UserRole };
@@ -18,7 +44,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     .from('user_profiles')
     .update({ role: body.role })
     .eq('id', id)
-    .eq('organization_id', auth.orgId!)
+    .eq('organization_id', result.user.orgId)
     .select()
     .single();
 
@@ -26,15 +52,15 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   return NextResponse.json({ member: data });
 }
 
-// DELETE — remove a member from the org (orphans their auth user but
-// removes the user_profiles link so they can't see this workspace anymore)
+// DELETE — remove a member from the org
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await getAuthedUser();
-  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (auth.role !== 'admin') return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+  const result = await resolveAdmin();
+  if ('error' in result) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
+  }
 
   const { id } = await params;
-  if (id === auth.id) {
+  if (id === result.user.id) {
     return NextResponse.json({ error: "You can't remove yourself" }, { status: 400 });
   }
 
@@ -43,17 +69,18 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     .from('user_profiles')
     .delete()
     .eq('id', id)
-    .eq('organization_id', auth.orgId!);
+    .eq('organization_id', result.user.orgId);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
 
-// Invitation revoke
+// PATCH action=revoke_invite — revoke a pending invitation (id is invitation id)
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await getAuthedUser();
-  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (auth.role !== 'admin') return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+  const result = await resolveAdmin();
+  if ('error' in result) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
+  }
 
   const { id } = await params;
   const body = (await request.json()) as { action?: string };
@@ -66,7 +93,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     .from('invitations')
     .delete()
     .eq('id', id)
-    .eq('organization_id', auth.orgId!);
+    .eq('organization_id', result.user.orgId);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
