@@ -17,9 +17,20 @@ function LoginForm() {
   const router = useRouter();
 
   useEffect(() => {
-    if (searchParams.get('error') === 'auth_failed') {
-      setError('Authentication failed. Please try again.');
-    }
+    const code = searchParams.get('error');
+    if (!code) return;
+    const messages: Record<string, string> = {
+      auth_failed: 'Authentication failed. Please try again.',
+      invalid_invite: 'This invitation link is invalid. Ask your administrator to resend it.',
+      invite_used: 'This invitation has already been used. Sign in with your email instead.',
+      invite_expired: 'This invitation has expired. Ask your administrator to send a new one.',
+      invite_email_mismatch:
+        'You are signed in with a different email than this invitation. Log out and try the link again.',
+      invite_required: 'Portal setup is invite-only. Contact info@fcgok.com to request access.',
+      profile_create_failed: 'We couldn\u2019t finish provisioning your account. Contact info@fcgok.com.',
+      no_org: 'Your account isn\u2019t linked to an organization yet. Contact info@fcgok.com.',
+    };
+    setError(messages[code] ?? 'Something went wrong. Please try again.');
   }, [searchParams]);
 
   async function handlePasswordLogin(e: React.FormEvent) {
