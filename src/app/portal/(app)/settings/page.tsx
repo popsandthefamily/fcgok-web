@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
 
 interface OrgSettings {
   logo_url?: string;
@@ -17,40 +16,32 @@ export default function SettingsPage() {
   const [message, setMessage] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [fullName, setFullName] = useState('');
-  const [orgId, setOrgId] = useState<string | null>(null);
   const [orgName, setOrgName] = useState('');
-  const [orgSlug, setOrgSlug] = useState('');
   const [orgSettings, setOrgSettings] = useState<OrgSettings>({});
   const [logoUploading, setLogoUploading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const supabase = createClient();
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
+      try {
+        const res = await fetch('/api/profile');
+        if (!res.ok) throw new Error('Failed to load profile');
+        const { user, profile } = await res.json();
 
-      setUserEmail(user.email ?? '');
+        setUserEmail(user.email ?? '');
+        setFullName(profile?.full_name ?? '');
+        setIsAdmin(profile?.role === 'admin');
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('*, organizations(*)')
-        .eq('id', user.id)
-        .single();
-
-      if (profile) {
-        setFullName(profile.full_name ?? '');
-        setIsAdmin(profile.role === 'admin');
-        const orgRaw = profile.organizations as unknown;
-        const org = orgRaw as { id: string; name: string; slug: string; settings?: OrgSettings } | null;
+        const org = profile?.organizations;
         if (org) {
-          setOrgId(org.id);
-          setOrgName(org.name);
-          setOrgSlug(org.slug);
+          setOrgName(org.name ?? '');
           setOrgSettings(org.settings ?? {});
         }
+      } catch (err) {
+        setMessage('Error loading: ' + (err instanceof Error ? err.message : 'unknown'));
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     load();
   }, []);
@@ -58,54 +49,66 @@ export default function SettingsPage() {
   async function saveProfile() {
     setSaving(true);
     setMessage('');
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
 
-    const { error: profileError } = await supabase
-      .from('user_profiles')
-      .update({ full_name: fullName })
-      .eq('id', user.id);
+    try {
+      // Save user profile
+      const profileRes = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: fullName }),
+      });
+      if (!profileRes.ok) {
+        const body = await profileRes.json().catch(() => ({}));
+        throw new Error(body.error ?? 'Failed to save profile');
+      }
 
-    let orgError = null;
-    if (isAdmin && orgId) {
-      const { error } = await supabase
-        .from('organizations')
-        .update({ name: orgName, settings: orgSettings })
-        .eq('id', orgId);
-      orgError = error;
-    }
+      // Save org settings if admin
+      if (isAdmin) {
+        const orgRes = await fetch('/api/organization', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: orgName, settings: orgSettings }),
+        });
+        if (!orgRes.ok) {
+          const body = await orgRes.json().catch(() => ({}));
+          throw new Error(body.error ?? 'Failed to save organization');
+        }
+      }
 
-    setSaving(false);
-    if (profileError || orgError) {
-      setMessage('Error saving: ' + (profileError?.message ?? orgError?.message));
-    } else {
       setMessage('Saved successfully.');
       setTimeout(() => setMessage(''), 3000);
+    } catch (err) {
+      setMessage('Error saving: ' + (err instanceof Error ? err.message : 'unknown'));
+    } finally {
+      setSaving(false);
     }
   }
 
   async function uploadLogo(file: File) {
-    if (!orgSlug) return;
     setLogoUploading(true);
-    const supabase = createClient();
-    const ext = file.name.split('.').pop() ?? 'png';
-    const path = `${orgSlug}/logo-${Date.now()}.${ext}`;
+    setMessage('');
 
-    const { error } = await supabase.storage
-      .from('branding')
-      .upload(path, file, { upsert: true, contentType: file.type });
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
 
-    if (error) {
-      setMessage('Upload failed: ' + error.message);
+      const res = await fetch('/api/organization/logo', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? 'Upload failed');
+      }
+
+      const { url } = await res.json();
+      setOrgSettings({ ...orgSettings, logo_url: url });
+      setMessage('Logo uploaded. Click Save to persist.');
+    } catch (err) {
+      setMessage('Upload failed: ' + (err instanceof Error ? err.message : 'unknown'));
+    } finally {
       setLogoUploading(false);
-      return;
     }
-
-    const { data: urlData } = supabase.storage.from('branding').getPublicUrl(path);
-    setOrgSettings({ ...orgSettings, logo_url: urlData.publicUrl });
-    setLogoUploading(false);
-    setMessage('Logo uploaded. Click Save to persist.');
   }
 
   if (loading) {
@@ -157,9 +160,7 @@ export default function SettingsPage() {
       <div className="portal-card" style={{ marginBottom: '1.5rem' }}>
         <div className="portal-card-header">
           <span className="portal-card-title">Company Branding</span>
-          {!isAdmin && (
-            <span style={{ fontSize: 11, color: '#9ca3af' }}>Admin only</span>
-          )}
+          {!isAdmin && <span style={{ fontSize: 11, color: '#9ca3af' }}>Admin only</span>}
         </div>
 
         <Field label="Company Name">
@@ -186,7 +187,7 @@ export default function SettingsPage() {
         </Field>
 
         <Field label="Company Logo">
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
             {orgSettings.logo_url && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -198,19 +199,23 @@ export default function SettingsPage() {
             {isAdmin && (
               <label
                 className="portal-btn portal-btn-ghost"
-                style={{ cursor: logoUploading ? 'wait' : 'pointer' }}
+                style={{ cursor: logoUploading ? 'wait' : 'pointer', display: 'inline-flex' }}
               >
-                {logoUploading ? 'Uploading...' : 'Upload Logo'}
+                {logoUploading ? 'Uploading...' : orgSettings.logo_url ? 'Replace Logo' : 'Upload Logo'}
                 <input
                   type="file"
                   accept="image/*"
                   style={{ display: 'none' }}
+                  disabled={logoUploading}
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) uploadLogo(file);
                   }}
                 />
               </label>
+            )}
+            {!isAdmin && !orgSettings.logo_url && (
+              <span style={{ fontSize: 12, color: '#9ca3af' }}>No logo uploaded yet</span>
             )}
           </div>
         </Field>
