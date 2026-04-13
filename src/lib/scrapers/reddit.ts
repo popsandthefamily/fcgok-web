@@ -1,19 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { urlHash } from '@/lib/utils/dedup';
-
-const SUBREDDITS = [
-  'selfstorage',
-  'commercialrealestate',
-  'realestateinvesting',
-  'SelfStorageInvesting',
-  'syndication',
-];
-
-const KEYWORDS = [
-  'self storage', 'self-storage', 'capital raise', 'LP', 'GP',
-  'syndication', '1031', 'opportunity zone', 'ground-up development',
-  'construction loan',
-];
+import type { OrgConfig } from '@/lib/config/industries';
 
 interface RedditPost {
   title: string;
@@ -45,13 +32,19 @@ async function getRedditToken(): Promise<string> {
   return data.access_token;
 }
 
-export async function ingestReddit(): Promise<{ ingested: number; skipped: number }> {
+export async function ingestReddit(
+  config: OrgConfig,
+  orgSlug: string,
+): Promise<{ ingested: number; skipped: number }> {
   const token = await getRedditToken();
   const supabase = await createServiceClient();
   let ingested = 0;
   let skipped = 0;
 
-  for (const sub of SUBREDDITS) {
+  const keywords = config.intel.keywords.map((k) => k.toLowerCase());
+  const subreddits = config.reddit_subreddits;
+
+  for (const sub of subreddits) {
     const res = await fetch(`https://oauth.reddit.com/r/${sub}/new?limit=25`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -67,7 +60,7 @@ export async function ingestReddit(): Promise<{ ingested: number; skipped: numbe
 
     for (const post of posts) {
       const fullText = `${post.title} ${post.selftext}`.toLowerCase();
-      const isRelevant = KEYWORDS.some((kw) => fullText.includes(kw.toLowerCase()));
+      const isRelevant = keywords.some((kw) => fullText.includes(kw));
       if (!isRelevant) { skipped++; continue; }
 
       const postUrl = `https://reddit.com${post.permalink}`;
@@ -77,6 +70,7 @@ export async function ingestReddit(): Promise<{ ingested: number; skipped: numbe
         .from('intel_items')
         .select('id')
         .eq('metadata->>url_hash', hash)
+        .contains('client_visibility', [orgSlug])
         .limit(1);
 
       if (existing && existing.length > 0) { skipped++; continue; }
@@ -88,6 +82,7 @@ export async function ingestReddit(): Promise<{ ingested: number; skipped: numbe
         body: post.selftext?.slice(0, 5000) || null,
         author: post.author,
         published_at: new Date(post.created_utc * 1000).toISOString(),
+        client_visibility: [orgSlug],
         metadata: {
           url_hash: hash,
           subreddit: post.subreddit,

@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { ingestReddit } from '@/lib/scrapers/reddit';
+import { runForOrgs } from '@/lib/scrapers/run-for-orgs';
+
+export const maxDuration = 60;
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
@@ -8,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await ingestReddit();
+    const result = await runForOrgs('reddit', ingestReddit);
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
     console.error('Reddit ingestion failed:', error);

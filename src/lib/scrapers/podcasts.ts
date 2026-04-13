@@ -1,25 +1,24 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { urlHash } from '@/lib/utils/dedup';
+import type { OrgConfig, Industry } from '@/lib/config/industries';
 
-// Self-storage and CRE podcast RSS feeds (verified working)
-const PODCAST_FEEDS = [
-  {
-    name: 'Self Storage Investing',
-    url: 'https://rss.buzzsprout.com/726468.rss',
-  },
-  {
-    name: 'Storage Nerds',
-    url: 'https://feeds.podetize.com/rss/SdiCXCOOT0',
-  },
-  {
-    name: 'Self Storage Income',
-    url: 'https://app.kajabi.com/podcasts/2147504576/feed',
-  },
-  {
-    name: 'The Storage Investor Show',
-    url: 'https://rss.buzzsprout.com/1332250.rss',
-  },
-];
+// Industry-specific podcast RSS feeds
+const PODCAST_FEEDS_BY_INDUSTRY: Record<Industry, { name: string; url: string }[]> = {
+  'self-storage': [
+    { name: 'Self Storage Investing', url: 'https://rss.buzzsprout.com/726468.rss' },
+    { name: 'Storage Nerds', url: 'https://feeds.podetize.com/rss/SdiCXCOOT0' },
+    { name: 'Self Storage Income', url: 'https://app.kajabi.com/podcasts/2147504576/feed' },
+    { name: 'The Storage Investor Show', url: 'https://rss.buzzsprout.com/1332250.rss' },
+  ],
+  'multi-family': [
+    { name: 'Multifamily Investing Podcast', url: 'https://feeds.buzzsprout.com/1007022.rss' },
+  ],
+  industrial: [],
+  retail: [],
+  office: [],
+  hospitality: [],
+  mixed: [],
+};
 
 interface RSSItem {
   title: string;
@@ -57,46 +56,37 @@ function parseRSSItems(xml: string): RSSItem[] {
   return items;
 }
 
-const STORAGE_KEYWORDS = [
-  'storage', 'self-storage', 'capital', 'fund', 'raise', 'investor',
-  'syndication', 'cap rate', 'noi', 'lender', 'development',
-];
-
-export async function ingestPodcasts(): Promise<{ ingested: number; skipped: number }> {
+export async function ingestPodcasts(
+  config: OrgConfig,
+  orgSlug: string,
+): Promise<{ ingested: number; skipped: number }> {
   const supabase = await createServiceClient();
   let ingested = 0;
   let skipped = 0;
 
-  for (const feed of PODCAST_FEEDS) {
+  const feeds = PODCAST_FEEDS_BY_INDUSTRY[config.industry] ?? [];
+  if (feeds.length === 0) return { ingested: 0, skipped: 0 };
+
+  for (const feed of feeds) {
     try {
       const res = await fetch(feed.url, {
         next: { revalidate: 0 },
         headers: { 'User-Agent': 'FCGPortal/1.0' },
       });
-      if (!res.ok) { continue; }
+      if (!res.ok) continue;
 
       const xml = await res.text();
       const items = parseRSSItems(xml);
 
-      // Only keep last 10 episodes per feed
       for (const item of items.slice(0, 10)) {
         if (!item.link) { skipped++; continue; }
 
-        // Filter for storage/capital relevance (skip if it's the general BP podcast)
-        if (feed.name === 'BiggerPockets Real Estate Podcast') {
-          const fullText = `${item.title} ${item.description}`.toLowerCase();
-          if (!STORAGE_KEYWORDS.some((kw) => fullText.includes(kw))) {
-            skipped++;
-            continue;
-          }
-        }
-
         const hash = urlHash(item.link);
-
         const { data: existing } = await supabase
           .from('intel_items')
           .select('id')
           .eq('metadata->>url_hash', hash)
+          .contains('client_visibility', [orgSlug])
           .limit(1);
 
         if (existing && existing.length > 0) { skipped++; continue; }
@@ -108,6 +98,7 @@ export async function ingestPodcasts(): Promise<{ ingested: number; skipped: num
           body: item.description.replace(/<[^>]*>/g, '').trim().slice(0, 3000),
           author: item.author || feed.name,
           published_at: item.pubDate ? new Date(item.pubDate).toISOString() : null,
+          client_visibility: [orgSlug],
           metadata: {
             url_hash: hash,
             podcast_name: feed.name,

@@ -1,24 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { urlHash } from '@/lib/utils/dedup';
-
-// LinkedIn workaround: Use NewsAPI to find LinkedIn posts indexed by Google News
-// that mention target self-storage companies. This catches press releases, hiring
-// announcements, and thought leadership without needing Proxycurl or LinkedIn API.
-
-const TARGET_COMPANIES = [
-  'Public Storage',
-  'Extra Space Storage',
-  'CubeSmart',
-  'SROA Capital',
-  'DXD Capital',
-  'Life Storage',
-  'National Storage Affiliates',
-  'BSC Group',
-  'Madison Capital Group',
-  'Cedar Creek Capital',
-  'SkyView Advisors',
-  'Argus Self Storage',
-];
+import type { OrgConfig } from '@/lib/config/industries';
 
 interface NewsArticle {
   title: string;
@@ -29,17 +11,24 @@ interface NewsArticle {
   author: string | null;
 }
 
-export async function ingestLinkedIn(): Promise<{ ingested: number; skipped: number }> {
+// LinkedIn workaround: use NewsAPI to find press-release style coverage
+// that mentions the org's target companies. Catches announcements, hires,
+// and fund raises without needing the Proxycurl API.
+export async function ingestLinkedIn(
+  config: OrgConfig,
+  orgSlug: string,
+): Promise<{ ingested: number; skipped: number }> {
   const apiKey = process.env.NEWSAPI_KEY;
-  if (!apiKey) throw new Error('NEWSAPI_KEY not set (used for LinkedIn workaround)');
+  if (!apiKey) throw new Error('NEWSAPI_KEY not set (required for LinkedIn workaround)');
+
+  const companies = config.intel.target_companies.slice(0, 6); // Rate-limit the fanout
+  if (companies.length === 0) return { ingested: 0, skipped: 0 };
 
   const supabase = await createServiceClient();
   let ingested = 0;
   let skipped = 0;
 
-  // Build a targeted query combining self-storage keywords with LinkedIn-ish sources
-  // Search for company announcements and press releases
-  for (const company of TARGET_COMPANIES.slice(0, 6)) {
+  for (const company of companies) {
     const query = `"${company}" AND (announce OR hire OR raise OR close OR acquire OR "new fund")`;
 
     const url = new URL('https://newsapi.org/v2/everything');
@@ -61,11 +50,11 @@ export async function ingestLinkedIn(): Promise<{ ingested: number; skipped: num
         if (!article.url) { skipped++; continue; }
 
         const hash = urlHash(article.url);
-
         const { data: existing } = await supabase
           .from('intel_items')
           .select('id')
           .eq('metadata->>url_hash', hash)
+          .contains('client_visibility', [orgSlug])
           .limit(1);
 
         if (existing && existing.length > 0) { skipped++; continue; }
@@ -77,6 +66,7 @@ export async function ingestLinkedIn(): Promise<{ ingested: number; skipped: num
           body: article.description,
           author: article.author,
           published_at: article.publishedAt,
+          client_visibility: [orgSlug],
           metadata: {
             url_hash: hash,
             tracked_company: company,

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ingestLinkedIn } from '@/lib/scrapers/linkedin';
+import { runForOrgs } from '@/lib/scrapers/run-for-orgs';
 
 export const maxDuration = 60;
 
@@ -10,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await ingestLinkedIn();
+    const result = await runForOrgs('linkedin', ingestLinkedIn);
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
     console.error('LinkedIn ingestion failed:', error);

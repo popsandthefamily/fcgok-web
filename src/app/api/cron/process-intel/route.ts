@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/server';
 import { analyzeIntelItem } from '@/lib/ai/analyze-intel';
+import type { OrgConfig } from '@/lib/config/industries';
 
 export const maxDuration = 60;
 
@@ -25,18 +26,49 @@ export async function GET(request: Request) {
       return NextResponse.json({ ok: true, processed: 0, message: 'No items to process' });
     }
 
+    // Cache org configs by slug to avoid repeated lookups
+    const orgCache = new Map<string, OrgConfig>();
+
+    async function getOrgConfig(slug: string): Promise<OrgConfig | null> {
+      if (orgCache.has(slug)) return orgCache.get(slug)!;
+      const { data } = await supabase
+        .from('organizations')
+        .select('settings')
+        .eq('slug', slug)
+        .single();
+      const config = data?.settings as OrgConfig | null;
+      if (config) orgCache.set(slug, config);
+      return config;
+    }
+
     const results: Array<{ id: string; status: string; error?: string }> = [];
     let processed = 0;
     let errors = 0;
 
     for (const item of items) {
       try {
-        const analysis = await analyzeIntelItem({
-          title: item.title,
-          body: item.body,
-          source: item.source,
-          author: item.author,
-        });
+        // Determine which org this item belongs to
+        const visibility = (item.client_visibility as string[]) ?? ['all'];
+        const orgSlug = visibility.find((v) => v !== 'all');
+        const orgConfig = orgSlug ? await getOrgConfig(orgSlug) : null;
+
+        const orgContext = orgConfig
+          ? {
+              industry: orgConfig.industry,
+              primary_role: orgConfig.primary_role,
+              keywords: orgConfig.intel.keywords,
+            }
+          : undefined;
+
+        const analysis = await analyzeIntelItem(
+          {
+            title: item.title,
+            body: item.body,
+            source: item.source,
+            author: item.author,
+          },
+          orgContext,
+        );
 
         await supabase
           .from('intel_items')

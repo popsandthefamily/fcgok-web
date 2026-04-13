@@ -1,8 +1,24 @@
 import { NextResponse } from 'next/server';
-import { createServiceClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 
 export async function GET(request: Request) {
+  // Require authenticated user
+  const authClient = await createClient();
+  const { data: { user } } = await authClient.auth.getUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const supabase = await createServiceClient();
+
+  // Get the user's org slug for scoping
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('organization_id, organizations(slug)')
+    .eq('id', user.id)
+    .single();
+
+  const orgRaw = profile?.organizations as unknown;
+  const org = orgRaw as { slug: string } | null;
+  const orgSlug = org?.slug;
 
   const url = new URL(request.url);
   const sources = url.searchParams.get('source')?.split(',').filter(Boolean);
@@ -18,6 +34,13 @@ export async function GET(request: Request) {
     .select('*', { count: 'exact' })
     .order('published_at', { ascending: false, nullsFirst: false })
     .range(offset, offset + limit - 1);
+
+  // Scope to user's org visibility (or global 'all' items)
+  if (orgSlug) {
+    query = query.or(`client_visibility.cs.{${orgSlug}},client_visibility.cs.{all}`);
+  } else {
+    query = query.contains('client_visibility', ['all']);
+  }
 
   if (sources && sources.length > 0) query = query.in('source', sources);
   if (categories && categories.length > 0) query = query.in('category', categories);

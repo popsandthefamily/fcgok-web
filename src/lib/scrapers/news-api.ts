@@ -1,8 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { urlHash } from '@/lib/utils/dedup';
-
-const KEYWORDS =
-  '"self storage" AND (acquisition OR development OR fund OR capital OR investment OR REIT OR transaction OR construction OR lending)';
+import type { OrgConfig } from '@/lib/config/industries';
 
 interface NewsArticle {
   title: string;
@@ -13,12 +11,21 @@ interface NewsArticle {
   author: string | null;
 }
 
-export async function ingestNews(): Promise<{ ingested: number; skipped: number }> {
+function buildQuery(config: OrgConfig): string {
+  const keywords = config.intel.keywords.slice(0, 5); // NewsAPI limits query length
+  const core = keywords.map((k) => `"${k}"`).join(' OR ');
+  return `(${core}) AND (acquisition OR development OR fund OR capital OR investment OR transaction OR construction OR lending)`;
+}
+
+export async function ingestNews(
+  config: OrgConfig,
+  orgSlug: string,
+): Promise<{ ingested: number; skipped: number }> {
   const apiKey = process.env.NEWSAPI_KEY;
   if (!apiKey) throw new Error('NEWSAPI_KEY not set');
 
   const url = new URL('https://newsapi.org/v2/everything');
-  url.searchParams.set('q', KEYWORDS);
+  url.searchParams.set('q', buildQuery(config));
   url.searchParams.set('language', 'en');
   url.searchParams.set('sortBy', 'publishedAt');
   url.searchParams.set('pageSize', '50');
@@ -43,6 +50,7 @@ export async function ingestNews(): Promise<{ ingested: number; skipped: number 
       .from('intel_items')
       .select('id')
       .eq('metadata->>url_hash', hash)
+      .contains('client_visibility', [orgSlug])
       .limit(1);
 
     if (existing && existing.length > 0) { skipped++; continue; }
@@ -54,6 +62,7 @@ export async function ingestNews(): Promise<{ ingested: number; skipped: number 
       body: article.description,
       author: article.author,
       published_at: article.publishedAt,
+      client_visibility: [orgSlug],
       metadata: {
         url_hash: hash,
         source_name: article.source.name,

@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
-import { ingestISS } from '@/lib/scrapers/iss-rss';
+import { ingestRSS } from '@/lib/scrapers/iss-rss';
+import { runForOrgs } from '@/lib/scrapers/run-for-orgs';
+
+export const maxDuration = 60;
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
@@ -8,10 +11,12 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await ingestISS();
+    // The ISS cron triggers all configured RSS feeds (ISS for self-storage,
+    // MultiHousing News for multi-family, etc.)
+    const result = await runForOrgs('iss', ingestRSS);
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
-    console.error('ISS ingestion failed:', error);
+    console.error('RSS ingestion failed:', error);
     return NextResponse.json(
       { ok: false, error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 },

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ingestPodcasts } from '@/lib/scrapers/podcasts';
+import { runForOrgs } from '@/lib/scrapers/run-for-orgs';
 
 export const maxDuration = 60;
 
@@ -10,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await ingestPodcasts();
+    const result = await runForOrgs('podcasts', ingestPodcasts);
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
     console.error('Podcast ingestion failed:', error);
