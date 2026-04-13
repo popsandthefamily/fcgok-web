@@ -8,7 +8,7 @@ import PortalSidebar from '../components/PortalSidebar';
 export default function AuthGate({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
   const [userName, setUserName] = useState('User');
-  const [orgName, setOrgName] = useState('FCG');
+  const [orgName, setOrgName] = useState('720 Companies');
   const [isAdmin, setIsAdmin] = useState(true);
   const router = useRouter();
 
@@ -26,16 +26,26 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
 
       setUserName(user.email ?? 'User');
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('*, organizations(*)')
-        .eq('id', user.id)
-        .single();
+      // Use API route to avoid RLS recursion on direct client queries
+      try {
+        const res = await fetch('/api/profile');
+        if (res.ok) {
+          const { profile } = await res.json();
+          if (profile) {
+            setUserName(profile.full_name ?? user.email ?? 'User');
+            const org = profile.organizations as { name?: string; settings?: { onboarding_completed?: boolean } } | null;
+            setOrgName(org?.name ?? '720 Companies');
+            setIsAdmin(profile.role === 'admin');
 
-      if (profile) {
-        setUserName(profile.full_name ?? user.email ?? 'User');
-        setOrgName((profile.organizations as { name: string } | null)?.name ?? 'FCG');
-        setIsAdmin(profile.role === 'admin');
+            // Redirect to setup if onboarding not complete
+            if (!org?.settings?.onboarding_completed) {
+              router.replace('/portal/setup');
+              return;
+            }
+          }
+        }
+      } catch {
+        // Silent fail — let them in with defaults
       }
 
       setState('authenticated');
