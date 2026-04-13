@@ -42,11 +42,18 @@ export interface DealFacts {
   risk_summary?: string;
 }
 
+export type SectionLayout = 'none' | 'hero' | 'side-right' | 'side-left';
+
 export interface DocumentSection {
   id: string;
   title: string;
   order: number;
-  content: string; // markdown
+  content: string; // markdown or HTML (both supported)
+  content_format?: 'markdown' | 'html';
+  image_url?: string;
+  image_layout?: SectionLayout;
+  image_caption?: string;
+  pull_quote?: string;
   generated_at?: string;
   edited?: boolean;
 }
