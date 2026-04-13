@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import { generateDocumentSections } from '@/lib/ai/generate-document-sections';
 import type { PortalDocument } from '@/lib/types/documents';
 import type { OrgConfig } from '@/lib/config/industries';
@@ -7,18 +8,17 @@ import type { OrgConfig } from '@/lib/config/industries';
 export const maxDuration = 60;
 
 export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const authClient = await createClient();
-  const { data: { user } } = await authClient.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await getAuthedUser();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
   const supabase = await createServiceClient();
 
-  // Fetch document + org config
   const { data: doc, error: docErr } = await supabase
     .from('documents')
     .select('*, organizations(settings, slug)')
     .eq('id', id)
+    .eq('organization_id', auth.orgId!)
     .single();
 
   if (docErr || !doc) {
@@ -29,16 +29,13 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   const orgConfig = document.organizations.settings;
   const orgSlug = document.organizations.slug;
 
-  // Mark as generating
   await supabase.from('documents').update({ status: 'generating' }).eq('id', id);
 
   try {
-    // Phase 5: pull relevant intel from the feed for this deal's location
     let intelContext = '';
     const facts = document.deal_facts;
-    const locationQuery = [facts.city, facts.state, facts.msa].filter(Boolean).join(' ');
 
-    if (locationQuery) {
+    if (facts.city || facts.state) {
       const { data: relatedIntel } = await supabase
         .from('intel_items')
         .select('title, summary')
@@ -49,9 +46,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
         .limit(8);
 
       if (relatedIntel && relatedIntel.length > 0) {
-        intelContext = relatedIntel
-          .map((i) => `- ${i.title}: ${i.summary}`)
-          .join('\n');
+        intelContext = relatedIntel.map((i) => `- ${i.title}: ${i.summary}`).join('\n');
       }
     }
 
@@ -64,10 +59,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
 
     await supabase
       .from('documents')
-      .update({
-        sections,
-        status: 'ready',
-      })
+      .update({ sections, status: 'ready' })
       .eq('id', id);
 
     return NextResponse.json({ ok: true, sections });

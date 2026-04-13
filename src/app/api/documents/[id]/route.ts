@@ -1,23 +1,9 @@
 import { NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
-
-async function getUserOrg() {
-  const authClient = await createClient();
-  const { data: { user } } = await authClient.auth.getUser();
-  if (!user) return null;
-
-  const supabase = await createServiceClient();
-  const { data: profile } = await supabase
-    .from('user_profiles')
-    .select('organization_id')
-    .eq('id', user.id)
-    .single();
-
-  return { userId: user.id, orgId: profile?.organization_id as string | undefined };
-}
+import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await getUserOrg();
+  const auth = await getAuthedUser();
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
@@ -34,7 +20,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await getUserOrg();
+  const auth = await getAuthedUser();
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
@@ -59,7 +45,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await getUserOrg();
+  const auth = await getAuthedUser();
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
