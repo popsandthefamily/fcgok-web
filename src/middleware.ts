@@ -6,5 +6,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/portal/:path*'],
+  // Run on portal pages AND API routes so Supabase session cookies refresh
+  // on every request. Excludes /api/cron (uses CRON_SECRET, no cookies).
+  matcher: ['/portal/:path*', '/api/((?!cron/).*)'],
 };
