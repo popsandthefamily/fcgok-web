@@ -39,9 +39,10 @@ export async function GET(request: Request) {
   if (search) {
     query = query.or(`title.ilike.%${search}%,summary.ilike.%${search}%,body.ilike.%${search}%`);
   }
-  // Hide items admin has marked as hidden unless explicitly requested
+  // Hide items admin has marked as hidden unless explicitly requested.
+  // NULL-safe: rows where metadata->>hidden is null OR not 'true' pass.
   if (!includeHidden) {
-    query = query.not('metadata->>hidden', 'eq', 'true');
+    query = query.or('metadata->>hidden.is.null,metadata->>hidden.neq.true');
   }
 
   const { data, count, error } = await query;
