@@ -251,18 +251,56 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
           __html: `
             @media print {
               @page { margin: 0; size: letter; }
-              html, body { background: white !important; }
-              body > *:not(.doc-print-wrapper),
-              .portal-sidebar, .portal-header, .no-print,
-              .portal-main > *:not(.doc-print-wrapper) { display: none !important; }
-              .portal-layout { display: block !important; }
-              .portal-main { padding: 0 !important; background: white !important; display: block !important; }
+
+              /* Hide everything we don't want in the PDF */
+              nav, footer, script, aside,
+              .portal-sidebar, .portal-header, .no-print {
+                display: none !important;
+              }
+
+              /* Keep the parent chain visible and reset its styling */
+              html, body, main, .portal-layout, .portal-main, .portal-card {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-shadow: none !important;
+                border: none !important;
+                color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+
               .doc-print-wrapper { display: block !important; }
-              .doc-print { box-shadow: none !important; border: none !important; padding: 0 !important; background: white !important; max-width: 100% !important; }
-              .doc-cover { page-break-after: always; break-after: page; min-height: 11in !important; }
-              .doc-section { page-break-inside: avoid; break-inside: avoid; padding: 0.5in 0.6in !important; }
-              .doc-content h1, .doc-content h2, .doc-content h3 { page-break-after: avoid; }
-              .doc-content p, .doc-content li { orphans: 3; widows: 3; }
+              .doc-print {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                background: white !important;
+                max-width: 100% !important;
+              }
+              .doc-cover {
+                page-break-after: always;
+                break-after: page;
+                min-height: 11in !important;
+                color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              .doc-section {
+                page-break-inside: avoid;
+                break-inside: avoid;
+                padding: 0.5in 0.6in !important;
+              }
+              .doc-content h1, .doc-content h2, .doc-content h3 {
+                page-break-after: avoid;
+              }
+              .doc-content p, .doc-content li {
+                orphans: 3;
+                widows: 3;
+              }
             }
             .doc-content h1, .doc-content h2 {
               font-family: 'Playfair Display', Georgia, serif;
