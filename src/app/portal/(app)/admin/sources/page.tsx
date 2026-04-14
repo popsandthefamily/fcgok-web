@@ -3,6 +3,19 @@ import type { IntelSource } from '@/lib/types';
 
 const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec', 'linkedin', 'biggerpockets', 'podcast'];
 
+// Expected cron cadence per source (hours between runs). Kept in sync with
+// vercel.json. Used to scale health thresholds so a daily source doesn't
+// appear "Stale" for 23 hours after a successful run.
+const EXPECTED_INTERVAL_HOURS: Record<IntelSource, number> = {
+  iss: 2,
+  news: 2,
+  reddit: 4,
+  sec: 24,
+  linkedin: 6,
+  biggerpockets: 6,
+  podcast: 6,
+};
+
 interface SourceHealth {
   source: IntelSource;
   lastSuccessful: string | null;
@@ -65,9 +78,11 @@ export default async function SourcesPage() {
     });
   }
 
-  function statusLabel(hours: number): { text: string; color: string; bg: string } {
-    if (hours < 12) return { text: 'Healthy', color: '#166534', bg: '#dcfce7' };
-    if (hours < 24) return { text: 'Stale', color: '#92400e', bg: '#fef3c7' };
+  function statusLabel(source: IntelSource, hours: number): { text: string; color: string; bg: string } {
+    const interval = EXPECTED_INTERVAL_HOURS[source];
+    // Healthy up to 1.5x the expected interval, stale up to 3x.
+    if (hours < interval * 1.5) return { text: 'Healthy', color: '#166534', bg: '#dcfce7' };
+    if (hours < interval * 3) return { text: 'Stale', color: '#92400e', bg: '#fef3c7' };
     return { text: 'Down', color: '#991b1b', bg: '#fee2e2' };
   }
 
@@ -81,12 +96,13 @@ export default async function SourcesPage() {
       </div>
 
       <p style={{ fontSize: 13, color: '#6b7280', marginBottom: '1.5rem' }}>
-        Monitoring ingestion pipelines. Green = last ingest &lt; 12h ago. Yellow = 12&ndash;24h. Red = &gt; 24h or never.
+        Monitoring ingestion pipelines. Thresholds are scaled per source cadence &mdash;
+        green means the last ingest is within 1.5&times; the expected interval, yellow within 3&times;, red beyond that.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {sourceHealth.map((sh) => {
-          const status = statusLabel(sh.hoursAgo);
+          const status = statusLabel(sh.source, sh.hoursAgo);
           const cronSlug = sh.source === 'biggerpockets' ? 'biggerpockets' : sh.source;
           const cronUrl = `/api/cron/ingest-${cronSlug}?secret=CRON_SECRET`;
 

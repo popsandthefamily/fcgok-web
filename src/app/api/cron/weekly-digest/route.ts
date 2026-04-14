@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/server';
 import { generateWeeklyDigest } from '@/lib/ai/generate-digest';
 import { sendDigestEmail } from '@/lib/utils/notifications';
+import { isAuthorizedCron } from '@/lib/auth/cron-auth';
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isAuthorizedCron(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
