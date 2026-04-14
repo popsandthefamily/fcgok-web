@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import AuthGate from './AuthGate';
 
 export const dynamic = 'force-dynamic';
@@ -9,15 +10,19 @@ export default async function AuthenticatedPortalLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/portal/login');
+  // getAuthedUser reads the sb-*-auth-token cookie directly and validates
+  // the access token via the service client. It does NOT attempt a refresh,
+  // so it can't collide with the middleware's refresh path the way a second
+  // createClient().auth.getUser() call could. Middleware is still responsible
+  // for refreshing the session cookies on each request.
+  const auth = await getAuthedUser();
+  if (!auth) redirect('/portal/login');
 
   const service = await createServiceClient();
   const { data: profile } = await service
     .from('user_profiles')
-    .select('full_name, role, organizations(name, settings)')
-    .eq('id', user.id)
+    .select('full_name, organizations(name, settings)')
+    .eq('id', auth.id)
     .maybeSingle();
 
   const org = (profile?.organizations ?? null) as
@@ -30,9 +35,9 @@ export default async function AuthenticatedPortalLayout({
 
   return (
     <AuthGate
-      userName={(profile?.full_name as string | null) ?? user.email ?? 'User'}
+      userName={(profile?.full_name as string | null) ?? auth.email ?? 'User'}
       orgName={org?.name ?? '720 Companies'}
-      isAdmin={profile?.role === 'admin'}
+      isAdmin={auth.role === 'admin'}
     >
       {children}
     </AuthGate>
