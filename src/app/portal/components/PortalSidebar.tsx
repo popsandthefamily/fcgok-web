@@ -19,7 +19,9 @@ type IconName =
   | 'sparkle'
   | 'building'
   | 'users'
-  | 'signal';
+  | 'signal'
+  | 'cog'
+  | 'logout';
 
 const ICON_SIZE = 16;
 
@@ -174,6 +176,21 @@ function Icon({ name }: { name: IconName }) {
           <circle cx="12" cy="19" r="0.75" fill="currentColor" />
         </svg>
       );
+    case 'cog':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+      );
+    case 'logout':
+      return (
+        <svg {...common}>
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <path d="M16 17l5-5-5-5" />
+          <path d="M21 12H9" />
+        </svg>
+      );
   }
 }
 
@@ -265,28 +282,44 @@ export default function PortalSidebar({
       ))}
 
       <div style={{ marginTop: 'auto', padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ fontSize: 13, color: 'rgba(244,241,234,0.6)', marginBottom: 4 }}>{userName}</div>
-        <div style={{ display: 'flex', gap: 12 }}>
+        <div style={{ fontSize: 13, color: 'rgba(244,241,234,0.6)', marginBottom: 10 }}>{userName}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <Link
             href="/portal/settings"
-            style={{ fontSize: 12, color: 'rgba(244,241,234,0.3)', textDecoration: 'none' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              fontSize: 12,
+              color: 'rgba(244,241,234,0.5)',
+              textDecoration: 'none',
+              lineHeight: 1,
+            }}
           >
-            Settings
+            <Icon name="cog" />
+            <span>Settings</span>
           </Link>
-          <form action="/portal/logout" method="post" style={{ display: 'inline' }}>
+          <form action="/portal/logout" method="post" style={{ display: 'contents' }}>
             <button
               type="submit"
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
                 background: 'none',
                 border: 'none',
                 padding: 0,
+                margin: 0,
                 fontSize: 12,
-                color: 'rgba(244,241,234,0.3)',
+                color: 'rgba(244,241,234,0.5)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
+                lineHeight: 1,
+                textAlign: 'left',
               }}
             >
-              Sign out
+              <Icon name="logout" />
+              <span>Sign out</span>
             </button>
           </form>
         </div>
