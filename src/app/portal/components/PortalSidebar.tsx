@@ -214,7 +214,6 @@ const ADMIN_SECTION: NavSection = {
   title: 'Admin',
   links: [
     { href: '/portal/admin', label: 'Overview', icon: 'shield' },
-    { href: '/portal/admin/curate', label: 'Digest Builder', icon: 'sparkle' },
     { href: '/portal/admin/entities', label: 'Manage Entities', icon: 'building' },
     { href: '/portal/admin/clients', label: 'Members', icon: 'users' },
     { href: '/portal/admin/sources', label: 'Source Health', icon: 'signal' },
