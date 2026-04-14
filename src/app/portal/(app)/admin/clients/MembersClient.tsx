@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { UserProfile, UserRole } from '@/lib/types';
 
 interface PendingInvite {
@@ -20,54 +21,28 @@ interface OrgInfo {
   settings?: { brand?: { logo_url?: string; tagline?: string } };
 }
 
-export default function MembersClient() {
-  const [members, setMembers] = useState<UserProfile[]>([]);
-  const [pending, setPending] = useState<PendingInvite[]>([]);
-  const [org, setOrg] = useState<OrgInfo | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+interface Props {
+  currentUserId: string;
+  org: OrgInfo | null;
+  initialMembers: UserProfile[];
+  initialPending: PendingInvite[];
+}
+
+export default function MembersClient({
+  currentUserId,
+  org,
+  initialMembers,
+  initialPending,
+}: Props) {
+  const router = useRouter();
+  const [members, setMembers] = useState<UserProfile[]>(initialMembers);
+  const [pending, setPending] = useState<PendingInvite[]>(initialPending);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Invite form state
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<UserRole>('viewer');
   const [inviting, setInviting] = useState(false);
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const [membersRes, profileRes] = await Promise.all([
-        fetch('/api/admin/members'),
-        fetch('/api/profile'),
-      ]);
-
-      if (!membersRes.ok) {
-        const body = await membersRes.json().catch(() => ({}));
-        throw new Error(body.error ?? 'Failed to load members');
-      }
-      const { members: m, pendingInvites } = await membersRes.json();
-      setMembers(m ?? []);
-      setPending(pendingInvites ?? []);
-
-      if (profileRes.ok) {
-        const { user, profile } = await profileRes.json();
-        setCurrentUserId(user.id);
-        if (profile?.organizations) {
-          setOrg(profile.organizations as OrgInfo);
-        }
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    load();
-  }, [load]);
 
   async function sendInvite(e: React.FormEvent) {
     e.preventDefault();
@@ -87,7 +62,7 @@ export default function MembersClient() {
       setMessage(`Invite sent to ${email}.`);
       setEmail('');
       setRole('viewer');
-      await load();
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -145,7 +120,6 @@ export default function MembersClient() {
         <Link href="/portal/admin" className="portal-btn portal-btn-ghost">&larr; Admin</Link>
       </div>
 
-      {/* Workspace info */}
       {org && (
         <div className="portal-card" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 16 }}>
           {org.settings?.brand?.logo_url && (
@@ -194,7 +168,6 @@ export default function MembersClient() {
         </div>
       )}
 
-      {/* Invite form */}
       <div className="portal-card" style={{ marginBottom: '1.5rem' }}>
         <div className="portal-card-header">
           <span className="portal-card-title">Invite a Member</span>
@@ -239,7 +212,6 @@ export default function MembersClient() {
         </p>
       </div>
 
-      {/* Pending invites */}
       {pending.length > 0 && (
         <div className="portal-card" style={{ marginBottom: '1.5rem' }}>
           <div className="portal-card-header">
@@ -291,14 +263,11 @@ export default function MembersClient() {
         </div>
       )}
 
-      {/* Active members */}
       <div className="portal-card">
         <div className="portal-card-header">
           <span className="portal-card-title">Active Members · {members.length}</span>
         </div>
-        {loading ? (
-          <p style={{ fontSize: 13, color: '#9ca3af' }}>Loading…</p>
-        ) : members.length === 0 ? (
+        {members.length === 0 ? (
           <p style={{ fontSize: 13, color: '#9ca3af' }}>No members yet.</p>
         ) : (
           <table style={tableStyle}>

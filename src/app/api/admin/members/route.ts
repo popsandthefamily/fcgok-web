@@ -40,35 +40,6 @@ async function resolveAdmin() {
   };
 }
 
-// GET — list members + pending invites for the calling admin's organization
-export async function GET(request: Request) {
-  const result = await resolveAdmin();
-  if ('error' in result) {
-    return NextResponse.json({ error: result.error }, { status: result.status });
-  }
-
-  const supabase = await createServiceClient();
-  const [profilesRes, invitesRes] = await Promise.all([
-    supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('organization_id', result.user.orgId)
-      .order('created_at', { ascending: true }),
-    supabase
-      .from('invitations')
-      .select('id, email, role, expires_at, consumed_at, created_at')
-      .eq('organization_id', result.user.orgId)
-      .is('consumed_at', null)
-      .gte('expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false }),
-  ]);
-
-  return NextResponse.json({
-    members: profilesRes.data ?? [],
-    pendingInvites: invitesRes.data ?? [],
-  });
-}
-
 // POST — invite a new user to the calling admin's existing organization
 export async function POST(request: Request) {
   const result = await resolveAdmin();
