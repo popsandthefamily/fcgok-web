@@ -95,7 +95,10 @@ export async function getAuthedUser(): Promise<AuthedUser | null> {
       return indexOf(a.name) - indexOf(b.name);
     });
 
-  if (authPieces.length === 0) return null;
+  if (authPieces.length === 0) {
+    console.warn('[auth-helper] no auth cookies; all cookie names:', all.map((c) => c.name));
+    return null;
+  }
 
   let rawValue = authPieces.map((c) => c.value).join('');
 
@@ -103,7 +106,8 @@ export async function getAuthedUser(): Promise<AuthedUser | null> {
   if (rawValue.startsWith('base64-')) {
     try {
       rawValue = Buffer.from(rawValue.slice('base64-'.length), 'base64').toString('utf-8');
-    } catch {
+    } catch (err) {
+      console.warn('[auth-helper] base64- decode failed:', err);
       return null;
     }
   }
@@ -118,14 +122,38 @@ export async function getAuthedUser(): Promise<AuthedUser | null> {
     } else if (parsed?.currentSession?.access_token) {
       accessToken = parsed.currentSession.access_token;
     }
-  } catch {
+    if (!accessToken) {
+      console.warn('[auth-helper] JSON parsed but no access_token; keys:', Object.keys(parsed ?? {}));
+    }
+  } catch (err) {
+    console.warn('[auth-helper] JSON.parse failed, treating rawValue as token:', err);
     accessToken = rawValue;
   }
 
   if (!accessToken) return null;
 
+  const parts = accessToken.split('.');
+  if (parts.length !== 3) {
+    console.warn('[auth-helper] accessToken does not have 3 segments, got:', parts.length, 'first 20 chars:', accessToken.slice(0, 20));
+    return null;
+  }
+
   const payload = verifyHs256(accessToken, jwtSecret);
-  if (!payload?.sub) return null;
+  if (!payload) {
+    // Re-decode payload for diagnostic (without verification)
+    try {
+      const p = JSON.parse(base64UrlDecode(parts[1]).toString('utf-8')) as SupabaseJwtPayload & { aud?: string };
+      const header = JSON.parse(base64UrlDecode(parts[0]).toString('utf-8')) as { alg?: string };
+      console.warn('[auth-helper] verifyHs256 returned null. alg=', header.alg, 'sub=', p.sub, 'exp=', p.exp, 'now=', Math.floor(Date.now() / 1000));
+    } catch (err) {
+      console.warn('[auth-helper] verifyHs256 failed AND diagnostic decode failed:', err);
+    }
+    return null;
+  }
+  if (!payload.sub) {
+    console.warn('[auth-helper] payload missing sub claim');
+    return null;
+  }
 
   const serviceClient = createSbClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
