@@ -1,28 +1,31 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import type { IntelSource } from '@/lib/types';
 
-const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec', 'linkedin', 'biggerpockets', 'podcast'];
+export const dynamic = 'force-dynamic';
+
+// Sources we actively schedule in vercel.json. linkedin / biggerpockets /
+// podcast routes exist but their crons were reverted in bd80888 (plan cron
+// limit), so they're intentionally not listed here — they'd always look Down.
+const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec'];
 
 // Expected cron cadence per source (hours between runs). Kept in sync with
 // vercel.json. Used to scale health thresholds so a daily source doesn't
 // appear "Stale" for 23 hours after a successful run.
-const EXPECTED_INTERVAL_HOURS: Record<IntelSource, number> = {
+const EXPECTED_INTERVAL_HOURS: Record<string, number> = {
   iss: 2,
   news: 2,
   reddit: 4,
   sec: 24,
-  linkedin: 6,
-  biggerpockets: 6,
-  podcast: 6,
 };
 
 interface SourceHealth {
   source: IntelSource;
-  lastSuccessful: string | null;
+  lastRun: string | null;
+  lastRunHoursAgo: number;
+  lastItemIngested: string | null;
   itemsToday: number;
   itemsThisWeek: number;
-  errorCount: number;
-  hoursAgo: number;
+  recentErrors: number;
 }
 
 export default async function SourcesPage() {
@@ -34,56 +37,74 @@ export default async function SourcesPage() {
   const sourceHealth: SourceHealth[] = [];
 
   for (const source of SOURCES) {
-    // Last successful ingestion
-    const { data: latest } = await supabase
-      .from('intel_items')
-      .select('ingested_at')
-      .eq('source', source)
-      .order('ingested_at', { ascending: false })
-      .limit(1);
+    const [runRes, itemRes, todayRes, weekRes, errorRes] = await Promise.all([
+      supabase
+        .from('scrape_runs')
+        .select('ran_at')
+        .eq('source', source)
+        .order('ran_at', { ascending: false })
+        .limit(1),
+      supabase
+        .from('intel_items')
+        .select('ingested_at')
+        .eq('source', source)
+        .order('ingested_at', { ascending: false })
+        .limit(1),
+      supabase
+        .from('intel_items')
+        .select('*', { count: 'exact', head: true })
+        .eq('source', source)
+        .gte('ingested_at', todayStart),
+      supabase
+        .from('intel_items')
+        .select('*', { count: 'exact', head: true })
+        .eq('source', source)
+        .gte('ingested_at', weekAgo),
+      supabase
+        .from('scrape_runs')
+        .select('*', { count: 'exact', head: true })
+        .eq('source', source)
+        .not('error', 'is', null)
+        .gte('ran_at', weekAgo),
+    ]);
 
-    const lastSuccessful = latest?.[0]?.ingested_at ?? null;
-    const hoursAgo = lastSuccessful
-      ? (now.getTime() - new Date(lastSuccessful).getTime()) / 3600000
+    // Prefer scrape_runs.ran_at for "last run" — falls back to the newest
+    // intel_items row for sources that predate the scrape_runs table or
+    // before the first cron run after deploy.
+    const lastRun = runRes.data?.[0]?.ran_at ?? itemRes.data?.[0]?.ingested_at ?? null;
+    const lastRunHoursAgo = lastRun
+      ? (now.getTime() - new Date(lastRun).getTime()) / 3600000
       : Infinity;
-
-    // Items ingested today
-    const { count: itemsToday } = await supabase
-      .from('intel_items')
-      .select('*', { count: 'exact', head: true })
-      .eq('source', source)
-      .gte('ingested_at', todayStart);
-
-    // Items this week
-    const { count: itemsThisWeek } = await supabase
-      .from('intel_items')
-      .select('*', { count: 'exact', head: true })
-      .eq('source', source)
-      .gte('ingested_at', weekAgo);
-
-    // Error count from metadata (items where metadata contains error info)
-    const { count: errorCount } = await supabase
-      .from('intel_items')
-      .select('*', { count: 'exact', head: true })
-      .eq('source', source)
-      .not('metadata->error', 'is', null);
 
     sourceHealth.push({
       source,
-      lastSuccessful,
-      itemsToday: itemsToday ?? 0,
-      itemsThisWeek: itemsThisWeek ?? 0,
-      errorCount: errorCount ?? 0,
-      hoursAgo,
+      lastRun,
+      lastRunHoursAgo,
+      lastItemIngested: itemRes.data?.[0]?.ingested_at ?? null,
+      itemsToday: todayRes.count ?? 0,
+      itemsThisWeek: weekRes.count ?? 0,
+      recentErrors: errorRes.count ?? 0,
     });
   }
 
-  function statusLabel(source: IntelSource, hours: number): { text: string; color: string; bg: string } {
-    const interval = EXPECTED_INTERVAL_HOURS[source];
-    // Healthy up to 1.5x the expected interval, stale up to 3x.
+  function statusLabel(
+    source: IntelSource,
+    hours: number,
+    errors: number,
+  ): { text: string; color: string; bg: string } {
+    if (errors > 0) return { text: 'Errors', color: '#991b1b', bg: '#fee2e2' };
+    const interval = EXPECTED_INTERVAL_HOURS[source] ?? 6;
     if (hours < interval * 1.5) return { text: 'Healthy', color: '#166534', bg: '#dcfce7' };
     if (hours < interval * 3) return { text: 'Stale', color: '#92400e', bg: '#fef3c7' };
     return { text: 'Down', color: '#991b1b', bg: '#fee2e2' };
+  }
+
+  function formatRelative(iso: string | null): string {
+    if (!iso) return 'Never';
+    const d = new Date(iso);
+    return d.toLocaleString('en-US', {
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
   }
 
   return (
@@ -96,15 +117,15 @@ export default async function SourcesPage() {
       </div>
 
       <p style={{ fontSize: 13, color: '#6b7280', marginBottom: '1.5rem' }}>
-        Monitoring ingestion pipelines. Thresholds are scaled per source cadence &mdash;
-        green means the last ingest is within 1.5&times; the expected interval, yellow within 3&times;, red beyond that.
+        Status reflects the last time each ingest cron actually fired
+        (success OR dedup-only). Items ingested today is a separate signal &mdash;
+        a healthy source can have 0 new items if nothing new was published.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {sourceHealth.map((sh) => {
-          const status = statusLabel(sh.source, sh.hoursAgo);
-          const cronSlug = sh.source === 'biggerpockets' ? 'biggerpockets' : sh.source;
-          const cronUrl = `/api/cron/ingest-${cronSlug}?secret=CRON_SECRET`;
+          const status = statusLabel(sh.source, sh.lastRunHoursAgo, sh.recentErrors);
+          const cronUrl = `/api/cron/ingest-${sh.source}`;
 
           return (
             <div key={sh.source} className="portal-card">
@@ -130,13 +151,9 @@ export default async function SourcesPage() {
 
               <div className="stat-grid" style={{ marginBottom: 0 }}>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>Last Successful</div>
+                  <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>Last Run</div>
                   <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>
-                    {sh.lastSuccessful
-                      ? new Date(sh.lastSuccessful).toLocaleString('en-US', {
-                          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-                        })
-                      : 'Never'}
+                    {formatRelative(sh.lastRun)}
                   </div>
                 </div>
                 <div style={{ textAlign: 'center' }}>
@@ -148,9 +165,9 @@ export default async function SourcesPage() {
                   <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{sh.itemsThisWeek}</div>
                 </div>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>Errors</div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: sh.errorCount > 0 ? '#dc2626' : '#111827' }}>
-                    {sh.errorCount}
+                  <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>Errors (7d)</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: sh.recentErrors > 0 ? '#dc2626' : '#111827' }}>
+                    {sh.recentErrors}
                   </div>
                 </div>
               </div>

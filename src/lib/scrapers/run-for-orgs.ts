@@ -23,12 +23,12 @@ export async function runForOrgs<T extends { ingested: number; skipped: number }
   scraper: (config: OrgConfig, orgSlug: string) => Promise<T>,
 ): Promise<{ ingested: number; skipped: number; perOrg: Record<string, T | { error: string }> }> {
   const orgs = await getActiveOrgs();
+  const supabase = await createServiceClient();
   let totalIngested = 0;
   let totalSkipped = 0;
   const perOrg: Record<string, T | { error: string }> = {};
 
   for (const org of orgs) {
-    // Skip if this org has this source disabled
     if (!org.settings.sources?.[sourceKey]) continue;
 
     try {
@@ -36,8 +36,20 @@ export async function runForOrgs<T extends { ingested: number; skipped: number }
       perOrg[org.slug] = result;
       totalIngested += result.ingested;
       totalSkipped += result.skipped;
+      await supabase.from('scrape_runs').insert({
+        source: sourceKey as string,
+        org_slug: org.slug,
+        items_ingested: result.ingested,
+        items_skipped: result.skipped,
+      });
     } catch (err) {
-      perOrg[org.slug] = { error: err instanceof Error ? err.message : String(err) };
+      const message = err instanceof Error ? err.message : String(err);
+      perOrg[org.slug] = { error: message };
+      await supabase.from('scrape_runs').insert({
+        source: sourceKey as string,
+        org_slug: org.slug,
+        error: message,
+      });
     }
   }
 
