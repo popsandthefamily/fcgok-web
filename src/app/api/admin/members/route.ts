@@ -17,9 +17,20 @@ interface InviteBody {
 // Resolve the authenticated admin and their org without using the
 // custom auth-helper (which has been flaky in route handlers).
 // Mirrors the pattern in /api/profile that's confirmed working.
-async function resolveAdmin() {
+async function resolveAdmin(request?: Request) {
+  // TEMP DEBUG — remove once 401 issue is diagnosed
+  const cookieHeader = request?.headers.get('cookie') ?? '';
+  const cookieNames = cookieHeader
+    .split(';')
+    .map((c) => c.trim().split('=')[0])
+    .filter(Boolean);
+  console.log('[members.resolveAdmin] cookies seen:', cookieNames.join(', ') || '(none)');
+  console.log('[members.resolveAdmin] has sb-*-auth-token?',
+    cookieNames.some((n) => n.startsWith('sb-') && n.includes('auth')));
+
   const sb = await createClient();
   const { data: { user }, error } = await sb.auth.getUser();
+  console.log('[members.resolveAdmin] getUser →', { userId: user?.id ?? null, error: error?.message ?? null });
   if (error || !user) return { error: 'Unauthorized', status: 401 as const };
 
   const service = await createServiceClient();
@@ -44,8 +55,8 @@ async function resolveAdmin() {
 }
 
 // GET — list members + pending invites for the calling admin's organization
-export async function GET() {
-  const result = await resolveAdmin();
+export async function GET(request: Request) {
+  const result = await resolveAdmin(request);
   if ('error' in result) {
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
@@ -74,7 +85,7 @@ export async function GET() {
 
 // POST — invite a new user to the calling admin's existing organization
 export async function POST(request: Request) {
-  const result = await resolveAdmin();
+  const result = await resolveAdmin(request);
   if ('error' in result) {
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
