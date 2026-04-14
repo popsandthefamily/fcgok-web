@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
+import BuggyWheel from '@/components/BuggyWheel';
 
 type IconName =
   | 'dashboard'
@@ -253,8 +254,11 @@ export default function PortalSidebar({
   return (
     <aside className="portal-sidebar">
       <div className="portal-sidebar-brand">
-        <h2>Frontier Intelligence</h2>
-        <span>{orgName}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <BuggyWheel size={22} strokeWidth={6} style={{ color: 'rgba(244,241,234,0.7)' }} />
+          <h2 style={{ margin: 0 }}>Frontier Intelligence</h2>
+        </div>
+        <span style={{ marginLeft: 32 }}>{orgName}</span>
       </div>
 
       {sections.map((section) => (

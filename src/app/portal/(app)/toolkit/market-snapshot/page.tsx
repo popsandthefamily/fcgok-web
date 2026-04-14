@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import BuggyWheel from '@/components/BuggyWheel';
 
 interface OrgBranding {
   name: string;
@@ -177,7 +178,6 @@ export default function MarketSnapshotPage() {
           .snapshot-content ul, .snapshot-content ol { margin: 0.5rem 0 0.75rem 1.5rem; color: #374151; }
           .snapshot-content li { margin: 0.25rem 0; line-height: 1.6; }
           .snapshot-content strong { color: #111827; font-weight: 600; }
-          @keyframes snapshot-spin { to { transform: rotate(360deg); } }
         `,
       }} />
 
@@ -221,7 +221,7 @@ export default function MarketSnapshotPage() {
 
       {loading && !result && (
         <div className="portal-card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <div style={{ display: 'inline-block', width: 32, height: 32, border: '3px solid #e5e7eb', borderTopColor: primaryColor, borderRadius: '50%', animation: 'snapshot-spin 1s linear infinite' }} />
+          <BuggyWheel spinning size={44} style={{ color: primaryColor }} />
           <p style={{ fontSize: 14, color: '#6b7280', marginTop: 16 }}>
             Analyzing <strong>{location}</strong>...
           </p>

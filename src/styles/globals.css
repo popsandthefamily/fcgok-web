@@ -148,6 +148,11 @@ h1, h2, h3, h4 {
   min-height: 80px;
 }
 
+/* ── BUGGY WHEEL ─────────────────────────────────────────────────── */
+@keyframes buggy-wheel-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ── MARQUEE ─────────────────────────────────────────────────────── */
 @keyframes marquee-scroll {
   from { transform: translateX(0); }

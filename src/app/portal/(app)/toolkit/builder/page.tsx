@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { DOCUMENT_TYPE_LABELS, DOCUMENT_TYPE_DESCRIPTIONS, type DocumentType, type PortalDocument } from '@/lib/types/documents';
+import { WheelLoader } from '@/components/BuggyWheel';
 
 const DOC_TYPES: DocumentType[] = ['om', 'prospectus', 'pitch_deck'];
 
@@ -99,7 +100,7 @@ export default function BuilderLandingPage() {
         </div>
 
         {loading ? (
-          <p style={{ fontSize: 13, color: '#9ca3af' }}>Loading...</p>
+          <WheelLoader label="Loading documents…" style={{ fontSize: 13 }} />
         ) : documents.length === 0 ? (
           <p style={{ fontSize: 13, color: '#9ca3af' }}>No documents yet. Create your first one above.</p>
         ) : (

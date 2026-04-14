@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { WheelLoader } from '@/components/BuggyWheel';
 
 interface OrgSettings {
   logo_url?: string;
@@ -115,7 +116,7 @@ export default function SettingsPage() {
   }
 
   if (loading) {
-    return <p style={{ fontSize: 14, color: '#9ca3af' }}>Loading...</p>;
+    return <WheelLoader label="Loading settings…" />;
   }
 
   return (

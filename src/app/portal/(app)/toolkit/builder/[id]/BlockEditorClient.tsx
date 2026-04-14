@@ -2,13 +2,14 @@
 
 import dynamic from 'next/dynamic';
 import type { BlockEditorProps } from './BlockEditor';
+import { WheelLoader } from '@/components/BuggyWheel';
 
 // BlockNote uses window/document at import time — must be client-only.
 const BlockEditor = dynamic(() => import('./BlockEditor'), {
   ssr: false,
   loading: () => (
-    <div style={{ padding: '1rem', color: '#9ca3af', fontSize: 13, fontStyle: 'italic' }}>
-      Loading editor…
+    <div style={{ padding: '1rem' }}>
+      <WheelLoader label="Loading editor…" style={{ fontSize: 13 }} />
     </div>
   ),
 });

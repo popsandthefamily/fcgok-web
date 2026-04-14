@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import BuggyWheel from '@/components/BuggyWheel';
 
 export default function DeckReviewPage() {
   const [text, setText] = useState('');
@@ -107,8 +108,9 @@ export default function DeckReviewPage() {
 
       {loading && (
         <div className="portal-card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <p style={{ fontSize: 14, color: '#9ca3af' }}>
-            Analyzing your pitch deck. This may take a moment...
+          <BuggyWheel spinning size={44} style={{ color: '#6b7280' }} />
+          <p style={{ fontSize: 14, color: '#6b7280', marginTop: 16 }}>
+            Analyzing your pitch deck. This may take a moment…
           </p>
         </div>
       )}

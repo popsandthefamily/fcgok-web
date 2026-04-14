@@ -7,6 +7,7 @@ import { useCreateBlockNote } from '@blocknote/react';
 
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
+import { WheelLoader } from '@/components/BuggyWheel';
 
 export interface BlockEditorProps {
   initialContent: string;
@@ -148,8 +149,8 @@ export default function BlockEditor({
       </div>
 
       {!ready ? (
-        <div style={{ padding: '1.5rem', color: '#9ca3af', fontSize: 13, fontStyle: 'italic' }}>
-          Loading editor…
+        <div style={{ padding: '1.5rem' }}>
+          <WheelLoader label="Loading editor…" style={{ fontSize: 13 }} />
         </div>
       ) : (
         <div

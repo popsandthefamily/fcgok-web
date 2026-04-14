@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { WheelLoader } from '@/components/BuggyWheel';
 
 interface Template {
   id: string;
@@ -312,7 +313,7 @@ export default function TemplatesPage() {
   }
 
   if (loading) {
-    return <p style={{ fontSize: 14, color: '#9ca3af' }}>Loading templates...</p>;
+    return <WheelLoader label="Loading templates…" />;
   }
 
   return (

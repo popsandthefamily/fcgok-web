@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { PortalDocument, DocumentSection, SectionLayout } from '@/lib/types/documents';
 import { DOCUMENT_TYPE_LABELS } from '@/lib/types/documents';
 import BlockEditorClient from './BlockEditorClient';
+import { WheelLoader } from '@/components/BuggyWheel';
 
 interface OrgBranding {
   name: string;
@@ -228,7 +229,7 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
     }
   }
 
-  if (loading) return <p style={{ fontSize: 14, color: '#9ca3af' }}>Loading document...</p>;
+  if (loading) return <WheelLoader label="Loading document…" />;
   if (!doc) return <p style={{ fontSize: 14, color: '#9ca3af' }}>Document not found.</p>;
 
   const hasSections = doc.sections.length > 0;

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import type { TrackedEntity, EntityType, EntityCategory, EntityStatus } from '@/lib/types';
+import { WheelLoader } from '@/components/BuggyWheel';
 
 const ENTITY_TYPES: EntityType[] = ['company', 'person', 'fund'];
 const ENTITY_CATEGORIES: EntityCategory[] = ['lender', 'equity_investor', 'broker', 'developer', 'operator', 'reit'];
@@ -279,7 +280,9 @@ export default function EntitiesPage() {
       <div className="portal-card">
         <span className="portal-card-title">Tracked Entities</span>
         {loading ? (
-          <p style={{ fontSize: 14, color: '#9ca3af', marginTop: '1rem' }}>Loading...</p>
+          <div style={{ marginTop: '1rem' }}>
+            <WheelLoader label="Loading entities…" />
+          </div>
         ) : entities.length === 0 ? (
           <p style={{ fontSize: 14, color: '#9ca3af', marginTop: '1rem' }}>No entities tracked yet. Add one above.</p>
         ) : (

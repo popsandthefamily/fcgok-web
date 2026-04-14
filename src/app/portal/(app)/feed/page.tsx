@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import type { IntelItem, IntelSource, IntelCategory, Sentiment } from '@/lib/types';
+import { WheelLoader } from '@/components/BuggyWheel';
 
 const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec', 'linkedin', 'biggerpockets', 'podcast'];
 const CATEGORIES: IntelCategory[] = ['market_intel', 'investor_activity', 'deal_flow', 'regulatory', 'competitive', 'operational'];
@@ -166,7 +167,7 @@ export default function FeedPage() {
 
       {/* Feed */}
       {loading ? (
-        <p style={{ fontSize: 14, color: '#9ca3af' }}>Loading...</p>
+        <WheelLoader label="Loading intel…" />
       ) : items.length === 0 ? (
         <div className="portal-card" style={{ textAlign: 'center', padding: '3rem' }}>
           <p style={{ fontSize: 14, color: '#9ca3af' }}>No items match your filters.</p>
