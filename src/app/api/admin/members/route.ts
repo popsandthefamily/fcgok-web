@@ -20,17 +20,29 @@ interface InviteBody {
 async function resolveAdmin(request?: Request) {
   // TEMP DEBUG — remove once 401 issue is diagnosed
   const cookieHeader = request?.headers.get('cookie') ?? '';
-  const cookieNames = cookieHeader
-    .split(';')
-    .map((c) => c.trim().split('=')[0])
-    .filter(Boolean);
-  console.log('[members.resolveAdmin] cookies seen:', cookieNames.join(', ') || '(none)');
-  console.log('[members.resolveAdmin] has sb-*-auth-token?',
-    cookieNames.some((n) => n.startsWith('sb-') && n.includes('auth')));
-
+  const rawPairs = cookieHeader.split(';').map((c) => c.trim()).filter(Boolean);
+  const sbCookies = rawPairs
+    .filter((p) => p.startsWith('sb-'))
+    .map((p) => {
+      const eq = p.indexOf('=');
+      const name = p.slice(0, eq);
+      const value = p.slice(eq + 1);
+      return {
+        name,
+        length: value.length,
+        preview: value.slice(0, 40),
+        decodedLooksJwt: value.split('.').length === 3,
+      };
+    });
   const sb = await createClient();
   const { data: { user }, error } = await sb.auth.getUser();
-  console.log('[members.resolveAdmin] getUser →', { userId: user?.id ?? null, error: error?.message ?? null });
+  console.log('[members.debug]', JSON.stringify({
+    totalCookies: rawPairs.length,
+    sbCookieCount: sbCookies.length,
+    sbCookies,
+    getUserError: error?.message ?? null,
+    getUserUserId: user?.id ?? null,
+  }));
   if (error || !user) return { error: 'Unauthorized', status: 401 as const };
 
   const service = await createServiceClient();
