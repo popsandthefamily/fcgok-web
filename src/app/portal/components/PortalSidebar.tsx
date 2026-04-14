@@ -273,12 +273,22 @@ export default function PortalSidebar({
           >
             Settings
           </Link>
-          <Link
-            href="/portal/logout"
-            style={{ fontSize: 12, color: 'rgba(244,241,234,0.3)', textDecoration: 'none' }}
-          >
-            Sign out
-          </Link>
+          <form action="/portal/logout" method="post" style={{ display: 'inline' }}>
+            <button
+              type="submit"
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                fontSize: 12,
+                color: 'rgba(244,241,234,0.3)',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              Sign out
+            </button>
+          </form>
         </div>
       </div>
     </aside>
