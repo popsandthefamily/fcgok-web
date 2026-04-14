@@ -14,35 +14,9 @@ interface InviteBody {
   fullName?: string;
 }
 
-// Resolve the authenticated admin and their org without using the
-// custom auth-helper (which has been flaky in route handlers).
-// Mirrors the pattern in /api/profile that's confirmed working.
-async function resolveAdmin(request?: Request) {
-  // TEMP DEBUG — remove once 401 issue is diagnosed
-  const cookieHeader = request?.headers.get('cookie') ?? '';
-  const rawPairs = cookieHeader.split(';').map((c) => c.trim()).filter(Boolean);
-  const sbCookies = rawPairs
-    .filter((p) => p.startsWith('sb-'))
-    .map((p) => {
-      const eq = p.indexOf('=');
-      const name = p.slice(0, eq);
-      const value = p.slice(eq + 1);
-      return {
-        name,
-        length: value.length,
-        preview: value.slice(0, 40),
-        decodedLooksJwt: value.split('.').length === 3,
-      };
-    });
+async function resolveAdmin() {
   const sb = await createClient();
   const { data: { user }, error } = await sb.auth.getUser();
-  console.log('[members.debug]', JSON.stringify({
-    totalCookies: rawPairs.length,
-    sbCookieCount: sbCookies.length,
-    sbCookies,
-    getUserError: error?.message ?? null,
-    getUserUserId: user?.id ?? null,
-  }));
   if (error || !user) return { error: 'Unauthorized', status: 401 as const };
 
   const service = await createServiceClient();
@@ -68,7 +42,7 @@ async function resolveAdmin(request?: Request) {
 
 // GET — list members + pending invites for the calling admin's organization
 export async function GET(request: Request) {
-  const result = await resolveAdmin(request);
+  const result = await resolveAdmin();
   if ('error' in result) {
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
@@ -97,7 +71,7 @@ export async function GET(request: Request) {
 
 // POST — invite a new user to the calling admin's existing organization
 export async function POST(request: Request) {
-  const result = await resolveAdmin(request);
+  const result = await resolveAdmin();
   if ('error' in result) {
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
