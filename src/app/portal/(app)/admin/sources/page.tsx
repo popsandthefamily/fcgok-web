@@ -1,7 +1,17 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import type { IntelSource } from '@/lib/types';
+import RefreshButton from './RefreshButton';
 
 export const dynamic = 'force-dynamic';
+
+const CT_TIME_OPTS: Intl.DateTimeFormatOptions = {
+  timeZone: 'America/Chicago',
+  month: 'short',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZoneName: 'short',
+};
 
 // Sources we actively schedule in vercel.json. linkedin / biggerpockets /
 // podcast routes exist but their crons were reverted in bd80888 (plan cron
@@ -101,10 +111,7 @@ export default async function SourcesPage() {
 
   function formatRelative(iso: string | null): string {
     if (!iso) return 'Never';
-    const d = new Date(iso);
-    return d.toLocaleString('en-US', {
-      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-    });
+    return new Date(iso).toLocaleString('en-US', CT_TIME_OPTS);
   }
 
   return (
@@ -112,7 +119,15 @@ export default async function SourcesPage() {
       <div className="portal-header">
         <h1>Source Health</h1>
         <span style={{ fontSize: 13, color: '#6b7280' }}>
-          {now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+          {now.toLocaleString('en-US', {
+            timeZone: 'America/Chicago',
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZoneName: 'short',
+          })}
         </span>
       </div>
 
@@ -144,9 +159,12 @@ export default async function SourcesPage() {
                     {status.text}
                   </span>
                 </div>
-                <span style={{ fontSize: 12, color: '#9ca3af', fontFamily: 'monospace' }}>
-                  {cronUrl}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: 12, color: '#9ca3af', fontFamily: 'monospace' }}>
+                    {cronUrl}
+                  </span>
+                  <RefreshButton source={sh.source} />
+                </div>
               </div>
 
               <div className="stat-grid" style={{ marginBottom: 0 }}>

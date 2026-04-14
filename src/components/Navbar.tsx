@@ -27,12 +27,12 @@ export default function Navbar() {
       {/* Logo */}
       <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
         <Image
-          src="/logos/fcg-logo-white.png"
+          src="/logos/fcg-logo-white-trimmed.png"
           alt="Frontier Consulting Group"
-          width={200}
-          height={101}
+          width={753}
+          height={510}
           unoptimized
-          style={{ height: 48, width: 'auto' }}
+          style={{ height: 44, width: 'auto', display: 'block' }}
           priority
         />
       </Link>
