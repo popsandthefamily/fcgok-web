@@ -4,24 +4,43 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Invest in Broken Bow & Hochatown — Local Advisory',
   description:
-    'Local market intelligence, builder connections, and STR data for investors exploring the Broken Bow, Oklahoma market. Federal Opportunity Zone with 2.2M annual visitors.',
+    'Local market intelligence, builder connections, and STR data for investors exploring the Broken Bow, Oklahoma market. Rural Opportunity Zone (Census Tract 986), 2.2M annual visitors, and a trusted local guide.',
   openGraph: {
     title: 'Invest in Broken Bow & Hochatown',
-    description: 'Local advisory for investors exploring the Broken Bow and Hochatown market. Federal Opportunity Zone, 2.2M annual visitors, and a trusted local guide.',
+    description: 'Local advisory for investors exploring Broken Bow and Hochatown. Rural Opportunity Zone, 2.2M annual visitors, and a trusted local guide.',
     url: 'https://fcgok.com/investors',
   },
   twitter: {
     title: 'Invest in Broken Bow & Hochatown',
-    description: 'Local advisory for investors exploring the Broken Bow and Hochatown market. Federal Opportunity Zone, 2.2M annual visitors, and a trusted local guide.',
+    description: 'Local advisory for investors exploring Broken Bow and Hochatown. Rural Opportunity Zone, 2.2M annual visitors, and a trusted local guide.',
   },
   alternates: { canonical: 'https://fcgok.com/investors' },
 };
 
 const MARKET_STATS = [
   { num: '2.2M', label: 'Annual visitors — Beavers Bend State Park' },
-  { num: 'OZ', label: 'Federal Opportunity Zone designation' },
+  { num: 'OZ', label: 'Rural Opportunity Zone — Tract 986 (tract-specific)' },
   { num: '▲', label: 'Choctaw casino resort under development' },
   { num: 'STR', label: 'Maturing market with retail expansion' },
+];
+
+const OZ_POINTS = [
+  {
+    title: 'It\u2019s real, but tract-specific.',
+    body: 'Broken Bow and parts of the Hochatown gateway sit inside Census Tract 986 — one of four federal Opportunity Zones in McCurtain County. The line matters cabin-by-cabin, so we verify the exact tract for each parcel before you write an offer.',
+  },
+  {
+    title: 'Rural zone in a growth market.',
+    body: 'Unlike the OZ tracts in OKC and Tulsa that were drawn for urban revitalization, this one was designated on county-level income data. You\u2019re not rescuing a distressed neighborhood — you\u2019re getting federal tax treatment for investing in a market that\u2019s growing on its own.',
+  },
+  {
+    title: 'Original program winds down Dec 31, 2026.',
+    body: 'Legacy capital-gain deferrals under the 2017 rules come due on that date — tax payable with 2026 returns. If you\u2019re sitting on deferred gains in an existing QOF, the clock is short.',
+  },
+  {
+    title: 'OZ 2.0 starts Jan 1, 2027 — better for rural.',
+    body: 'The One Big Beautiful Bill Act made Opportunity Zones permanent. Governors nominate new tracts starting July 2026. Rural zones get a 30% basis step-up (vs. 10% urban) and a 50% substantial-improvement requirement (vs. 100%) — which actually pencils for buy-and-hold cabin strategies.',
+  },
 ];
 
 const PILLARS = [
@@ -137,6 +156,39 @@ export default function InvestorsPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ── OPPORTUNITY ZONE ───────────────────────────────────────── */}
+      <section style={{ padding: '1rem 3rem 5rem' }}>
+        <span className="section-label">Opportunity Zone</span>
+        <h2 style={{
+          fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
+          fontWeight: 400, marginBottom: '1rem',
+        }}>
+          The OZ story here <em style={{ color: 'var(--forest-mid)' }}>isn&apos;t the OKC story.</em>
+        </h2>
+        <p style={{ fontSize: 15, color: 'var(--text-muted)', lineHeight: 1.8, maxWidth: 760, marginBottom: '2.5rem' }}>
+          Broken Bow&apos;s Opportunity Zone designation gets cited a lot in pitch decks, usually without the fine print.
+          The program is real and the tax treatment is meaningful — but the mechanics differ from most Oklahoma OZ
+          conversations, which are built around urban OKC and Tulsa tracts. Here&apos;s what actually applies in
+          McCurtain County.
+        </p>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 1, background: 'var(--border)', border: '1px solid var(--border)',
+        }}>
+          {OZ_POINTS.map(({ title, body }) => (
+            <div key={title} style={{ background: 'var(--warm-white)', padding: '2rem' }}>
+              <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 8, color: 'var(--forest)' }}>{title}</h3>
+              <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.7, margin: 0 }}>{body}</p>
+            </div>
+          ))}
+        </div>
+        <p className="disclaimer" style={{ marginTop: '2rem' }}>
+          <strong>Not tax advice.</strong> OZ eligibility is tract- and parcel-specific, substantial-improvement rules
+          apply to most real estate plays, and Oklahoma conforms to the federal framework through rolling AGI
+          conformity. Confirm everything with a qualified tax advisor before investing.
+        </p>
       </section>
 
       {/* ── HOW IT WORKS ───────────────────────────────────────────── */}
