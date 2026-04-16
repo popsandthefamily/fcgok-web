@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { Comp } from '@/lib/types';
+import type { Comp, IntelItem } from '@/lib/types';
 import { WheelLoader } from '@/components/BuggyWheel';
 
 type SortKey = 'date' | 'price' | 'cap_rate' | 'ppu';
@@ -129,7 +129,7 @@ export default function CompsClient() {
     <>
       {/* Filters */}
       <div className="portal-card" style={{ marginBottom: '1rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 160px auto auto', gap: '0.75rem', alignItems: 'end' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px', gap: 12, marginBottom: 12 }}>
           <div>
             <label style={{ fontSize: 11, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>
               Search
@@ -153,6 +153,8 @@ export default function CompsClient() {
               ))}
             </select>
           </div>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
           <button className="portal-btn portal-btn-primary" onClick={() => setShowForm(!showForm)}>
             {showForm ? 'Cancel' : '+ Add Comp'}
           </button>
@@ -269,6 +271,12 @@ export default function CompsClient() {
           </table>
         </div>
       )}
+
+      {/* Deal Flow Intel — extract structured comps from articles */}
+      <DealFlowIntel
+        existingIntelIds={new Set(comps.filter((c) => c.source_intel_id).map((c) => c.source_intel_id!))}
+        onExtracted={(newComps) => setComps((prev) => [...newComps, ...prev])}
+      />
     </>
   );
 }
@@ -437,6 +445,130 @@ function AddCompForm({ onSaved, onCancel }: { onSaved: (c: Comp) => void; onCanc
           <button type="button" className="portal-btn portal-btn-ghost" onClick={onCancel}>Cancel</button>
         </div>
       </form>
+    </div>
+  );
+}
+
+function DealFlowIntel({
+  existingIntelIds,
+  onExtracted,
+}: {
+  existingIntelIds: Set<string>;
+  onExtracted: (comps: Comp[]) => void;
+}) {
+  const [items, setItems] = useState<IntelItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [extracting, setExtracting] = useState<string | null>(null);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch('/api/intel?category=deal_flow&limit=50');
+        if (!res.ok) return;
+        const data = await res.json();
+        setItems(data.items ?? []);
+      } catch { /* ignore */ }
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  async function handleExtract(itemId: string) {
+    setExtracting(itemId);
+    setMessage('');
+    try {
+      const res = await fetch('/api/toolkit/comps/extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ intel_item_id: itemId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Extraction failed');
+      if (data.count > 0) {
+        onExtracted(data.comps);
+        setMessage(`Extracted ${data.count} comp${data.count > 1 ? 's' : ''}`);
+      } else {
+        setMessage('No structured transactions found in this article.');
+      }
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Extraction failed');
+    } finally {
+      setExtracting(null);
+    }
+  }
+
+  const unextracted = items.filter((i) => !existingIntelIds.has(i.id));
+
+  if (loading) return null;
+  if (unextracted.length === 0) return null;
+
+  return (
+    <div style={{ marginTop: '2rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+        <div>
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>
+            Deal Flow Intel
+          </span>
+          <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 8 }}>
+            {unextracted.length} article{unextracted.length !== 1 ? 's' : ''} · click Extract to pull structured comps
+          </span>
+        </div>
+        {message && (
+          <span style={{ fontSize: 12, color: '#6b7280' }}>{message}</span>
+        )}
+      </div>
+
+      <div className="portal-card" style={{ overflow: 'auto', padding: 0 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <thead>
+            <tr style={{ borderBottom: '2px solid #e5e7eb', background: '#f9fafb' }}>
+              <th style={thStyle}>Date</th>
+              <th style={thStyle}>Article</th>
+              <th style={thStyle}>Source</th>
+              <th style={{ ...thStyle, textAlign: 'right' }}></th>
+            </tr>
+          </thead>
+          <tbody>
+            {unextracted.map((item) => (
+              <tr key={item.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                <td style={{ ...tdStyle, whiteSpace: 'nowrap', color: '#6b7280' }}>
+                  {item.published_at
+                    ? new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })
+                    : '—'}
+                </td>
+                <td style={{ ...tdStyle, maxWidth: 480 }}>
+                  <div style={{ fontWeight: 500, color: '#111827' }}>{item.title}</div>
+                  {item.summary && (
+                    <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2, lineHeight: 1.4 }}>
+                      {item.summary.slice(0, 140)}{item.summary.length > 140 ? '…' : ''}
+                    </div>
+                  )}
+                </td>
+                <td style={{ ...tdStyle, fontSize: 12 }}>
+                  {item.source_url ? (
+                    <a href={item.source_url} target="_blank" rel="noopener noreferrer" style={{ color: '#1a3a2a', textDecoration: 'none' }}>
+                      {item.source} →
+                    </a>
+                  ) : (
+                    <span style={{ color: '#9ca3af' }}>{item.source}</span>
+                  )}
+                </td>
+                <td style={{ ...tdStyle, textAlign: 'right' }}>
+                  <button
+                    className="portal-btn portal-btn-ghost"
+                    style={{ fontSize: 12, padding: '4px 12px' }}
+                    disabled={extracting === item.id}
+                    onClick={() => handleExtract(item.id)}
+                  >
+                    {extracting === item.id ? 'Extracting…' : 'Extract'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
