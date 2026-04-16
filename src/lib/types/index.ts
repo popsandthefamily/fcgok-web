@@ -126,6 +126,40 @@ export interface UserProfile {
   created_at: string;
 }
 
+// ── Comps ───────────────────────────────────────────────────
+
+export type CompSource = 'manual' | 'ai_extracted' | 'imported';
+
+export interface Comp {
+  id: string;
+  organization_id: string;
+  property_name: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  zip: string | null;
+  sale_price: number | null;
+  sale_date: string | null;
+  buyer: string | null;
+  seller: string | null;
+  asset_type: string | null;
+  units: number | null;
+  square_feet: number | null;
+  lot_acres: number | null;
+  year_built: number | null;
+  price_per_unit: number | null;
+  price_per_sf: number | null;
+  cap_rate: number | null;
+  noi: number | null;
+  source: CompSource;
+  source_intel_id: string | null;
+  notes: string | null;
+  verified: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // ── Portal Events ────────────────────────────────────────────
 
 export type EventType = 'view' | 'save' | 'click_through' | 'search' | 'export';
