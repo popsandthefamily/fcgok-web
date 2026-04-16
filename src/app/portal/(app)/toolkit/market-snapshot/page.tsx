@@ -4,6 +4,39 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import BuggyWheel from '@/components/BuggyWheel';
+import type { SnapshotScores } from '@/lib/ai/generate-snapshot';
+
+const ASSET_TYPES = [
+  { value: '', label: 'Auto (from org settings)' },
+  { value: 'self-storage', label: 'Self-Storage' },
+  { value: 'multi-family', label: 'Multi-Family' },
+  { value: 'industrial', label: 'Industrial' },
+  { value: 'retail', label: 'Retail' },
+  { value: 'office', label: 'Office' },
+  { value: 'hospitality', label: 'Hospitality / STR' },
+  { value: 'mixed', label: 'Mixed / Multi-Asset' },
+];
+
+const SCORE_LABELS: Record<keyof SnapshotScores, string> = {
+  population_momentum: 'Population Momentum',
+  supply_demand_gap: 'Supply / Demand Gap',
+  barrier_to_entry: 'Barrier to Entry',
+  economic_diversity: 'Economic Diversity',
+  competitive_saturation: 'Low Saturation',
+  infrastructure_access: 'Infrastructure',
+};
+
+function scoreColor(n: number): string {
+  if (n >= 70) return '#16a34a';
+  if (n >= 50) return '#ca8a04';
+  return '#dc2626';
+}
+
+function verdictColor(composite: number): string {
+  if (composite >= 70) return '#166534';
+  if (composite >= 50) return '#854d0e';
+  return '#991b1b';
+}
 
 interface OrgBranding {
   name: string;
@@ -13,32 +46,28 @@ interface OrgBranding {
   tagline?: string;
 }
 
-function renderMarkdown(text: string): string {
-  // Normalize line endings
-  let html = text.replace(/\r\n/g, '\n');
+interface SnapshotData {
+  scores: SnapshotScores;
+  composite: number;
+  verdict: string;
+  narrative: string;
+}
 
-  // Headings
+function renderMarkdown(text: string): string {
+  let html = text.replace(/\r\n/g, '\n');
   html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
   html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
   html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-
-  // Bold + italic
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/(?<![*])\*([^*]+)\*(?![*])/g, '<em>$1</em>');
-
-  // Bullet lists — group consecutive lines starting with - or *
   html = html.replace(/(^[-*] .+(\n[-*] .+)*)/gm, (block) => {
     const items = block.split('\n').map((l) => l.replace(/^[-*]\s+/, '').trim());
     return '<ul>' + items.map((i) => `<li>${i}</li>`).join('') + '</ul>';
   });
-
-  // Numbered lists
   html = html.replace(/(^\d+\. .+(\n\d+\. .+)*)/gm, (block) => {
     const items = block.split('\n').map((l) => l.replace(/^\d+\.\s+/, '').trim());
     return '<ol>' + items.map((i) => `<li>${i}</li>`).join('') + '</ol>';
   });
-
-  // Paragraphs — double newlines become paragraph breaks
   html = html
     .split(/\n\n+/)
     .map((block) => {
@@ -47,13 +76,14 @@ function renderMarkdown(text: string): string {
       return `<p>${block.replace(/\n/g, '<br>')}</p>`;
     })
     .join('\n');
-
   return html;
 }
 
 export default function MarketSnapshotPage() {
   const [location, setLocation] = useState('');
-  const [result, setResult] = useState('');
+  const [assetType, setAssetType] = useState('');
+  const [keywordsRaw, setKeywordsRaw] = useState('');
+  const [result, setResult] = useState<SnapshotData | null>(null);
   const [loading, setLoading] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState('');
@@ -92,21 +122,30 @@ export default function MarketSnapshotPage() {
     if (!trimmed) return;
     setLoading(true);
     setError('');
-    setResult('');
+    setResult(null);
     setElapsed(0);
+
+    const keywords = keywordsRaw
+      .split(',')
+      .map((k) => k.trim())
+      .filter(Boolean);
 
     try {
       const res = await fetch('/api/toolkit/market-snapshot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ location: trimmed }),
+        body: JSON.stringify({
+          location: trimmed,
+          assetType: assetType || undefined,
+          keywords: keywords.length ? keywords : undefined,
+        }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         throw new Error(body?.error ?? `Request failed (${res.status})`);
       }
       const data = await res.json();
-      setResult(data.snapshot ?? '');
+      setResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -128,8 +167,6 @@ export default function MarketSnapshotPage() {
           @media print {
             @page { margin: 0.75in 0.65in; size: letter; }
             html, body { background: white !important; }
-            /* Hide everything via visibility so ancestors of the print wrapper
-               don't collapse it. Then re-show the wrapper + its descendants. */
             body * { visibility: hidden !important; }
             .snapshot-print-wrapper,
             .snapshot-print-wrapper * { visibility: visible !important; }
@@ -186,19 +223,61 @@ export default function MarketSnapshotPage() {
         <Link href="/portal" className="portal-btn portal-btn-ghost">&larr; Dashboard</Link>
       </div>
 
-      {/* Input */}
+      {/* Inputs */}
       <div className="portal-card" style={{ marginBottom: '1.5rem' }}>
-        <span className="portal-card-title">Location</span>
-        <div style={{ display: 'flex', gap: 8, marginTop: '0.75rem' }}>
+        <span className="portal-card-title">Parameters</span>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: 12, marginTop: '0.75rem' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+              Region
+            </label>
+            <input
+              type="text"
+              className="filter-search"
+              placeholder="MSA, county, or city (e.g. Sherman, TX)"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
+              disabled={loading}
+              style={{ width: '100%' }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+              Asset Type
+            </label>
+            <select
+              className="filter-search"
+              value={assetType}
+              onChange={(e) => setAssetType(e.target.value)}
+              disabled={loading}
+              style={{ width: '100%', height: 38 }}
+            >
+              {ASSET_TYPES.map(({ value, label }) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 12 }}>
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+            Focus Keywords <span style={{ fontWeight: 400, textTransform: 'none' }}>(optional, comma-separated)</span>
+          </label>
           <input
             type="text"
             className="filter-search"
-            placeholder="Enter an MSA, county, or city (e.g. Sherman, TX)"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            placeholder="e.g. cabin STR, Class A, opportunity zone"
+            value={keywordsRaw}
+            onChange={(e) => setKeywordsRaw(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             disabled={loading}
+            style={{ width: '100%' }}
           />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 16 }}>
           <button
             className="portal-btn portal-btn-primary"
             onClick={handleGenerate}
@@ -207,10 +286,10 @@ export default function MarketSnapshotPage() {
           >
             {loading ? `Generating (${elapsed}s)` : 'Generate Snapshot'}
           </button>
+          <span style={{ fontSize: 11, color: '#9ca3af' }}>
+            Groq Llama 3.3 70B · typically 5–15 seconds · cross-references your intel feed
+          </span>
         </div>
-        <p style={{ fontSize: 11, color: '#9ca3af', marginTop: '0.75rem' }}>
-          Using Groq Llama 3.3 70B for fast generation (typically 5-15 seconds). Cross-references recent intel from this market.
-        </p>
       </div>
 
       {error && (
@@ -223,10 +302,10 @@ export default function MarketSnapshotPage() {
         <div className="portal-card" style={{ textAlign: 'center', padding: '3rem' }}>
           <BuggyWheel spinning size={44} style={{ color: primaryColor }} />
           <p style={{ fontSize: 14, color: '#6b7280', marginTop: 16 }}>
-            Analyzing <strong>{location}</strong>...
+            Analyzing <strong>{location}</strong>{assetType ? ` · ${assetType}` : ''}...
           </p>
           <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>
-            Cross-referencing intel and building the market snapshot
+            Scoring viability, cross-referencing intel, and building the market snapshot
           </p>
         </div>
       )}
@@ -259,7 +338,7 @@ export default function MarketSnapshotPage() {
                   />
                 )}
                 <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#6b7280' }}>
-                  Market Snapshot
+                  Market Snapshot{assetType ? ` · ${assetType}` : ''}
                 </div>
                 <h1 style={{
                   fontFamily: 'Playfair Display, Georgia, serif',
@@ -284,10 +363,69 @@ export default function MarketSnapshotPage() {
               </div>
             </div>
 
+            {/* Viability Scorecard */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '120px 1fr',
+              gap: '1.5rem',
+              marginBottom: 32,
+              padding: '1.5rem',
+              background: '#fafaf8',
+              border: '1px solid #e5e7eb',
+              borderRadius: 6,
+            }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{
+                  fontSize: 42,
+                  fontWeight: 700,
+                  fontFamily: 'Playfair Display, Georgia, serif',
+                  color: verdictColor(result.composite),
+                  lineHeight: 1,
+                }}>
+                  {result.composite}
+                </div>
+                <div style={{ fontSize: 11, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 4 }}>
+                  / 100
+                </div>
+                <div style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: verdictColor(result.composite),
+                  marginTop: 8,
+                  textAlign: 'center',
+                }}>
+                  {result.verdict}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {(Object.entries(result.scores) as [keyof SnapshotScores, number][]).map(([key, value]) => (
+                  <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 130, fontSize: 11, color: '#6b7280', flexShrink: 0 }}>
+                      {SCORE_LABELS[key]}
+                    </div>
+                    <div style={{ flex: 1, height: 10, background: '#e5e7eb', borderRadius: 5, overflow: 'hidden' }}>
+                      <div style={{
+                        width: `${value}%`,
+                        height: '100%',
+                        background: scoreColor(value),
+                        borderRadius: 5,
+                        transition: 'width 0.5s ease',
+                      }} />
+                    </div>
+                    <div style={{ width: 28, fontSize: 12, fontWeight: 600, color: scoreColor(value), textAlign: 'right' }}>
+                      {value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Narrative */}
             <div
               className="snapshot-content"
               style={{ fontSize: 14, lineHeight: 1.7, color: '#374151' }}
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(result) }}
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(result.narrative) }}
             />
 
             <div style={{
