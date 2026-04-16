@@ -106,7 +106,11 @@ export async function POST(request: Request) {
   const origin = new URL(request.url).origin;
   const redirectTo = `${origin}/portal/invite/callback?token=${token}`;
 
-  const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+  async function rollbackInvite(): Promise<void> {
+    await supabase.from('invitations').delete().eq('id', invitation!.id);
+  }
+
+  let { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
     type: 'invite',
     email,
     options: {
@@ -115,8 +119,74 @@ export async function POST(request: Request) {
     },
   });
 
+  // Fallback: the auth.users row already exists (a prior invite that got
+  // scanner-consumed, or a resend for the same person). Look them up, make
+  // sure they're not already an active member of some *other* org, rewrite
+  // their user_metadata to point at this org, and re-issue as a magic link.
+  const alreadyRegistered =
+    linkErr?.message?.toLowerCase().includes('already been registered') ||
+    linkErr?.message?.toLowerCase().includes('already registered') ||
+    linkErr?.message?.toLowerCase().includes('user already exists');
+
+  if (alreadyRegistered) {
+    const { data: listData, error: listError } =
+      await supabase.auth.admin.listUsers({ perPage: 1000 });
+    if (listError) {
+      await rollbackInvite();
+      return NextResponse.json({ error: listError.message }, { status: 500 });
+    }
+
+    const existingUser = listData.users.find(
+      (u) => (u.email ?? '').toLowerCase() === email,
+    );
+    if (!existingUser) {
+      await rollbackInvite();
+      return NextResponse.json(
+        { error: 'Supabase reports this email is registered but we cannot find the user record.' },
+        { status: 500 },
+      );
+    }
+
+    const { data: existingProfile } = await supabase
+      .from('user_profiles')
+      .select('organization_id, organizations(name)')
+      .eq('id', existingUser.id)
+      .maybeSingle();
+
+    if (
+      existingProfile?.organization_id &&
+      existingProfile.organization_id !== admin.orgId
+    ) {
+      await rollbackInvite();
+      const otherOrg = (existingProfile.organizations ?? null) as
+        | { name?: string }
+        | null;
+      const orgLabel = otherOrg?.name ?? 'another organization';
+      return NextResponse.json(
+        { error: `${email} is already an active member of ${orgLabel}. Remove them there first if you need to move them.` },
+        { status: 409 },
+      );
+    }
+
+    // Rewrite metadata so the auth-callback self-heal lands them in this org
+    const { error: updateError } = await supabase.auth.admin.updateUserById(
+      existingUser.id,
+      { user_metadata: { organization_id: admin.orgId, role, org_name: orgName } },
+    );
+    if (updateError) {
+      await rollbackInvite();
+      return NextResponse.json({ error: updateError.message }, { status: 500 });
+    }
+
+    ({ data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+      type: 'magiclink',
+      email,
+      options: { redirectTo },
+    }));
+  }
+
   if (linkErr || !linkData?.properties?.action_link) {
-    await supabase.from('invitations').delete().eq('id', invitation.id);
+    await rollbackInvite();
     return NextResponse.json(
       { error: linkErr?.message ?? 'Failed to generate invite link' },
       { status: 500 },
@@ -132,7 +202,7 @@ export async function POST(request: Request) {
       expiresAt,
     });
   } catch (err) {
-    await supabase.from('invitations').delete().eq('id', invitation.id);
+    await rollbackInvite();
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Failed to send invite email' },
       { status: 500 },
