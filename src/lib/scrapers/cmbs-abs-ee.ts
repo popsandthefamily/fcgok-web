@@ -267,8 +267,11 @@ async function fetchLatestAbsEeUrl(cik: string): Promise<{ accession: string; xm
     const indexRes = await fetch(indexUrl, { headers: { 'User-Agent': USER_AGENT } });
     if (!indexRes.ok) continue;
     const indexHtml = await indexRes.text();
-    // exh_102.xml is the asset-data tape; exh_103 is asset-related-document.
-    const xmlMatch = indexHtml.match(/href="([^"]*exh_?102[^"]*\.xml)"/i);
+    // Asset-data tape filename varies by filer:
+    //   exh_102.xml (JPMCC / Wells servicer filings)
+    //   exh102.xml / ex102.xml / ex_102.xml (Benchmark / Citigroup / etc.)
+    // 103 is the asset-related-document exhibit (different form).
+    const xmlMatch = indexHtml.match(/href="([^"]*\bex_?h?_?102[^"]*\.xml)"/i);
     if (!xmlMatch) continue;
     const xmlUrl = xmlMatch[1].startsWith('http') ? xmlMatch[1] : `https://www.sec.gov${xmlMatch[1]}`;
     return { accession, xmlUrl };
