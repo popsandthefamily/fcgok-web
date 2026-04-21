@@ -17,18 +17,19 @@ const CT_TIME_OPTS: Intl.DateTimeFormatOptions = {
 // Reddit and LinkedIn were removed entirely — ToS / commercial-resale risk.
 // Note: "edgar-distress" writes intel_items with source='sec' (it IS SEC
 // data) but tracks its own scrape_runs.source so cadence is independent.
-type SourceKey = 'iss' | 'news' | 'sec' | 'edgar-distress';
+type SourceKey = 'iss' | 'news' | 'sec' | 'edgar-distress' | 'cmbs-abs-ee';
 
-const SOURCES: SourceKey[] = ['iss', 'news', 'sec', 'edgar-distress'];
+const SOURCES: SourceKey[] = ['iss', 'news', 'sec', 'edgar-distress', 'cmbs-abs-ee'];
 
 // Some scrape keys don't correspond 1:1 to intel_items.source — edgar-distress
 // items land in source='sec' with category='distress'. For per-source item
 // counts we fall back to a different filter in that case.
-const ITEM_FILTER: Partial<Record<SourceKey, { source: string; category?: string }>> = {
+const ITEM_FILTER: Partial<Record<SourceKey, { source: string; category?: string; subtype?: string }>> = {
   iss: { source: 'iss' },
   news: { source: 'news' },
   sec: { source: 'sec' },
-  'edgar-distress': { source: 'sec', category: 'distress' },
+  'edgar-distress': { source: 'sec', category: 'distress', subtype: 'distress_8k' },
+  'cmbs-abs-ee': { source: 'sec', category: 'distress', subtype: 'cmbs_abs_ee' },
 };
 
 // Expected cron cadence per source (hours between runs). Kept in sync with
@@ -39,6 +40,7 @@ const EXPECTED_INTERVAL_HOURS: Record<SourceKey, number> = {
   news: 2,
   sec: 24,
   'edgar-distress': 2,
+  'cmbs-abs-ee': 24 * 7,
 };
 
 interface SourceHealth {
@@ -67,6 +69,7 @@ export default async function SourcesPage() {
     const applyItemFilter = (q: any) => {
       let qq = q.eq('source', filter.source);
       if (filter.category) qq = qq.eq('category', filter.category);
+      if (filter.subtype) qq = qq.eq('metadata->>subtype', filter.subtype);
       return qq;
     };
 

@@ -5,17 +5,20 @@ import { ingestNews } from '@/lib/scrapers/news-api';
 import { ingestSEC } from '@/lib/scrapers/sec-edgar';
 import { ingestRSS } from '@/lib/scrapers/iss-rss';
 import { ingestEdgarDistress } from '@/lib/scrapers/edgar-distress';
+import { ingestCmbsAbsEe } from '@/lib/scrapers/cmbs-abs-ee';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60;
+// cmbs-abs-ee can take 2-4 minutes; the rest finish well under 60s.
+export const maxDuration = 300;
 
-type ManualSource = 'iss' | 'news' | 'sec' | 'edgar-distress';
+type ManualSource = 'iss' | 'news' | 'sec' | 'edgar-distress' | 'cmbs-abs-ee';
 
 const SCRAPERS: Record<ManualSource, Parameters<typeof runForOrgs>[1]> = {
   iss: ingestRSS,
   news: ingestNews,
   sec: ingestSEC,
   'edgar-distress': ingestEdgarDistress,
+  'cmbs-abs-ee': ingestCmbsAbsEe,
 };
 
 export async function POST(

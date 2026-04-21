@@ -132,9 +132,19 @@ export default async function PortalDashboard() {
           >
             {distressItems.map((item) => {
               const meta = (item.metadata as {
+                subtype?: string;
                 distress_items?: string[];
-                company_name?: string;
+                severity?: 'critical' | 'elevated' | 'watchlist';
+                property_state?: string;
+                property_city?: string;
+                trust_name?: string;
               } | null) ?? {};
+              const severityColor =
+                meta.severity === 'critical' ? '#7f1d1d' : meta.severity === 'elevated' ? '#991b1b' : '#b45309';
+              const typeBadge =
+                meta.subtype === 'cmbs_abs_ee' ? 'CMBS LOAN'
+                : meta.subtype === 'distress_8k' ? '8-K'
+                : 'DISTRESS';
               return (
                 <a
                   key={item.id}
@@ -156,12 +166,12 @@ export default async function PortalDashboard() {
                         fontWeight: 600,
                         padding: '2px 7px',
                         borderRadius: 3,
-                        background: '#991b1b',
+                        background: severityColor,
                         color: 'white',
                         letterSpacing: '0.05em',
                       }}
                     >
-                      DISTRESS
+                      {typeBadge}
                     </span>
                     {meta.distress_items?.map((code) => (
                       <span
@@ -179,6 +189,27 @@ export default async function PortalDashboard() {
                         {code}
                       </span>
                     ))}
+                    {meta.severity && (
+                      <span
+                        style={{
+                          fontSize: 11,
+                          padding: '1px 6px',
+                          borderRadius: 3,
+                          background: '#fee2e2',
+                          color: '#991b1b',
+                          border: '1px solid #fca5a5',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.04em',
+                        }}
+                      >
+                        {meta.severity}
+                      </span>
+                    )}
+                    {meta.property_state && (
+                      <span style={{ fontSize: 11, color: '#6b7280' }}>
+                        {meta.property_city ? `${meta.property_city}, ` : ''}{meta.property_state}
+                      </span>
+                    )}
                     <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 'auto' }}>
                       {item.published_at ? timeAgo(item.published_at) : ''}
                     </span>
@@ -197,7 +228,10 @@ export default async function PortalDashboard() {
           </div>
         ) : (
           <p style={{ fontSize: 14, color: '#9ca3af', margin: 0 }}>
-            No distress signals in the last 14 days across the self-storage watchlist. New 8-K filings from PSA, EXR, CUBE, NSA, SELF, and SMA with items 2.03, 2.04, 2.06, 4.02, 5.02, or 8.01 will appear here.
+            No distress signals in the last 14 days. Monitored sources: 8-K
+            filings from PSA, EXR, CUBE, NSA, SELF, SMA; CMBS ABS-EE loan
+            tapes for self-storage collateral with delinquency, modification,
+            DSCR breach, or near-term maturity risk.
           </p>
         )}
       </div>

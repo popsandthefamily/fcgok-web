@@ -263,6 +263,7 @@ export interface OrgConfig {
     biggerpockets: boolean;
     podcasts: boolean;
     'edgar-distress': boolean;
+    'cmbs-abs-ee': boolean;
   };
   custom_rss_feeds: { name: string; url: string }[];
   brand?: {
@@ -298,6 +299,7 @@ export function defaultConfigForIndustry(
       biggerpockets: true,
       podcasts: true,
       'edgar-distress': industry === 'self-storage',
+      'cmbs-abs-ee': industry === 'self-storage',
     },
     custom_rss_feeds: preset.custom_rss_feeds,
     onboarding_completed: false,

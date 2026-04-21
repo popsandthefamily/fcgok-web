@@ -70,17 +70,19 @@ export async function GET(request: Request) {
           orgContext,
         );
 
-        await supabase
-          .from('intel_items')
-          .update({
-            summary: analysis.summary,
-            ai_analysis: analysis,
-            relevance_score: analysis.relevance_score,
-            category: analysis.category,
-            entities: analysis.entities,
-            tags: analysis.tags,
-          })
-          .eq('id', item.id);
+        // Preserve scraper-assigned categories (e.g. 'distress' from the
+        // 8-K / ABS-EE pipelines) — the AI overwrite used to clobber these
+        // when the LLM picked a less-specific tag from the same content.
+        const update: Record<string, unknown> = {
+          summary: analysis.summary,
+          ai_analysis: analysis,
+          relevance_score: analysis.relevance_score,
+          entities: analysis.entities,
+          tags: analysis.tags,
+        };
+        if (item.category === null) update.category = analysis.category;
+
+        await supabase.from('intel_items').update(update).eq('id', item.id);
 
         processed++;
         results.push({ id: item.id, status: 'ok' });
