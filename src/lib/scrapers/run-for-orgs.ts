@@ -29,7 +29,10 @@ export async function runForOrgs<T extends { ingested: number; skipped: number }
   const perOrg: Record<string, T | { error: string }> = {};
 
   for (const org of orgs) {
-    if (!org.settings.sources?.[sourceKey]) continue;
+    // Default-opt-in: only skip if the flag is explicitly false. Legacy
+    // org configs predate new source keys (e.g. edgar-distress) and would
+    // otherwise never get the new source until they re-ran onboarding.
+    if (org.settings.sources?.[sourceKey] === false) continue;
 
     try {
       const result = await scraper(org.settings, org.slug);

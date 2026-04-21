@@ -13,7 +13,8 @@ export type IntelCategory =
   | 'deal_flow'
   | 'regulatory'
   | 'competitive'
-  | 'operational';
+  | 'operational'
+  | 'distress';
 
 export type Sentiment = 'bullish' | 'bearish' | 'neutral' | 'mixed';
 

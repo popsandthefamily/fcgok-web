@@ -4,17 +4,18 @@ import { runForOrgs } from '@/lib/scrapers/run-for-orgs';
 import { ingestNews } from '@/lib/scrapers/news-api';
 import { ingestSEC } from '@/lib/scrapers/sec-edgar';
 import { ingestRSS } from '@/lib/scrapers/iss-rss';
-import type { IntelSource } from '@/lib/types';
+import { ingestEdgarDistress } from '@/lib/scrapers/edgar-distress';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-type ManualSource = Extract<IntelSource, 'iss' | 'news' | 'sec'>;
+type ManualSource = 'iss' | 'news' | 'sec' | 'edgar-distress';
 
 const SCRAPERS: Record<ManualSource, Parameters<typeof runForOrgs>[1]> = {
   iss: ingestRSS,
   news: ingestNews,
   sec: ingestSEC,
+  'edgar-distress': ingestEdgarDistress,
 };
 
 export async function POST(

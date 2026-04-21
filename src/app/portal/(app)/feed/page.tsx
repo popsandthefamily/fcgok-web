@@ -5,7 +5,7 @@ import type { IntelItem, IntelSource, IntelCategory, Sentiment } from '@/lib/typ
 import { WheelLoader } from '@/components/BuggyWheel';
 
 const SOURCES: IntelSource[] = ['iss', 'news', 'sec', 'biggerpockets', 'podcast'];
-const CATEGORIES: IntelCategory[] = ['market_intel', 'investor_activity', 'deal_flow', 'regulatory', 'competitive', 'operational'];
+const CATEGORIES: IntelCategory[] = ['market_intel', 'investor_activity', 'deal_flow', 'regulatory', 'competitive', 'operational', 'distress'];
 const SENTIMENTS: Sentiment[] = ['bullish', 'bearish', 'neutral', 'mixed'];
 
 type AdminAction = 'pin' | 'unpin' | 'hide' | 'boost' | 'lower';

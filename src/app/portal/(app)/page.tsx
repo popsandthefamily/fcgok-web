@@ -8,13 +8,26 @@ export default async function PortalDashboard() {
 
   // Fetch high-priority items (relevance > 0.8, last 7 days)
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
   const { data: highPriority } = await supabase
     .from('intel_items')
     .select('*')
     .gte('relevance_score', 0.8)
     .gte('ingested_at', weekAgo)
+    .or('category.neq.distress,category.is.null')
     .order('relevance_score', { ascending: false })
     .limit(5);
+
+  // Distress signals — category='distress', 14d window. Separate from
+  // High Priority above; high-priority filters distress out to avoid
+  // duplication, and distress gets top billing below.
+  const { data: distressItems } = await supabase
+    .from('intel_items')
+    .select('*')
+    .eq('category', 'distress')
+    .gte('published_at', twoWeeksAgo)
+    .order('published_at', { ascending: false })
+    .limit(8);
 
   // Fetch weekly stats
   const { count: weekTotal } = await supabase
@@ -84,6 +97,109 @@ export default async function PortalDashboard() {
           <div className="stat-value">{bullishPct}%</div>
           <div className="stat-label">Bullish sentiment</div>
         </div>
+      </div>
+
+      {/* Distress signals */}
+      <div
+        className="portal-card"
+        style={{
+          marginBottom: '1.5rem',
+          borderColor: '#fca5a5',
+          background: distressItems && distressItems.length > 0 ? '#fef2f2' : undefined,
+        }}
+      >
+        <div className="portal-card-header">
+          <span className="portal-card-title" style={{ color: '#991b1b' }}>
+            Distress Signals
+          </span>
+          <Link
+            href="/portal/feed?category=distress"
+            style={{ fontSize: 12, color: '#991b1b', textDecoration: 'none' }}
+          >
+            View all &rarr;
+          </Link>
+        </div>
+        {distressItems && distressItems.length > 0 ? (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1px',
+              background: '#fecaca',
+              borderRadius: 4,
+              overflow: 'hidden',
+            }}
+          >
+            {distressItems.map((item) => {
+              const meta = (item.metadata as {
+                distress_items?: string[];
+                company_name?: string;
+              } | null) ?? {};
+              return (
+                <a
+                  key={item.id}
+                  href={item.source_url ?? '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    background: 'white',
+                    padding: '0.875rem 1rem',
+                    display: 'block',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 600,
+                        padding: '2px 7px',
+                        borderRadius: 3,
+                        background: '#991b1b',
+                        color: 'white',
+                        letterSpacing: '0.05em',
+                      }}
+                    >
+                      DISTRESS
+                    </span>
+                    {meta.distress_items?.map((code) => (
+                      <span
+                        key={code}
+                        style={{
+                          fontSize: 11,
+                          fontFamily: 'monospace',
+                          padding: '1px 6px',
+                          borderRadius: 3,
+                          background: '#fee2e2',
+                          color: '#991b1b',
+                          border: '1px solid #fca5a5',
+                        }}
+                      >
+                        {code}
+                      </span>
+                    ))}
+                    <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 'auto' }}>
+                      {item.published_at ? timeAgo(item.published_at) : ''}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: '#111827', marginBottom: 4 }}>
+                    {item.title}
+                  </div>
+                  {item.summary && (
+                    <div style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.6 }}>
+                      {item.summary}
+                    </div>
+                  )}
+                </a>
+              );
+            })}
+          </div>
+        ) : (
+          <p style={{ fontSize: 14, color: '#9ca3af', margin: 0 }}>
+            No distress signals in the last 14 days across the self-storage watchlist. New 8-K filings from PSA, EXR, CUBE, NSA, SELF, and SMA with items 2.03, 2.04, 2.06, 4.02, 5.02, or 8.01 will appear here.
+          </p>
+        )}
       </div>
 
       {/* High priority feed */}

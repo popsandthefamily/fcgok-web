@@ -262,6 +262,7 @@ export interface OrgConfig {
     sec: boolean;
     biggerpockets: boolean;
     podcasts: boolean;
+    'edgar-distress': boolean;
   };
   custom_rss_feeds: { name: string; url: string }[];
   brand?: {
@@ -296,6 +297,7 @@ export function defaultConfigForIndustry(
       sec: true,
       biggerpockets: true,
       podcasts: true,
+      'edgar-distress': industry === 'self-storage',
     },
     custom_rss_feeds: preset.custom_rss_feeds,
     onboarding_completed: false,

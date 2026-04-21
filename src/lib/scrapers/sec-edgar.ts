@@ -104,7 +104,11 @@ export async function ingestSEC(
       const count = Math.min(recent.accessionNumber?.length ?? 0, 5);
       for (let i = 0; i < count; i++) {
         const form = recent.form?.[i];
-        if (!['10-K', '10-Q', '8-K', 'S-11'].includes(form)) continue;
+        // 8-Ks are handled separately by edgar-distress scraper so every
+        // 8-K gets evaluated for distress-item codes (2.03/2.04/2.06 etc.)
+        // before insert. If we also inserted them here, url_hash dedup
+        // would steal the row and we'd lose the distress tag.
+        if (!['10-K', '10-Q', 'S-11'].includes(form)) continue;
 
         const accession = recent.accessionNumber[i];
         const hash = urlHash(accession);

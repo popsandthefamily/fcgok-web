@@ -21,7 +21,7 @@ Analyze the following content and return a JSON object with:
 
 1. "summary": 2-3 sentence executive summary focused on actionable takeaways for this client
 2. "relevance_score": 0.0 to 1.0 (how relevant is this to a ${industryLabel} ${roleLabel}?)
-3. "category": one of "market_intel" | "investor_activity" | "deal_flow" | "regulatory" | "competitive" | "operational"
+3. "category": one of "market_intel" | "investor_activity" | "deal_flow" | "regulatory" | "competitive" | "operational" | "distress" — pick "distress" when the content indicates financial trouble at an operator, property, or loan: debt acceleration, impairment, material adverse event, non-reliance on prior financials, abrupt officer departures, capital call, distribution suspension, CMBS watchlist/special-servicer transfer, foreclosure / Notice of Default, DSCR breach. If the item is already pre-tagged distress by the ingester, keep it "distress" unless the content clearly belongs to another category.
 4. "entities": { "companies": [], "people": [], "locations": [], "dollar_amounts": [], "cap_rates": [], "fund_names": [] }
 5. "tags": array of lowercase tags
 6. "sentiment": "bullish" | "bearish" | "neutral" | "mixed"

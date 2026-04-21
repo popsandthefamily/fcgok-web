@@ -1,5 +1,4 @@
 import { createServiceClient } from '@/lib/supabase/server';
-import type { IntelSource } from '@/lib/types';
 import RefreshButton from './RefreshButton';
 
 export const dynamic = 'force-dynamic';
@@ -13,22 +12,37 @@ const CT_TIME_OPTS: Intl.DateTimeFormatOptions = {
   timeZoneName: 'short',
 };
 
-// Sources we actively schedule in vercel.json. biggerpockets / podcast
+// Scrape keys we actively schedule in vercel.json. biggerpockets / podcast
 // routes exist but their crons were reverted in bd80888 (plan cron limit).
 // Reddit and LinkedIn were removed entirely — ToS / commercial-resale risk.
-const SOURCES: IntelSource[] = ['iss', 'news', 'sec'];
+// Note: "edgar-distress" writes intel_items with source='sec' (it IS SEC
+// data) but tracks its own scrape_runs.source so cadence is independent.
+type SourceKey = 'iss' | 'news' | 'sec' | 'edgar-distress';
+
+const SOURCES: SourceKey[] = ['iss', 'news', 'sec', 'edgar-distress'];
+
+// Some scrape keys don't correspond 1:1 to intel_items.source — edgar-distress
+// items land in source='sec' with category='distress'. For per-source item
+// counts we fall back to a different filter in that case.
+const ITEM_FILTER: Partial<Record<SourceKey, { source: string; category?: string }>> = {
+  iss: { source: 'iss' },
+  news: { source: 'news' },
+  sec: { source: 'sec' },
+  'edgar-distress': { source: 'sec', category: 'distress' },
+};
 
 // Expected cron cadence per source (hours between runs). Kept in sync with
 // vercel.json. Used to scale health thresholds so a daily source doesn't
 // appear "Stale" for 23 hours after a successful run.
-const EXPECTED_INTERVAL_HOURS: Record<string, number> = {
+const EXPECTED_INTERVAL_HOURS: Record<SourceKey, number> = {
   iss: 2,
   news: 2,
   sec: 24,
+  'edgar-distress': 2,
 };
 
 interface SourceHealth {
-  source: IntelSource;
+  source: SourceKey;
   lastRun: string | null;
   lastRunHoursAgo: number;
   lastItemIngested: string | null;
@@ -46,6 +60,16 @@ export default async function SourcesPage() {
   const sourceHealth: SourceHealth[] = [];
 
   for (const source of SOURCES) {
+    const filter = ITEM_FILTER[source] ?? { source };
+    // Narrow generic inference on the query builder is hostile; `any` is
+    // fine here since we only add .eq() chains and return.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const applyItemFilter = (q: any) => {
+      let qq = q.eq('source', filter.source);
+      if (filter.category) qq = qq.eq('category', filter.category);
+      return qq;
+    };
+
     const [runRes, itemRes, todayRes, weekRes, errorRes] = await Promise.all([
       supabase
         .from('scrape_runs')
@@ -53,22 +77,25 @@ export default async function SourcesPage() {
         .eq('source', source)
         .order('ran_at', { ascending: false })
         .limit(1),
-      supabase
-        .from('intel_items')
-        .select('ingested_at')
-        .eq('source', source)
-        .order('ingested_at', { ascending: false })
-        .limit(1),
-      supabase
-        .from('intel_items')
-        .select('*', { count: 'exact', head: true })
-        .eq('source', source)
-        .gte('ingested_at', todayStart),
-      supabase
-        .from('intel_items')
-        .select('*', { count: 'exact', head: true })
-        .eq('source', source)
-        .gte('ingested_at', weekAgo),
+      applyItemFilter(
+        supabase
+          .from('intel_items')
+          .select('ingested_at')
+          .order('ingested_at', { ascending: false })
+          .limit(1),
+      ),
+      applyItemFilter(
+        supabase
+          .from('intel_items')
+          .select('*', { count: 'exact', head: true })
+          .gte('ingested_at', todayStart),
+      ),
+      applyItemFilter(
+        supabase
+          .from('intel_items')
+          .select('*', { count: 'exact', head: true })
+          .gte('ingested_at', weekAgo),
+      ),
       supabase
         .from('scrape_runs')
         .select('*', { count: 'exact', head: true })
@@ -97,7 +124,7 @@ export default async function SourcesPage() {
   }
 
   function statusLabel(
-    source: IntelSource,
+    source: SourceKey,
     hours: number,
     errors: number,
   ): { text: string; color: string; bg: string } {
