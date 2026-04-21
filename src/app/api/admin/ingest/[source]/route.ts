@@ -3,19 +3,17 @@ import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import { runForOrgs } from '@/lib/scrapers/run-for-orgs';
 import { ingestNews } from '@/lib/scrapers/news-api';
 import { ingestSEC } from '@/lib/scrapers/sec-edgar';
-import { ingestReddit } from '@/lib/scrapers/reddit';
 import { ingestRSS } from '@/lib/scrapers/iss-rss';
 import type { IntelSource } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-type ManualSource = Extract<IntelSource, 'iss' | 'news' | 'reddit' | 'sec'>;
+type ManualSource = Extract<IntelSource, 'iss' | 'news' | 'sec'>;
 
 const SCRAPERS: Record<ManualSource, Parameters<typeof runForOrgs>[1]> = {
   iss: ingestRSS,
   news: ingestNews,
-  reddit: ingestReddit,
   sec: ingestSEC,
 };
 

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import type { IntelItem, IntelSource, IntelCategory, Sentiment } from '@/lib/types';
 import { WheelLoader } from '@/components/BuggyWheel';
 
-const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec', 'linkedin', 'biggerpockets', 'podcast'];
+const SOURCES: IntelSource[] = ['iss', 'news', 'sec', 'biggerpockets', 'podcast'];
 const CATEGORIES: IntelCategory[] = ['market_intel', 'investor_activity', 'deal_flow', 'regulatory', 'competitive', 'operational'];
 const SENTIMENTS: Sentiment[] = ['bullish', 'bearish', 'neutral', 'mixed'];
 

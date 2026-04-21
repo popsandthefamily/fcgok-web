@@ -1,7 +1,7 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import type { IntelSource } from '@/lib/types';
 
-const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec', 'linkedin', 'biggerpockets', 'podcast'];
+const SOURCES: IntelSource[] = ['iss', 'news', 'sec', 'biggerpockets', 'podcast'];
 
 export default async function AdminOverview() {
   const supabase = await createServiceClient();

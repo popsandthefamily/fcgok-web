@@ -82,14 +82,6 @@ export default function SetupClient({ org }: SetupClientProps) {
     setConfig({ ...config, intel: { ...config.intel, target_companies: companies } });
   }
 
-  function updateSubreddits(text: string) {
-    const subs = text
-      .split(/[\s,\n]/)
-      .map((s) => s.trim().replace(/^r\//, '').replace(/^\//, ''))
-      .filter(Boolean);
-    setConfig({ ...config, reddit_subreddits: subs });
-  }
-
   async function finish() {
     setSaving(true);
     setError('');
@@ -286,9 +278,7 @@ export default function SetupClient({ org }: SetupClientProps) {
                 {[
                   { key: 'news' as const, label: 'News', description: 'Press releases, trade publications, real estate news via NewsAPI' },
                   { key: 'sec' as const, label: 'SEC EDGAR', description: 'Public company filings, Form D private placements, REIT reports' },
-                  { key: 'reddit' as const, label: 'Reddit', description: 'Community discussions across targeted subreddits' },
                   { key: 'biggerpockets' as const, label: 'BiggerPockets', description: 'Blog posts filtered for your asset class' },
-                  { key: 'linkedin' as const, label: 'LinkedIn (proxy)', description: 'Company announcements surfaced via news search' },
                   { key: 'podcasts' as const, label: 'Podcasts', description: 'Episode summaries from industry podcasts' },
                   ...(industry === 'self-storage'
                     ? [{ key: 'iss' as const, label: 'Inside Self-Storage', description: 'Primary self-storage trade publication RSS feed' }]
@@ -332,19 +322,6 @@ export default function SetupClient({ org }: SetupClientProps) {
               <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 24 }}>
                 Almost done. Review your settings and kick off your instance.
               </p>
-
-              {config.sources.reddit && (
-                <>
-                  <Label>Reddit Subreddits (space or comma separated, no r/ prefix needed)</Label>
-                  <textarea
-                    value={config.reddit_subreddits.join('\n')}
-                    onChange={(e) => updateSubreddits(e.target.value)}
-                    rows={3}
-                    className="filter-search"
-                    style={{ width: '100%', marginBottom: 20, fontFamily: 'inherit' }}
-                  />
-                </>
-              )}
 
               <div
                 style={{

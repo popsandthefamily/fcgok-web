@@ -1,8 +1,6 @@
 // ── Intel Items ──────────────────────────────────────────────
 
 export type IntelSource =
-  | 'linkedin'
-  | 'reddit'
   | 'biggerpockets'
   | 'iss'
   | 'sec'

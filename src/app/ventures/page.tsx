@@ -42,7 +42,7 @@ const VENTURES: Venture[] = [
     name: 'Frontier Intelligence',
     tag: 'Investor Software',
     href: '/portal',
-    body: 'A private intelligence platform for investors operating in Southeast Oklahoma. Ingests SEC filings, local news, Reddit, LinkedIn, and podcast transcripts, then summarizes what matters — tracked entities, deal flow, regulatory shifts, and market signals — in a branded portal clients can log into daily.',
+    body: 'A private intelligence platform for investors operating in Southeast Oklahoma. Ingests SEC filings, industry publications, and podcast transcripts, then summarizes what matters — tracked entities, deal flow, regulatory shifts, and market signals — in a branded portal clients can log into daily.',
     detail: 'Same technical foundation as hocha.town. Where hocha.town serves visitors, Frontier Intelligence serves the capital allocators behind the investments.',
   },
   {

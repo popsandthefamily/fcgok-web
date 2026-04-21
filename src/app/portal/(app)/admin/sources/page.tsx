@@ -13,10 +13,10 @@ const CT_TIME_OPTS: Intl.DateTimeFormatOptions = {
   timeZoneName: 'short',
 };
 
-// Sources we actively schedule in vercel.json. linkedin / biggerpockets /
-// podcast routes exist but their crons were reverted in bd80888 (plan cron
-// limit), so they're intentionally not listed here — they'd always look Down.
-const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec'];
+// Sources we actively schedule in vercel.json. biggerpockets / podcast
+// routes exist but their crons were reverted in bd80888 (plan cron limit).
+// Reddit and LinkedIn were removed entirely — ToS / commercial-resale risk.
+const SOURCES: IntelSource[] = ['iss', 'news', 'sec'];
 
 // Expected cron cadence per source (hours between runs). Kept in sync with
 // vercel.json. Used to scale health thresholds so a daily source doesn't
@@ -24,7 +24,6 @@ const SOURCES: IntelSource[] = ['iss', 'news', 'reddit', 'sec'];
 const EXPECTED_INTERVAL_HOURS: Record<string, number> = {
   iss: 2,
   news: 2,
-  reddit: 4,
   sec: 24,
 };
 

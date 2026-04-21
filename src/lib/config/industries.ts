@@ -1,6 +1,6 @@
 // Industry presets for portal setup wizard.
 // Each preset provides sensible defaults for keywords, companies,
-// subreddits, and RSS feeds. Users can customize after selection.
+// and RSS feeds. Users can customize after selection.
 
 export type Industry =
   | 'self-storage'
@@ -25,7 +25,6 @@ export interface IndustryPreset {
   description: string;
   keywords: string[];
   target_companies: string[];
-  reddit_subreddits: string[];
   custom_rss_feeds: { name: string; url: string }[];
 }
 
@@ -64,13 +63,6 @@ export const INDUSTRY_PRESETS: Record<Industry, IndustryPreset> = {
       'Argus Self Storage',
       'Marcus & Millichap',
     ],
-    reddit_subreddits: [
-      'selfstorage',
-      'commercialrealestate',
-      'realestateinvesting',
-      'SelfStorageInvesting',
-      'syndication',
-    ],
     custom_rss_feeds: [
       { name: 'Inside Self-Storage', url: 'https://www.insideselfstorage.com/rss.xml' },
     ],
@@ -108,13 +100,6 @@ export const INDUSTRY_PRESETS: Record<Industry, IndustryPreset> = {
       'Cortland',
       'Tishman Speyer',
     ],
-    reddit_subreddits: [
-      'multifamily',
-      'commercialrealestate',
-      'realestateinvesting',
-      'syndication',
-      'apartmentinvesting',
-    ],
     custom_rss_feeds: [
       { name: 'MultiHousing News', url: 'https://www.multihousingnews.com/feed/' },
     ],
@@ -147,7 +132,6 @@ export const INDUSTRY_PRESETS: Record<Industry, IndustryPreset> = {
       'Lineage Logistics',
       'Americold',
     ],
-    reddit_subreddits: ['commercialrealestate', 'realestateinvesting', 'syndication'],
     custom_rss_feeds: [],
   },
   retail: {
@@ -176,7 +160,6 @@ export const INDUSTRY_PRESETS: Record<Industry, IndustryPreset> = {
       'Spirit Realty',
       'Agree Realty',
     ],
-    reddit_subreddits: ['commercialrealestate', 'realestateinvesting'],
     custom_rss_feeds: [],
   },
   office: {
@@ -204,7 +187,6 @@ export const INDUSTRY_PRESETS: Record<Industry, IndustryPreset> = {
       'Cousins Properties',
       'Healthcare Realty',
     ],
-    reddit_subreddits: ['commercialrealestate', 'realestateinvesting'],
     custom_rss_feeds: [],
   },
   hospitality: {
@@ -232,7 +214,6 @@ export const INDUSTRY_PRESETS: Record<Industry, IndustryPreset> = {
       'Apple Hospitality',
       'Summit Hotel Properties',
     ],
-    reddit_subreddits: ['hotels', 'shorttermrentals', 'commercialrealestate'],
     custom_rss_feeds: [],
   },
   mixed: {
@@ -257,7 +238,6 @@ export const INDUSTRY_PRESETS: Record<Industry, IndustryPreset> = {
       'Apollo Global',
       'Carlyle Group',
     ],
-    reddit_subreddits: ['commercialrealestate', 'realestateinvesting', 'syndication'],
     custom_rss_feeds: [],
   },
 };
@@ -279,13 +259,10 @@ export interface OrgConfig {
   sources: {
     iss: boolean;
     news: boolean;
-    reddit: boolean;
     sec: boolean;
     biggerpockets: boolean;
-    linkedin: boolean;
     podcasts: boolean;
   };
-  reddit_subreddits: string[];
   custom_rss_feeds: { name: string; url: string }[];
   brand?: {
     logo_url?: string;
@@ -316,13 +293,10 @@ export function defaultConfigForIndustry(
     sources: {
       iss: industry === 'self-storage',
       news: true,
-      reddit: true,
       sec: true,
       biggerpockets: true,
-      linkedin: true,
       podcasts: true,
     },
-    reddit_subreddits: preset.reddit_subreddits,
     custom_rss_feeds: preset.custom_rss_feeds,
     onboarding_completed: false,
   };
