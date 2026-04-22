@@ -302,10 +302,14 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
                 orphans: 3;
                 widows: 3;
               }
-              /* FI outro gets its own page. */
+              /* Keep the FI outro with the content that precedes it so it
+                 closes the last content page rather than producing a
+                 nearly-empty final sheet. */
               .doc-fi-outro {
-                page-break-before: always;
-                break-before: page;
+                page-break-before: avoid;
+                break-before: avoid;
+                page-break-inside: avoid;
+                break-inside: avoid;
               }
             }
             .doc-content h1, .doc-content h2 {
@@ -911,36 +915,26 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
                 </div>
               </div>
 
-              {/* Frontier Intelligence outro — final page stamp so every
-                  exported document closes with the platform brand. */}
+              {/* Frontier Intelligence stamp — closes the last content
+                  page. Compact so it doesn't push onto its own sheet. */}
               <div
                 className="doc-fi-outro"
                 style={{
-                  padding: '4rem 3rem 3rem',
+                  padding: '1rem 3rem 1.5rem',
                   background: 'white',
                   textAlign: 'center',
                   color: '#6b7280',
                   display: 'flex',
-                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 16,
-                  borderTop: '1px solid #e5e7eb',
+                  justifyContent: 'center',
+                  gap: 10,
                 }}
               >
-                <BuggyWheel size={56} style={{ color: primaryColor }} />
-                <div
-                  style={{
-                    fontFamily: 'Playfair Display, Georgia, serif',
-                    fontSize: 22,
-                    color: '#111827',
-                    fontWeight: 400,
-                  }}
-                >
+                <BuggyWheel size={18} style={{ color: primaryColor }} />
+                <span style={{ fontWeight: 600, color: '#111827', fontSize: 12 }}>
                   Frontier Intelligence
-                </div>
-                <div style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                  Produced via the Frontier Intelligence platform · fcgok.com
-                </div>
+                </span>
+                <span style={{ fontSize: 10, color: '#9ca3af' }}>· fcgok.com</span>
               </div>
             </div>
           </div>
