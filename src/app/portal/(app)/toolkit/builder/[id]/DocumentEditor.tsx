@@ -6,7 +6,7 @@ import Link from 'next/link';
 import type { PortalDocument, DocumentSection, SectionLayout } from '@/lib/types/documents';
 import { DOCUMENT_TYPE_LABELS } from '@/lib/types/documents';
 import BlockEditorClient from './BlockEditorClient';
-import { WheelLoader } from '@/components/BuggyWheel';
+import BuggyWheel, { WheelLoader } from '@/components/BuggyWheel';
 
 interface OrgBranding {
   name: string;
@@ -251,7 +251,10 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
         dangerouslySetInnerHTML={{
           __html: `
             @media print {
-              @page { margin: 0; size: letter; }
+              /* Reserve margins for the per-page running header (company
+                 logo) and footer (Frontier Intelligence mark). Cover page
+                 overrides these to bleed full-page. */
+              @page { margin: 0.7in 0.6in 0.85in; size: letter; }
 
               /* Hide everything we don't want in the PDF */
               nav, footer, script, aside,
@@ -259,6 +262,34 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
                 display: none !important;
               }
 
+              /* Running header + footer — position:fixed inside @media print
+                 repeats these on every page in Chromium/WebKit. */
+              .doc-page-header {
+                position: fixed !important;
+                top: 0.25in;
+                left: 0.6in;
+                right: 0.6in;
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+                padding-bottom: 6px;
+                border-bottom: 1px solid #d4d4d4;
+                font-size: 9pt;
+                color: #6b7280;
+              }
+              .doc-page-footer {
+                position: fixed !important;
+                bottom: 0.3in;
+                left: 0.6in;
+                right: 0.6in;
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+                padding-top: 6px;
+                border-top: 1px solid #d4d4d4;
+                font-size: 9pt;
+                color: #6b7280;
+              }
               /* Keep the parent chain visible and reset its styling */
               html, body, main, .portal-layout, .portal-main, .portal-card {
                 background: white !important;
@@ -286,6 +317,9 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
                 page-break-after: always;
                 break-after: page;
                 min-height: 11in !important;
+                /* Bleed across the reserved header/footer margins so the
+                   cover hero fills the first page. */
+                margin: -0.7in -0.6in -0.85in !important;
                 color-adjust: exact;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -302,6 +336,10 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
                 orphans: 3;
                 widows: 3;
               }
+            }
+            /* Screen-only: hide the per-page print chrome. */
+            @media screen {
+              .doc-page-header, .doc-page-footer { display: none; }
             }
             .doc-content h1, .doc-content h2 {
               font-family: 'Playfair Display', Georgia, serif;
@@ -522,6 +560,36 @@ export default function DocumentEditor({ documentId }: { documentId: string }) {
 
       {hasSections && (
         <div className="doc-print-wrapper">
+          {/* Per-page running header — company logo + deal name at top of
+              every printed page. Hidden on screen (see @media screen rule). */}
+          <div className="doc-page-header">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              {branding?.logo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={branding.logo_url}
+                  alt={branding.name}
+                  style={{ height: 18, width: 'auto' }}
+                />
+              ) : (
+                <span style={{ fontWeight: 600, color: '#374151' }}>
+                  {branding?.name ?? ''}
+                </span>
+              )}
+            </span>
+            <span style={{ fontStyle: 'italic' }}>{doc.deal_name}</span>
+          </div>
+
+          {/* Per-page Frontier Intelligence footer — brand mark at bottom of
+              every printed page. Hidden on screen. */}
+          <div className="doc-page-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <BuggyWheel size={12} style={{ color: primaryColor }} />
+              <span style={{ fontWeight: 600, color: '#374151' }}>Frontier Intelligence</span>
+            </span>
+            <span>{doc.type === 'om' ? 'Strictly Confidential' : 'For Discussion'}</span>
+          </div>
+
           <div className="portal-card doc-print" style={{ padding: 0, background: 'white' }}>
             {/* ═════════ COVER PAGE ═════════ */}
             <div
