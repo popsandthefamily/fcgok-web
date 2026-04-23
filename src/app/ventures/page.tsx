@@ -66,7 +66,7 @@ const VENTURES: Venture[] = [
 export default function VenturesPage() {
   return (
     <>
-      <section style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
+      <section className="mobile-pad" style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
         <span className="section-label section-label--light">Portfolio</span>
         <h1 style={{
           fontFamily: 'var(--font-serif)',
@@ -77,10 +77,10 @@ export default function VenturesPage() {
         </h1>
       </section>
 
-      <section style={{ padding: '5rem 3rem' }}>
+      <section className="mobile-pad" style={{ padding: '5rem 3rem' }}>
         <div style={{ display: 'grid', gap: 1, background: 'var(--border)', border: '1px solid var(--border)' }}>
           {VENTURES.map(({ logo, logoNode, name, tag, href, body, detail }) => (
-            <div key={name} style={{
+            <div key={name} className="mobile-stack" style={{
               background: 'var(--warm-white)', padding: '3rem',
               display: 'grid', gridTemplateColumns: '220px 1fr', gap: '3rem', alignItems: 'start',
             }}>

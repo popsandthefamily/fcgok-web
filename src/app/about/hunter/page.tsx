@@ -66,7 +66,7 @@ export default function HunterPage() {
   return (
     <>
       {/* ── HERO ───────────────────────────────────────────────────── */}
-      <section style={{
+      <section className="mobile-stack mobile-pad" style={{
         background: 'var(--forest)',
         padding: '5rem 3rem',
         display: 'grid',
@@ -110,7 +110,7 @@ export default function HunterPage() {
       </section>
 
       {/* ── STAT BAR ───────────────────────────────────────────────── */}
-      <div style={{
+      <div className="mobile-2col" style={{
         background: 'var(--cream)',
         display: 'grid', gridTemplateColumns: `repeat(${STATS.length}, 1fr)`,
         gap: 1, borderTop: '1px solid var(--border)',
@@ -124,7 +124,7 @@ export default function HunterPage() {
       </div>
 
       {/* ── MAIN CONTENT ───────────────────────────────────────────── */}
-      <section style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '5rem', padding: '5rem 3rem', alignItems: 'start' }}>
+      <section className="mobile-stack mobile-pad" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '5rem', padding: '5rem 3rem', alignItems: 'start' }}>
         <div>
           <span className="section-label">Background</span>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 400, lineHeight: 1.2, marginBottom: '1.5rem' }}>

@@ -54,7 +54,7 @@ export default function InvestorsPage() {
   return (
     <>
       {/* ── HERO ───────────────────────────────────────────────────── */}
-      <section style={{
+      <section className="mobile-stack mobile-pad" style={{
         background: 'var(--forest)', padding: '6rem 3rem 5rem',
         display: 'grid', gridTemplateColumns: '1fr 380px', gap: '5rem', alignItems: 'start',
       }}>
@@ -74,7 +74,7 @@ export default function InvestorsPage() {
             partner.
           </p>
 
-          <div style={{
+          <div className="mobile-stack" style={{
             display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
             gap: 1, background: 'rgba(255,255,255,0.08)',
             border: '1px solid rgba(255,255,255,0.08)', margin: '3rem 0',
@@ -136,7 +136,7 @@ export default function InvestorsPage() {
       </section>
 
       {/* ── WHAT WE BRING ──────────────────────────────────────────── */}
-      <section style={{ padding: '5rem 3rem' }}>
+      <section className="mobile-pad" style={{ padding: '5rem 3rem' }}>
         <span className="section-label">What We Bring</span>
         <h2 style={{
           fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
@@ -144,7 +144,7 @@ export default function InvestorsPage() {
         }}>
           Your strategic partner <em style={{ color: 'var(--forest-mid)' }}>on the ground.</em>
         </h2>
-        <div style={{
+        <div className="mobile-stack" style={{
           display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
           gap: 1, background: 'var(--border)', border: '1px solid var(--border)',
         }}>
@@ -159,7 +159,7 @@ export default function InvestorsPage() {
       </section>
 
       {/* ── OPPORTUNITY ZONE ───────────────────────────────────────── */}
-      <section style={{ padding: '1rem 3rem 5rem' }}>
+      <section className="mobile-pad" style={{ padding: '1rem 3rem 5rem' }}>
         <span className="section-label">Opportunity Zone</span>
         <h2 style={{
           fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
@@ -173,7 +173,7 @@ export default function InvestorsPage() {
           conversations, which are built around urban OKC and Tulsa tracts. Here&apos;s what actually applies in
           McCurtain County.
         </p>
-        <div style={{
+        <div className="mobile-stack" style={{
           display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
           gap: 1, background: 'var(--border)', border: '1px solid var(--border)',
         }}>
@@ -192,7 +192,7 @@ export default function InvestorsPage() {
       </section>
 
       {/* ── HOW IT WORKS ───────────────────────────────────────────── */}
-      <section style={{ background: 'var(--forest)', padding: '5rem 3rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem' }}>
+      <section className="mobile-stack mobile-pad" style={{ background: 'var(--forest)', padding: '5rem 3rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem' }}>
         <div>
           <span className="section-label section-label--light">How It Works</span>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: 'var(--cream)', fontWeight: 400, marginBottom: '1.5rem' }}>

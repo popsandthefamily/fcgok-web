@@ -20,7 +20,7 @@ export default function AboutPage() {
   return (
     <>
       {/* Header */}
-      <section style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
+      <section className="mobile-pad" style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
         <span className="section-label section-label--light">About</span>
         <h1 style={{
           fontFamily: 'var(--font-serif)',
@@ -34,7 +34,7 @@ export default function AboutPage() {
       </section>
 
       {/* Story */}
-      <section style={{ padding: '5rem 3rem' }}>
+      <section className="mobile-pad" style={{ padding: '5rem 3rem' }}>
         <div style={{ maxWidth: 680 }}>
           <span className="section-label">Why We&apos;re Here</span>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 400, marginBottom: '1.5rem' }}>
@@ -69,7 +69,7 @@ export default function AboutPage() {
             We&apos;re in the arena — operating in the same market we advise on.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', border: '1px solid var(--border)' }}>
+          <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', border: '1px solid var(--border)' }}>
             {[
               { num: '50+', label: 'Years of family roots in the Broken Bow area' },
               { num: '4', label: 'Active ventures — software to property management' },
@@ -85,7 +85,7 @@ export default function AboutPage() {
       </section>
 
       {/* What We Do */}
-      <section style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
+      <section className="mobile-pad" style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
         <div style={{ maxWidth: 680 }}>
           <span className="section-label section-label--light">What We Do</span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', marginTop: '2rem' }}>
@@ -104,7 +104,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section style={{ padding: '5rem 3rem', textAlign: 'center' }}>
+      <section className="mobile-pad" style={{ padding: '5rem 3rem', textAlign: 'center' }}>
         <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 400, marginBottom: '1rem' }}>
           Want to work together?
         </h2>

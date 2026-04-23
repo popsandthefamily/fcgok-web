@@ -26,25 +26,29 @@ export default function HomePage() {
     <>
       <style>{`
         @media (max-width: 768px) {
-          /* Pull in the wide horizontal padding. 3rem (48px) each side
-             eats a third of a 375px viewport. */
-          .home-hero { padding: 2.5rem 1.25rem 1.25rem !important; min-height: 0 !important; }
-          .home-section { padding: 3rem 1.25rem !important; }
-          .home-dual-cta { margin: 0 !important; }
+          /* Homepage-specific overrides. Global utilities (.mobile-stack
+             etc.) in globals.css handle most, but the hero is a flex
+             container that needs special treatment. */
+          .home-hero {
+            padding: 2.5rem 1.25rem 1.25rem !important;
+            min-height: 0 !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+          }
+          .home-hero > * { max-width: 100% !important; }
+
           .home-split > div { padding: 2.5rem 1.25rem !important; }
-
-          /* Stack every multi-col grid to one column. */
           .home-split { grid-template-columns: 1fr !important; }
-          .home-ventures { grid-template-columns: 1fr !important; gap: 1rem !important; }
-          .home-dual-cta { grid-template-columns: 1fr !important; }
 
-          /* Pull the absolute-positioned stat bar out of position:absolute
-             so it flows below the hero copy instead of overlapping it. */
+          /* Absolute-positioned stat bar → static, full width, one row
+             per stat. Was landing beside hero text because the hero is
+             display:flex and a static child just becomes a flex sibling. */
           .home-hero-stats {
             position: static !important;
             left: auto !important;
             right: auto !important;
             bottom: auto !important;
+            width: 100% !important;
             margin-top: 2.5rem !important;
             grid-template-columns: 1fr !important;
           }
@@ -169,7 +173,7 @@ export default function HomePage() {
       </div>
 
       {/* ── VENTURES ───────────────────────────────────────────────── */}
-      <section className="home-section" style={{ padding: '5rem 3rem' }}>
+      <section className="mobile-pad" style={{ padding: '5rem 3rem' }}>
         <span className="section-label">Our Ventures</span>
         <h2 style={{
           fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.6rem)',
@@ -177,7 +181,7 @@ export default function HomePage() {
         }}>
           We don&apos;t just consult — <em style={{ color: 'var(--forest-mid)' }}>we build.</em>
         </h2>
-        <div className="home-ventures" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem' }}>
+        <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem' }}>
           {([
             { logo: '/logos/hocha-icon.png', name: 'hocha.town', desc: 'The tourism platform for Hochatown & Broken Bow — AI trip planner, burn ban widget, STR tax calculator, and native iOS app.', tag: 'Live Platform', href: 'https://hocha.town' },
             { logoNode: <BuggyWheel size={32} strokeWidth={6} style={{ color: 'var(--forest)' }} />, name: 'Frontier Intelligence', desc: 'Private intel platform for investors — SEC filings, news, and market signals summarized in a branded portal.', tag: 'Investor Software', href: '/portal' },
@@ -199,7 +203,7 @@ export default function HomePage() {
       </section>
 
       {/* ── DUAL CTA ───────────────────────────────────────────────── */}
-      <section className="home-dual-cta" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', margin: '0 3rem 5rem' }}>
+      <section className="mobile-stack mobile-nomargin" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', margin: '0 3rem 5rem' }}>
         {[
           { title: 'For Investors', body: 'Exploring the Broken Bow market? Local market intelligence, builder connections, and operational support from someone who lives here.', href: '/investors', cta: 'Investor Resources →' },
           { title: 'For Businesses', body: 'Need more bookings, better tech, or a marketing strategy that actually works? We build tools for this market.', href: '/businesses', cta: 'Business Services →' },

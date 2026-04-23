@@ -30,7 +30,7 @@ export default function BusinessesPage() {
   return (
     <>
       {/* ── HERO ───────────────────────────────────────────────────── */}
-      <section style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
+      <section className="mobile-pad" style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
         <span className="section-label section-label--light">For Businesses</span>
         <h1 style={{
           fontFamily: 'var(--font-serif)',
@@ -48,8 +48,8 @@ export default function BusinessesPage() {
       </section>
 
       {/* ── SERVICES GRID ──────────────────────────────────────────── */}
-      <section style={{ padding: '5rem 3rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+      <section className="mobile-pad" style={{ padding: '5rem 3rem' }}>
+        <div className="mobile-stack" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
           {SERVICES.map(({ num, title, body }) => (
             <div key={num} className="pillar">
               <div className="pillar-num">{num}</div>
@@ -61,7 +61,7 @@ export default function BusinessesPage() {
       </section>
 
       {/* ── HOCHA.TOWN CTA ─────────────────────────────────────────── */}
-      <section style={{
+      <section className="mobile-stack mobile-nomargin mobile-pad" style={{
         margin: '0 3rem 5rem',
         background: 'var(--forest)',
         display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem',
@@ -90,7 +90,7 @@ export default function BusinessesPage() {
       </section>
 
       {/* ── CONTACT CTA ────────────────────────────────────────────── */}
-      <section style={{ padding: '0 3rem 5rem', maxWidth: 600 }}>
+      <section className="mobile-pad" style={{ padding: '0 3rem 5rem', maxWidth: 600 }}>
         <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: 400, marginBottom: '1rem' }}>
           Ready to grow?
         </h2>

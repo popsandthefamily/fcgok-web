@@ -4,11 +4,11 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <>
-      <footer style={{
+      <footer className="mobile-pad" style={{
         background: '#0f1f17',
         padding: '4rem 3rem 2rem',
       }}>
-        <div style={{
+        <div className="mobile-stack" style={{
           maxWidth: 1200,
           margin: '0 auto',
           display: 'grid',
@@ -59,7 +59,7 @@ export default function Footer() {
       </footer>
 
       {/* Bottom bar */}
-      <div style={{
+      <div className="mobile-pad" style={{
         background: '#0f1f17',
         borderTop: '1px solid rgba(255,255,255,0.06)',
         padding: '1.25rem 3rem',

@@ -296,4 +296,15 @@ h1, h2, h3, h4 {
   nav > div:last-child {
     display: none;
   }
+
+  /* Utility classes applied to marketing-page containers to handle
+     phone-width layout without rewriting every page's inline styles.
+       .mobile-stack    — collapses multi-col grid to single column
+       .mobile-2col     — collapses 3+ col grid to 2 cols (stat bars)
+       .mobile-pad      — shrinks horizontal padding (3rem → 1.25rem)
+       .mobile-nomargin — zeros outer horizontal margin */
+  .mobile-stack    { grid-template-columns: 1fr !important; gap: 1rem !important; }
+  .mobile-2col     { grid-template-columns: repeat(2, 1fr) !important; }
+  .mobile-pad      { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+  .mobile-nomargin { margin-left: 0 !important; margin-right: 0 !important; }
 }

@@ -19,7 +19,7 @@ export default function CareersPage() {
   return (
     <>
       {/* Header */}
-      <section style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
+      <section className="mobile-pad" style={{ background: 'var(--forest)', padding: '5rem 3rem' }}>
         <span className="section-label section-label--light">Careers</span>
         <h1 style={{
           fontFamily: 'var(--font-serif)',
@@ -37,7 +37,7 @@ export default function CareersPage() {
       </section>
 
       {/* Open Positions */}
-      <section style={{ padding: '5rem 3rem' }}>
+      <section className="mobile-pad" style={{ padding: '5rem 3rem' }}>
         <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: 400, marginBottom: '2rem' }}>
           Open positions
         </h2>
