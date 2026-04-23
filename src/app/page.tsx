@@ -24,8 +24,41 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
+      <style>{`
+        @media (max-width: 768px) {
+          /* Pull in the wide horizontal padding. 3rem (48px) each side
+             eats a third of a 375px viewport. */
+          .home-hero { padding: 2.5rem 1.25rem 1.25rem !important; min-height: 0 !important; }
+          .home-section { padding: 3rem 1.25rem !important; }
+          .home-dual-cta { margin: 0 !important; }
+          .home-split > div { padding: 2.5rem 1.25rem !important; }
+
+          /* Stack every multi-col grid to one column. */
+          .home-split { grid-template-columns: 1fr !important; }
+          .home-ventures { grid-template-columns: 1fr !important; gap: 1rem !important; }
+          .home-dual-cta { grid-template-columns: 1fr !important; }
+
+          /* Pull the absolute-positioned stat bar out of position:absolute
+             so it flows below the hero copy instead of overlapping it. */
+          .home-hero-stats {
+            position: static !important;
+            left: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+            margin-top: 2.5rem !important;
+            grid-template-columns: 1fr !important;
+          }
+          .home-hero-stats > div {
+            padding: 1rem 0 !important;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+          }
+          .home-hero-stats > div:last-child { border-bottom: none; }
+          .home-hero-stats > div > div:first-child { font-size: 1.8rem !important; }
+        }
+      `}</style>
+
       {/* ── HERO ───────────────────────────────────────────────────── */}
-      <section style={{
+      <section className="home-hero" style={{
         background: 'var(--forest)',
         minHeight: '92vh',
         display: 'flex',
@@ -75,7 +108,7 @@ export default function HomePage() {
         </div>
 
         {/* Stat bar */}
-        <div style={{
+        <div className="home-hero-stats" style={{
           position: 'absolute', bottom: '2.5rem', left: '3rem', right: '3rem',
           display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 0, borderTop: '1px solid rgba(255,255,255,0.08)', zIndex: 2,
@@ -101,7 +134,7 @@ export default function HomePage() {
       <MarqueeStrip />
 
       {/* ── OPPORTUNITY + WHAT WE DO SPLIT ─────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', background: 'var(--forest)' }}>
+      <div className="home-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', background: 'var(--forest)' }}>
         <div style={{ padding: '5rem 3rem' }}>
           <span className="section-label section-label--light">The Opportunity</span>
           <h2 style={{
@@ -136,7 +169,7 @@ export default function HomePage() {
       </div>
 
       {/* ── VENTURES ───────────────────────────────────────────────── */}
-      <section style={{ padding: '5rem 3rem' }}>
+      <section className="home-section" style={{ padding: '5rem 3rem' }}>
         <span className="section-label">Our Ventures</span>
         <h2 style={{
           fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.6rem)',
@@ -144,7 +177,7 @@ export default function HomePage() {
         }}>
           We don&apos;t just consult — <em style={{ color: 'var(--forest-mid)' }}>we build.</em>
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem' }}>
+        <div className="home-ventures" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem' }}>
           {([
             { logo: '/logos/hocha-icon.png', name: 'hocha.town', desc: 'The tourism platform for Hochatown & Broken Bow — AI trip planner, burn ban widget, STR tax calculator, and native iOS app.', tag: 'Live Platform', href: 'https://hocha.town' },
             { logoNode: <BuggyWheel size={32} strokeWidth={6} style={{ color: 'var(--forest)' }} />, name: 'Frontier Intelligence', desc: 'Private intel platform for investors — SEC filings, news, and market signals summarized in a branded portal.', tag: 'Investor Software', href: '/portal' },
@@ -166,7 +199,7 @@ export default function HomePage() {
       </section>
 
       {/* ── DUAL CTA ───────────────────────────────────────────────── */}
-      <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', margin: '0 3rem 5rem' }}>
+      <section className="home-dual-cta" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', margin: '0 3rem 5rem' }}>
         {[
           { title: 'For Investors', body: 'Exploring the Broken Bow market? Local market intelligence, builder connections, and operational support from someone who lives here.', href: '/investors', cta: 'Investor Resources →' },
           { title: 'For Businesses', body: 'Need more bookings, better tech, or a marketing strategy that actually works? We build tools for this market.', href: '/businesses', cta: 'Business Services →' },
