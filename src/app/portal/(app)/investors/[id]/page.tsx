@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import type { TrackedEntity, IntelItem } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -9,6 +10,9 @@ export default async function EntityDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const auth = await getAuthedUser();
+  if (!auth?.orgId) notFound();
+
   const supabase = await createServiceClient();
 
   // Fetch entity
@@ -16,6 +20,7 @@ export default async function EntityDetailPage({
     .from('tracked_entities')
     .select('*')
     .eq('id', id)
+    .eq('organization_id', auth.orgId)
     .single();
 
   if (!entity) notFound();

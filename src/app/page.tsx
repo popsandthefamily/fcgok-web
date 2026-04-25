@@ -107,7 +107,7 @@ export default function HomePage() {
 
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <Link href="/investors" className="btn-primary">I&apos;m an Investor</Link>
-            <Link href="/businesses" className="btn-outline">I&apos;m a Business Owner</Link>
+            <Link href="/businesses" className="btn-outline">I&apos;m Raising Capital</Link>
           </div>
         </div>
 

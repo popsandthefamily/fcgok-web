@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import BuggyWheel from '@/components/BuggyWheel';
 import type { SnapshotScores } from '@/lib/ai/generate-snapshot';
+import { renderSafeMarkdown } from '@/lib/utils/render-markdown';
 
 const ASSET_TYPES = [
   { value: '', label: 'Auto (from org settings)' },
@@ -50,32 +51,6 @@ interface SnapshotData {
   composite: number;
   verdict: string;
   narrative: string;
-}
-
-function renderMarkdown(text: string): string {
-  let html = text.replace(/\r\n/g, '\n');
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/(?<![*])\*([^*]+)\*(?![*])/g, '<em>$1</em>');
-  html = html.replace(/(^[-*] .+(\n[-*] .+)*)/gm, (block) => {
-    const items = block.split('\n').map((l) => l.replace(/^[-*]\s+/, '').trim());
-    return '<ul>' + items.map((i) => `<li>${i}</li>`).join('') + '</ul>';
-  });
-  html = html.replace(/(^\d+\. .+(\n\d+\. .+)*)/gm, (block) => {
-    const items = block.split('\n').map((l) => l.replace(/^\d+\.\s+/, '').trim());
-    return '<ol>' + items.map((i) => `<li>${i}</li>`).join('') + '</ol>';
-  });
-  html = html
-    .split(/\n\n+/)
-    .map((block) => {
-      if (block.match(/^<(h\d|ul|ol)/)) return block;
-      if (!block.trim()) return '';
-      return `<p>${block.replace(/\n/g, '<br>')}</p>`;
-    })
-    .join('\n');
-  return html;
 }
 
 export default function MarketSnapshotPage() {
@@ -433,7 +408,7 @@ export default function MarketSnapshotPage() {
             <div
               className="snapshot-content"
               style={{ fontSize: 14, lineHeight: 1.7, color: '#374151' }}
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(result.narrative) }}
+              dangerouslySetInnerHTML={{ __html: renderSafeMarkdown(result.narrative) }}
             />
 
             <div style={{

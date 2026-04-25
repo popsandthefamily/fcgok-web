@@ -77,6 +77,7 @@ export type EntityStatus =
 
 export interface TrackedEntity {
   id: string;
+  organization_id: string | null;
   name: string;
   entity_type: EntityType;
   description: string | null;
@@ -176,6 +177,7 @@ export interface PortalEvent {
 
 export interface WeeklyDigest {
   id: string;
+  organization_id: string | null;
   week_start: string;
   week_end: string;
   content: string;

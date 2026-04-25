@@ -7,6 +7,7 @@ import type { PortalDocument, DocumentSection, SectionLayout } from '@/lib/types
 import { DOCUMENT_TYPE_LABELS } from '@/lib/types/documents';
 import BlockEditorClient from './BlockEditorClient';
 import BuggyWheel, { WheelLoader } from '@/components/BuggyWheel';
+import { renderSafeMarkdown, sanitizeHtml } from '@/lib/utils/render-markdown';
 
 interface OrgBranding {
   name: string;
@@ -36,46 +37,8 @@ function isHtml(content: string): boolean {
 
 // Simple markdown-to-HTML (for legacy content)
 function renderMarkdown(text: string): string {
-  if (isHtml(text)) return text;
-
-  let html = text.replace(/\r\n/g, '\n');
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/(?<![*])\*([^*]+)\*(?![*])/g, '<em>$1</em>');
-
-  // Tables
-  html = html.replace(/((?:^\|.+\|\n)+)/gm, (block) => {
-    const rows = block.trim().split('\n').map((r) => r.slice(1, -1).split('|').map((c) => c.trim()));
-    if (rows.length < 2) return block;
-    const [header, sep, ...body] = rows;
-    if (!sep.every((c) => /^-+$/.test(c))) return block;
-    return `<table><thead><tr>${header.map((c) => `<th>${c}</th>`).join('')}</tr></thead><tbody>${body
-      .map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`)
-      .join('')}</tbody></table>`;
-  });
-
-  html = html.replace(/(^[-*] .+(\n[-*] .+)*)/gm, (block) => {
-    const items = block.split('\n').map((l) => l.replace(/^[-*]\s+/, '').trim());
-    return '<ul>' + items.map((i) => `<li>${i}</li>`).join('') + '</ul>';
-  });
-
-  html = html.replace(/(^\d+\. .+(\n\d+\. .+)*)/gm, (block) => {
-    const items = block.split('\n').map((l) => l.replace(/^\d+\.\s+/, '').trim());
-    return '<ol>' + items.map((i) => `<li>${i}</li>`).join('') + '</ol>';
-  });
-
-  html = html
-    .split(/\n\n+/)
-    .map((block) => {
-      if (block.match(/^<(h\d|ul|ol|table|blockquote)/)) return block;
-      if (!block.trim()) return '';
-      return `<p>${block.replace(/\n/g, '<br>')}</p>`;
-    })
-    .join('\n');
-
-  return html;
+  if (isHtml(text)) return sanitizeHtml(text);
+  return renderSafeMarkdown(text);
 }
 
 export default function DocumentEditor({ documentId }: { documentId: string }) {

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import BuggyWheel from '@/components/BuggyWheel';
+import { renderSafeMarkdown } from '@/lib/utils/render-markdown';
 
 export default function DeckReviewPage() {
   const [text, setText] = useState('');
@@ -40,10 +41,7 @@ export default function DeckReviewPage() {
   }
 
   function renderMarkdown(md: string) {
-    const html = md
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n/g, '<br />');
-    return { __html: html };
+    return { __html: renderSafeMarkdown(md) };
   }
 
   return (

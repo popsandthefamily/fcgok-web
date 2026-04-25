@@ -211,6 +211,7 @@ const NAV_SECTIONS: NavSection[] = [
     title: 'Intelligence',
     links: [
       { href: '/portal', label: 'Dashboard', icon: 'dashboard' },
+      { href: '/portal/raise', label: 'Capital Raise', icon: 'sparkle' },
       { href: '/portal/feed', label: 'Intel Feed', icon: 'feed' },
       { href: '/portal/investors', label: 'Investor Radar', icon: 'radar' },
       { href: '/portal/digest', label: 'Weekly Digest', icon: 'digest' },
