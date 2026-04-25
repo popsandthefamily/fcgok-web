@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { RaiseMatch } from '@/lib/matching/get-matches';
 import type { FIT_WEIGHTS } from '@/lib/matching/score';
+import type { PipelineStage } from '@/lib/types/pipeline';
+import AddToPipelineButton from './AddToPipelineButton';
 
 type Weights = typeof FIT_WEIGHTS;
 type ComponentKey = keyof Weights;
@@ -26,10 +28,14 @@ export default function MatchCard({
   rank,
   match,
   weights,
+  raiseId,
+  inPipelineStage,
 }: {
   rank: number;
   match: RaiseMatch;
   weights: Weights;
+  raiseId: string;
+  inPipelineStage: PipelineStage | null;
 }) {
   const [expanded, setExpanded] = useState(false);
   const { entity, fit, mandate } = match;
@@ -190,20 +196,27 @@ export default function MatchCard({
           )}
         </div>
 
-        {/* Score */}
-        <div style={{ flex: '0 0 auto', textAlign: 'right' }}>
-          <div style={{
-            fontSize: 28,
-            fontWeight: 600,
-            color: scoreColor,
-            lineHeight: 1,
-            fontVariantNumeric: 'tabular-nums',
-          }}>
-            {Math.round(fit.score)}
+        {/* Score + pipeline action */}
+        <div style={{ flex: '0 0 auto', textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+          <div>
+            <div style={{
+              fontSize: 28,
+              fontWeight: 600,
+              color: scoreColor,
+              lineHeight: 1,
+              fontVariantNumeric: 'tabular-nums',
+            }}>
+              {Math.round(fit.score)}
+            </div>
+            <div style={{ fontSize: 10, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>
+              / 100
+            </div>
           </div>
-          <div style={{ fontSize: 10, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>
-            / 100
-          </div>
+          <AddToPipelineButton
+            raiseId={raiseId}
+            entityId={entity.id}
+            inPipelineStage={inPipelineStage}
+          />
         </div>
       </div>
     </div>

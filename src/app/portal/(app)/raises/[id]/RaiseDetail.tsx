@@ -127,6 +127,21 @@ export default function RaiseDetail({
         </p>
       </div>
 
+      {/* Pipeline */}
+      <div className="portal-card" style={{ marginBottom: '1rem' }}>
+        <div className="portal-card-header">
+          <span className="portal-card-title">Pipeline</span>
+          <Link href={`/portal/raises/${raise.id}/pipeline`} className="portal-btn portal-btn-ghost" style={{ fontSize: 12, padding: '4px 10px' }}>
+            Open pipeline →
+          </Link>
+        </div>
+        <p style={{ fontSize: 13, color: '#6b7280', margin: 0, lineHeight: 1.6 }}>
+          Investors you're actively working through stages — from identified to
+          committed. Add candidates from the matches view, then move them through
+          the pipeline as conversations progress.
+        </p>
+      </div>
+
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
         <button
           onClick={handleDelete}

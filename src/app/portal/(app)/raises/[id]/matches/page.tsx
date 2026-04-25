@@ -5,6 +5,7 @@ import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import { computeRaiseMatches } from '@/lib/matching/get-matches';
 import { FIT_WEIGHTS } from '@/lib/matching/score';
 import type { Raise } from '@/lib/types/raises';
+import type { PipelineStage } from '@/lib/types/pipeline';
 import MatchCard from './MatchCard';
 import RefreshButton from './RefreshButton';
 
@@ -39,6 +40,17 @@ export default async function RaiseMatchesPage({
 
   const { matches } = await computeRaiseMatches(supabase, raise as Raise, limit);
 
+  // Map of entity_id → current pipeline stage so MatchCard can switch
+  // "Add to pipeline" → "In pipeline · stage" without re-querying per card.
+  const { data: pipelineRows } = await supabase
+    .from('raise_pipeline')
+    .select('entity_id, stage')
+    .eq('raise_id', id);
+  const pipelineByEntity = new Map<string, PipelineStage>();
+  for (const r of (pipelineRows ?? []) as { entity_id: string; stage: PipelineStage }[]) {
+    pipelineByEntity.set(r.entity_id, r.stage);
+  }
+
   const profileGaps = describeProfileGaps(raise as Raise);
 
   return (
@@ -50,6 +62,9 @@ export default async function RaiseMatchesPage({
         </div>
         <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
           <Link href={`/portal/raises/${id}`} className="portal-btn portal-btn-ghost">&larr; Raise</Link>
+          <Link href={`/portal/raises/${id}/pipeline`} className="portal-btn portal-btn-ghost">
+            Pipeline ({pipelineByEntity.size})
+          </Link>
           <RefreshButton
             raiseId={id}
             limit={limit}
@@ -102,7 +117,14 @@ export default async function RaiseMatchesPage({
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {matches.map((m, i) => (
-            <MatchCard key={m.entity.id} rank={i + 1} match={m} weights={FIT_WEIGHTS} />
+            <MatchCard
+              key={m.entity.id}
+              rank={i + 1}
+              match={m}
+              weights={FIT_WEIGHTS}
+              raiseId={id}
+              inPipelineStage={pipelineByEntity.get(m.entity.id) ?? null}
+            />
           ))}
         </div>
       )}
