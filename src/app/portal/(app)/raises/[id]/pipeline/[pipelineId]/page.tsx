@@ -11,6 +11,7 @@ import type { Raise } from '@/lib/types/raises';
 import type { TrackedEntity } from '@/lib/types';
 import PipelineEditor from './PipelineEditor';
 import AddNoteForm from './AddNoteForm';
+import OutreachComposer from './OutreachComposer';
 import RemoveFromPipelineButton from '../RemoveFromPipelineButton';
 
 export const dynamic = 'force-dynamic';
@@ -105,9 +106,15 @@ export default async function PipelineDetailPage({
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '1.25rem', alignItems: 'start' }}>
-        {/* Left column: editor + timeline */}
+        {/* Left column: editor + outreach + notes + timeline */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <PipelineEditor raiseId={id} pipeline={p} />
+
+          <OutreachComposer
+            raiseId={id}
+            pipelineId={pipelineId}
+            defaultRecipientName={e.name}
+          />
 
           <div className="portal-card">
             <div className="portal-card-header">
@@ -205,6 +212,7 @@ function TimelineItem({ event }: { event: EventWithActor }) {
   const actor = event.actor_email ?? 'system';
   const description = describeEvent(event);
   const note = event.event_type === 'note_added' ? (event.payload as { note?: string })?.note : null;
+  const outreachSubject = event.event_type === 'outreach_sent' ? (event.payload as { subject?: string })?.subject : null;
 
   return (
     <li style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: '0.75rem', padding: '0.5rem 0', borderTop: '1px solid #f3f4f6', fontSize: 13 }}>
@@ -227,6 +235,11 @@ function TimelineItem({ event }: { event: EventWithActor }) {
             whiteSpace: 'pre-wrap',
           }}>
             {note}
+          </div>
+        )}
+        {outreachSubject && (
+          <div style={{ fontSize: 12, color: '#4b5563', marginTop: 4, fontStyle: 'italic' }}>
+            “{outreachSubject}”
           </div>
         )}
       </div>
