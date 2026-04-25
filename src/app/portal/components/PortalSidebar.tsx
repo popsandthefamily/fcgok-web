@@ -234,7 +234,6 @@ const ADMIN_SECTION: NavSection = {
     { href: '/portal/admin', label: 'Overview', icon: 'shield' },
     { href: '/portal/admin/entities', label: 'Manage Entities', icon: 'building' },
     { href: '/portal/admin/clients', label: 'Members', icon: 'users' },
-    { href: '/portal/admin/sources', label: 'Source Health', icon: 'signal' },
   ],
 };
 

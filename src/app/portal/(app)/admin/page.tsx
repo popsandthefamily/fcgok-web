@@ -1,7 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/server';
-import type { IntelSource } from '@/lib/types';
-
-const SOURCES: IntelSource[] = ['iss', 'news', 'sec', 'biggerpockets', 'podcast'];
+import RefreshButton from './sources/RefreshButton';
+import { formatSourceTime, getSourceHealth, statusLabel } from './source-health';
 
 export default async function AdminOverview() {
   const supabase = await createServiceClient();
@@ -25,34 +24,11 @@ export default async function AdminOverview() {
     .from('tracked_entities')
     .select('*', { count: 'exact', head: true });
 
-  // Active sources (sources with at least one item in the last 7 days)
-  const { data: recentSourceData } = await supabase
-    .from('intel_items')
-    .select('source')
-    .gte('ingested_at', weekAgo);
-
-  const activeSources = new Set(recentSourceData?.map((r) => r.source)).size;
-
-  // Source health: last ingested timestamp and count per source
-  const sourceHealthMap: Record<string, { lastIngested: string | null; count: number }> = {};
-  for (const source of SOURCES) {
-    const { data: latest } = await supabase
-      .from('intel_items')
-      .select('ingested_at')
-      .eq('source', source)
-      .order('ingested_at', { ascending: false })
-      .limit(1);
-
-    const { count } = await supabase
-      .from('intel_items')
-      .select('*', { count: 'exact', head: true })
-      .eq('source', source);
-
-    sourceHealthMap[source] = {
-      lastIngested: latest?.[0]?.ingested_at ?? null,
-      count: count ?? 0,
-    };
-  }
+  const sourceHealth = await getSourceHealth(supabase);
+  const activeSources = sourceHealth.filter((source) => {
+    const status = statusLabel(source.source, source.lastRunHoursAgo, source.recentErrors);
+    return status.text === 'Healthy';
+  }).length;
 
   // Recent activity: last 10 items ingested
   const { data: recentItems } = await supabase
@@ -86,59 +62,61 @@ export default async function AdminOverview() {
         </div>
         <div className="stat-card">
           <div className="stat-value">{activeSources}</div>
-          <div className="stat-label">Active Sources (7d)</div>
+          <div className="stat-label">Healthy Sources</div>
         </div>
       </div>
 
       {/* Source health table */}
       <div className="portal-card" style={{ marginBottom: '1.5rem' }}>
         <div className="portal-card-header">
-          <span className="portal-card-title">Source Health</span>
+          <span className="portal-card-title">Sources</span>
+          <span style={{ fontSize: 12, color: '#9ca3af' }}>Status, last run, and manual refresh</span>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #e5e7eb', textAlign: 'left' }}>
               <th style={{ padding: '8px 12px', fontWeight: 500, color: '#6b7280', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Source</th>
-              <th style={{ padding: '8px 12px', fontWeight: 500, color: '#6b7280', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Last Ingested</th>
-              <th style={{ padding: '8px 12px', fontWeight: 500, color: '#6b7280', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Total Items</th>
+              <th style={{ padding: '8px 12px', fontWeight: 500, color: '#6b7280', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Status</th>
+              <th style={{ padding: '8px 12px', fontWeight: 500, color: '#6b7280', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Last Run</th>
+              <th style={{ padding: '8px 12px', fontWeight: 500, color: '#6b7280', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'right' }}>Week</th>
+              <th aria-label="Refresh source" style={{ padding: '8px 12px', width: 44 }} />
             </tr>
           </thead>
           <tbody>
-            {SOURCES.map((source) => {
-              const health = sourceHealthMap[source];
-              const lastTime = health.lastIngested
-                ? new Date(health.lastIngested).toLocaleString('en-US', {
-                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-                  })
-                : 'Never';
-
-              const hoursAgo = health.lastIngested
-                ? (now.getTime() - new Date(health.lastIngested).getTime()) / 3600000
-                : Infinity;
-
-              const statusColor =
-                hoursAgo < 12 ? '#22c55e' :
-                hoursAgo < 24 ? '#f59e0b' :
-                '#ef4444';
+            {sourceHealth.map((health) => {
+              const status = statusLabel(health.source, health.lastRunHoursAgo, health.recentErrors);
 
               return (
-                <tr key={source} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                <tr key={health.source} style={{ borderBottom: '1px solid #f3f4f6' }}>
                   <td style={{ padding: '10px 12px' }}>
-                    <span className="badge badge-source" data-source={source}>
-                      {source.toUpperCase()}
+                    <span className="badge badge-source" data-source={health.source}>
+                      {health.source.toUpperCase()}
                     </span>
                   </td>
-                  <td style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <td style={{ padding: '10px 12px' }}>
                     <span
                       style={{
-                        width: 8, height: 8, borderRadius: '50%',
-                        background: statusColor, display: 'inline-block',
+                        fontSize: 11,
+                        fontWeight: 500,
+                        padding: '3px 10px',
+                        borderRadius: 10,
+                        background: status.bg,
+                        color: status.color,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.04em',
                       }}
-                    />
-                    {lastTime}
+                    >
+                      {status.text}
+                    </span>
+                  </td>
+                  <td style={{ padding: '10px 12px', color: '#374151' }}>
+                    {formatSourceTime(health.lastRun)}
                   </td>
                   <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                    {health.count.toLocaleString()}
+                    {health.itemsThisWeek.toLocaleString()}
+                  </td>
+                  <td style={{ padding: '10px 12px', textAlign: 'right' }}>
+                    <RefreshButton source={health.source} iconOnly />
                   </td>
                 </tr>
               );
