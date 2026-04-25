@@ -12,6 +12,7 @@ import type { TrackedEntity } from '@/lib/types';
 import PipelineEditor from './PipelineEditor';
 import AddNoteForm from './AddNoteForm';
 import OutreachComposer from './OutreachComposer';
+import ShareLinkCreator from './ShareLinkCreator';
 import RemoveFromPipelineButton from '../RemoveFromPipelineButton';
 
 export const dynamic = 'force-dynamic';
@@ -115,6 +116,8 @@ export default async function PipelineDetailPage({
             pipelineId={pipelineId}
             defaultRecipientName={e.name}
           />
+
+          <ShareLinkCreator raiseId={id} pipelineId={pipelineId} />
 
           <div className="portal-card">
             <div className="portal-card-header">
@@ -266,8 +269,26 @@ function describeEvent(event: EventWithActor): string {
     case 'document_shared':
       return 'Document shared';
     case 'engagement':
-      return 'Engagement signal';
+      return describeEngagement(event);
     case 'pipeline_removed':
       return 'Removed from pipeline';
   }
+}
+
+function describeEngagement(event: EventWithActor): string {
+  const p = event.payload as { event_type?: string; asset_type?: string };
+  const action = p.event_type ?? 'engagement';
+  const asset = p.asset_type;
+  const labels: Record<string, string> = {
+    email_open: 'Opened email',
+    link_click: 'Clicked link',
+    document_view: 'Viewed document',
+    document_download: 'Downloaded document',
+    page_view: 'Viewed page',
+    section_view: 'Viewed section',
+    data_room_login: 'Opened data room',
+    data_room_file_view: 'Viewed data room file',
+  };
+  const label = labels[action] ?? `Engagement: ${action}`;
+  return asset ? `${label} (${asset.replace(/_/g, ' ')})` : label;
 }

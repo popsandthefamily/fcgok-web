@@ -10,10 +10,12 @@ import {
   type RaisePipelineRow,
 } from '@/lib/types/pipeline';
 import type { TrackedEntity } from '@/lib/types';
+import type { EngagementRollup } from '@/lib/types/engagement';
 
 interface RowWithEntity {
   pipeline: RaisePipelineRow;
   entity: Pick<TrackedEntity, 'id' | 'name' | 'entity_type'>;
+  rollup: EngagementRollup | null;
 }
 
 const COLUMN_WIDTH = 220;
@@ -156,12 +158,13 @@ export default function PipelineKanban({
                   drop here
                 </div>
               ) : (
-                items.map(({ pipeline, entity }) => (
+                items.map(({ pipeline, entity, rollup }) => (
                   <KanbanCard
                     key={pipeline.id}
                     raiseId={raiseId}
                     pipeline={pipeline}
                     entity={entity}
+                    rollup={rollup}
                     isDragging={draggingId === pipeline.id}
                     onDragStart={(e) => {
                       e.dataTransfer.effectAllowed = 'move';
@@ -184,6 +187,7 @@ function KanbanCard({
   raiseId,
   pipeline,
   entity,
+  rollup,
   isDragging,
   onDragStart,
   onDragEnd,
@@ -191,6 +195,7 @@ function KanbanCard({
   raiseId: string;
   pipeline: RaisePipelineRow;
   entity: Pick<TrackedEntity, 'id' | 'name' | 'entity_type'>;
+  rollup: EngagementRollup | null;
   isDragging: boolean;
   onDragStart: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragEnd: () => void;
@@ -199,6 +204,7 @@ function KanbanCard({
   const isOverdue = pipeline.next_action_due_at
     ? new Date(pipeline.next_action_due_at).getTime() < Date.now()
     : false;
+  const engagement = engagementSummary(rollup);
 
   return (
     <div
@@ -225,9 +231,26 @@ function KanbanCard({
         >
           {entity.name}
         </Link>
-        {pipeline.priority === 'high' && (
-          <span title="High priority" style={{ fontSize: 10, color: '#991b1b' }}>●</span>
-        )}
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexShrink: 0 }}>
+          {engagement && (
+            <span
+              title={engagement.tooltip}
+              style={{
+                fontSize: 9,
+                color: engagement.color,
+                background: engagement.bg,
+                padding: '1px 5px',
+                borderRadius: 3,
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
+              ● {engagement.count}
+            </span>
+          )}
+          {pipeline.priority === 'high' && (
+            <span title="High priority" style={{ fontSize: 10, color: '#991b1b' }}>●</span>
+          )}
+        </div>
       </div>
       <div style={{ fontSize: 11, color: '#9ca3af', textTransform: 'capitalize', marginBottom: 6 }}>
         {entity.entity_type}
@@ -246,6 +269,54 @@ function KanbanCard({
       )}
     </div>
   );
+}
+
+interface EngagementSummary {
+  count: number;
+  color: string;
+  bg: string;
+  tooltip: string;
+}
+
+function engagementSummary(rollup: EngagementRollup | null): EngagementSummary | null {
+  if (!rollup) return null;
+  const total =
+    rollup.deck_views +
+    rollup.om_views +
+    rollup.data_room_visits +
+    rollup.email_opens +
+    rollup.link_clicks;
+  if (total === 0) return null;
+
+  const last = rollup.last_engagement_at ? new Date(rollup.last_engagement_at).getTime() : 0;
+  const days = (Date.now() - last) / 86_400_000;
+
+  let color: string;
+  let bg: string;
+  if (days <= 7) {
+    color = '#15803d';
+    bg = '#dcfce7';
+  } else if (days <= 30) {
+    color = '#92400e';
+    bg = '#fef3c7';
+  } else {
+    color = '#6b7280';
+    bg = '#f3f4f6';
+  }
+
+  const parts: string[] = [];
+  if (rollup.deck_views) parts.push(`${rollup.deck_views} deck`);
+  if (rollup.om_views) parts.push(`${rollup.om_views} OM`);
+  if (rollup.data_room_visits) parts.push(`${rollup.data_room_visits} data room`);
+  if (rollup.email_opens) parts.push(`${rollup.email_opens} open`);
+  if (rollup.link_clicks) parts.push(`${rollup.link_clicks} click`);
+
+  return {
+    count: total,
+    color,
+    bg,
+    tooltip: `${parts.join(' · ')} · last ${Math.floor(days)}d ago`,
+  };
 }
 
 function formatDue(iso: string): string {

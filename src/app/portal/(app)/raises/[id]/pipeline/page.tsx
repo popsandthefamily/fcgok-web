@@ -5,6 +5,7 @@ import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import type { RaisePipelineRow } from '@/lib/types/pipeline';
 import type { Raise } from '@/lib/types/raises';
 import type { TrackedEntity } from '@/lib/types';
+import type { EngagementRollup } from '@/lib/types/engagement';
 import PipelineKanban from './PipelineKanban';
 
 export const dynamic = 'force-dynamic';
@@ -45,10 +46,29 @@ export default async function PipelinePage({ params }: { params: Promise<{ id: s
     }
   }
 
+  // Per-pipeline engagement counters maintained by the engagement_after_insert
+  // trigger. Used for Kanban dots so we don't aggregate per render.
+  const pipelineIds = rows.map((r) => r.id);
+  const rollupByPipeline = new Map<string, EngagementRollup>();
+  if (pipelineIds.length > 0) {
+    const { data: rollups } = await supabase
+      .from('engagement_rollups')
+      .select('*')
+      .in('pipeline_id', pipelineIds);
+    for (const r of (rollups ?? []) as EngagementRollup[]) {
+      rollupByPipeline.set(r.pipeline_id, r);
+    }
+  }
+
   const initialRows = rows
     .map((pipeline) => {
       const entity = entitiesById.get(pipeline.entity_id);
-      return entity ? { pipeline, entity } : null;
+      if (!entity) return null;
+      return {
+        pipeline,
+        entity,
+        rollup: rollupByPipeline.get(pipeline.id) ?? null,
+      };
     })
     .filter((x): x is NonNullable<typeof x> => x !== null);
 
