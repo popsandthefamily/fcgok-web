@@ -217,6 +217,12 @@ const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    title: 'Capital',
+    links: [
+      { href: '/portal/raises', label: 'Raises', icon: 'signal' },
+    ],
+  },
+  {
     title: 'Tools',
     links: [
       { href: '/portal/toolkit/builder', label: 'Document Builder', icon: 'document' },
