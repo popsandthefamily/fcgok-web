@@ -92,7 +92,7 @@ export default function OutreachComposer({
     }
   }
 
-  async function markAsSent() {
+  async function submitSend(deliveryMode: 'log_only' | 'send_via_app') {
     if (!templateId) {
       setError('Pick a template first');
       return;
@@ -100,6 +100,16 @@ export default function OutreachComposer({
     if (!subject.trim()) {
       setError('Subject is required');
       return;
+    }
+    if (deliveryMode === 'send_via_app') {
+      if (!recipientEmail.trim()) {
+        setError('Recipient email is required to send via app');
+        return;
+      }
+      if (!body.trim()) {
+        setError('Body is required to send via app');
+        return;
+      }
     }
     setSending(true);
     setError(null);
@@ -113,11 +123,16 @@ export default function OutreachComposer({
           body,
           recipient_email: recipientEmail.trim() || null,
           recipient_name: recipientName.trim() || null,
+          delivery_mode: deliveryMode,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
-      // Reset the form, keep the composer open for follow-ups
+      if (data.delivery_warning) {
+        setError(`Logged, but delivery failed: ${data.delivery_warning}`);
+        setSending(false);
+        return;
+      }
       setSubject('');
       setBody('');
       setOpen(false);
@@ -251,18 +266,31 @@ export default function OutreachComposer({
           >
             {copied ? 'Copied!' : 'Copy subject + body'}
           </button>
-          <button
-            type="button"
-            onClick={markAsSent}
-            disabled={sending || !subject.trim()}
-            className="portal-btn portal-btn-primary"
-          >
-            {sending ? 'Logging…' : 'Mark as sent'}
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              type="button"
+              onClick={() => submitSend('log_only')}
+              disabled={sending || !subject.trim()}
+              className="portal-btn portal-btn-ghost"
+              title="Log this as sent — use when you sent via Gmail or another client"
+            >
+              {sending ? 'Working…' : 'Mark as sent'}
+            </button>
+            <button
+              type="button"
+              onClick={() => submitSend('send_via_app')}
+              disabled={sending || !subject.trim() || !recipientEmail.trim() || !body.trim()}
+              className="portal-btn portal-btn-primary"
+              title="Send via Resend with open + click tracking embedded"
+            >
+              {sending ? 'Sending…' : '✉ Send via app'}
+            </button>
+          </div>
         </div>
         <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, lineHeight: 1.5 }}>
-          Tip: copy the body, send via your normal email client, then click Mark as sent
-          to log it on the timeline.
+          Send via app delivers through Resend with a tracking pixel and link rewriting
+          so opens and clicks appear on the timeline. Mark as sent is for emails you
+          sent manually elsewhere.
         </p>
       </div>
     </div>

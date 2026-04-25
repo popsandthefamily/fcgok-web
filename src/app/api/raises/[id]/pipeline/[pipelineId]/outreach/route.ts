@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/server';
 import { getAuthedUser } from '@/lib/supabase/auth-helper';
+import { sendOutreachEmail } from '@/lib/email/outreach';
 
-// Logs an outreach as sent (matches the app's "log it after I sent it
-// from Gmail" pattern — no SMTP delivery from this endpoint). Writes
-// outreach_sends with the full FK set (pipeline_id + entity_id +
-// raise_id) and emits a raise_pipeline_events row of type
-// outreach_sent so the timeline picks it up.
+// Logs an outreach send and optionally delivers it via Resend with
+// open/click tracking embedded. Two delivery modes:
+//   - 'log_only' (default): user copied to Gmail and sent manually.
+//     We only log and emit the timeline event. No tracking.
+//   - 'send_via_app': we send via Resend with a 1x1 pixel and link
+//     rewriting through /api/track/{open,click}. Re-opens and clicks
+//     fire engagement_events keyed by the send_id; the trigger from
+//     migration 007 takes care of rollups + timeline mirroring.
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string; pipelineId: string }> },
@@ -24,9 +28,17 @@ export async function POST(
   const recipientEmail = typeof body?.recipient_email === 'string' ? body.recipient_email.trim() || null : null;
   const recipientName = typeof body?.recipient_name === 'string' ? body.recipient_name.trim() || null : null;
   const notes = typeof body?.notes === 'string' ? body.notes.trim() || null : null;
+  const deliveryMode: 'log_only' | 'send_via_app' =
+    body?.delivery_mode === 'send_via_app' ? 'send_via_app' : 'log_only';
 
   if (!templateId) return NextResponse.json({ error: 'template_id is required' }, { status: 400 });
   if (!subject) return NextResponse.json({ error: 'subject is required' }, { status: 400 });
+  if (deliveryMode === 'send_via_app' && !recipientEmail) {
+    return NextResponse.json({ error: 'recipient_email is required to send via app' }, { status: 400 });
+  }
+  if (deliveryMode === 'send_via_app' && !bodyText?.trim()) {
+    return NextResponse.json({ error: 'body is required to send via app' }, { status: 400 });
+  }
 
   const supabase = await createServiceClient();
 
@@ -51,7 +63,7 @@ export async function POST(
 
   const pipeline = pipelineRes.data as { id: string; entity_id: string; raise_id: string };
 
-  // 1. Insert the send log.
+  // 1. Insert the send log first to get a send_id (needed for tracking links).
   const { data: sendData, error: sendErr } = await supabase
     .from('outreach_sends')
     .insert({
@@ -72,9 +84,33 @@ export async function POST(
 
   if (sendErr) return NextResponse.json({ error: sendErr.message }, { status: 500 });
 
-  // 2. Emit the timeline event. Soft-fail: if event insert fails, the
-  //    send is still logged. We surface the error in the response but
-  //    don't roll back.
+  // 2. If sending via app, push through Resend with tracking embedded.
+  let deliveryWarning: string | null = null;
+  if (deliveryMode === 'send_via_app' && recipientEmail && bodyText) {
+    const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin;
+    try {
+      await sendOutreachEmail({
+        to: recipientEmail,
+        subject,
+        bodyText,
+        sendId: sendData.id,
+        origin,
+      });
+    } catch (err) {
+      deliveryWarning = err instanceof Error ? err.message : String(err);
+      // Mark the send row with the delivery error so the timeline reflects truth.
+      await supabase
+        .from('outreach_sends')
+        .update({
+          notes: notes
+            ? `${notes}\n\n[delivery_error] ${deliveryWarning}`
+            : `[delivery_error] ${deliveryWarning}`,
+        })
+        .eq('id', sendData.id);
+    }
+  }
+
+  // 3. Emit the timeline event. Soft-fail: send is still logged either way.
   const { error: eventErr } = await supabase
     .from('raise_pipeline_events')
     .insert({
@@ -87,11 +123,15 @@ export async function POST(
         template_id: templateId,
         subject,
         recipient_email: recipientEmail,
+        delivery_mode: deliveryMode,
+        delivery_error: deliveryWarning,
       },
     });
 
   return NextResponse.json({
     send: sendData,
+    delivery_mode: deliveryMode,
+    delivery_warning: deliveryWarning,
     event_warning: eventErr ? eventErr.message : null,
   }, { status: 201 });
 }
