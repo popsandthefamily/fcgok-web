@@ -81,7 +81,28 @@ export default function MatchCard({
             )}
           </div>
 
-          {/* Top reasons */}
+          {/* AI rationale (if cached) */}
+          {match.rationale && (
+            <div style={{
+              fontSize: 13,
+              color: '#1f2937',
+              background: '#f0fdf4',
+              borderLeft: '3px solid #22c55e',
+              padding: '8px 12px',
+              borderRadius: 4,
+              marginBottom: 8,
+              lineHeight: 1.55,
+            }}>
+              {match.rationale}
+              {match.rationale_stale && (
+                <span style={{ marginLeft: 6, fontSize: 10, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  · stale (raise edited since)
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Top deterministic reasons */}
           {fit.reasons.length > 0 ? (
             <div style={{ fontSize: 12, color: '#4b5563', marginBottom: 8, lineHeight: 1.5 }}>
               {fit.reasons.join(' · ')}

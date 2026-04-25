@@ -6,6 +6,7 @@ import { computeRaiseMatches } from '@/lib/matching/get-matches';
 import { FIT_WEIGHTS } from '@/lib/matching/score';
 import type { Raise } from '@/lib/types/raises';
 import MatchCard from './MatchCard';
+import RefreshButton from './RefreshButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,12 +48,21 @@ export default async function RaiseMatchesPage({
           <h1 style={{ marginBottom: 4 }}>Investor Matches</h1>
           <span style={{ fontSize: 13, color: '#6b7280' }}>{(raise as Raise).name}</span>
         </div>
-        <Link href={`/portal/raises/${id}`} className="portal-btn portal-btn-ghost">&larr; Raise</Link>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+          <Link href={`/portal/raises/${id}`} className="portal-btn portal-btn-ghost">&larr; Raise</Link>
+          <RefreshButton
+            raiseId={id}
+            limit={limit}
+            pendingCount={matches.filter((m) => m.rationale == null || m.rationale_stale).length}
+            totalCount={matches.length}
+          />
+        </div>
       </div>
 
       <p style={{ fontSize: 13, color: '#6b7280', marginBottom: '1rem', lineHeight: 1.6 }}>
         Investors ranked against this raise's profile. Scores are deterministic
-        and update live as you edit the raise. AI rationale ships next.
+        and update live as you edit the raise. AI rationale is generated on
+        demand and cached until you edit the raise again.
       </p>
 
       {profileGaps.length > 0 && (
