@@ -1,10 +1,17 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import type { IntelSource } from '@/lib/types';
 
 const SOURCES: IntelSource[] = ['iss', 'news', 'sec', 'biggerpockets', 'podcast'];
 
 export default async function AdminOverview() {
+  const auth = await getAuthedUser();
+  if (!auth?.orgId) return null;
+
   const supabase = await createServiceClient();
+  const visibilityOr = auth.orgSlug
+    ? `client_visibility.cs.{${auth.orgSlug}},client_visibility.cs.{all}`
+    : 'client_visibility.cs.{all}';
 
   const now = new Date();
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
@@ -12,23 +19,27 @@ export default async function AdminOverview() {
   // Total intel items
   const { count: totalItems } = await supabase
     .from('intel_items')
-    .select('*', { count: 'exact', head: true });
+    .select('*', { count: 'exact', head: true })
+    .or(visibilityOr);
 
   // Items this week
   const { count: weekItems } = await supabase
     .from('intel_items')
     .select('*', { count: 'exact', head: true })
+    .or(visibilityOr)
     .gte('ingested_at', weekAgo);
 
   // Entities tracked
   const { count: entityCount } = await supabase
     .from('tracked_entities')
-    .select('*', { count: 'exact', head: true });
+    .select('*', { count: 'exact', head: true })
+    .eq('organization_id', auth.orgId);
 
   // Active sources (sources with at least one item in the last 7 days)
   const { data: recentSourceData } = await supabase
     .from('intel_items')
     .select('source')
+    .or(visibilityOr)
     .gte('ingested_at', weekAgo);
 
   const activeSources = new Set(recentSourceData?.map((r) => r.source)).size;
@@ -40,13 +51,15 @@ export default async function AdminOverview() {
       .from('intel_items')
       .select('ingested_at')
       .eq('source', source)
+      .or(visibilityOr)
       .order('ingested_at', { ascending: false })
       .limit(1);
 
     const { count } = await supabase
       .from('intel_items')
       .select('*', { count: 'exact', head: true })
-      .eq('source', source);
+      .eq('source', source)
+      .or(visibilityOr);
 
     sourceHealthMap[source] = {
       lastIngested: latest?.[0]?.ingested_at ?? null,
@@ -58,6 +71,7 @@ export default async function AdminOverview() {
   const { data: recentItems } = await supabase
     .from('intel_items')
     .select('id, source, title, ingested_at')
+    .or(visibilityOr)
     .order('ingested_at', { ascending: false })
     .limit(10);
 

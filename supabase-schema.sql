@@ -35,6 +35,7 @@ CREATE INDEX idx_intel_items_curated ON intel_items(is_curated) WHERE is_curated
 -- ── Tracked Entities ─────────────────────────────────────────
 CREATE TABLE tracked_entities (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  organization_id UUID,
   name TEXT NOT NULL,
   entity_type TEXT NOT NULL,
   description TEXT,
@@ -95,6 +96,7 @@ CREATE TABLE portal_events (
 -- ── Weekly Digests ───────────────────────────────────────────
 CREATE TABLE weekly_digests (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
   week_start TIMESTAMPTZ NOT NULL,
   week_end TIMESTAMPTZ NOT NULL,
   content TEXT NOT NULL,
@@ -149,20 +151,27 @@ CREATE POLICY "Admins manage intel items"
   USING (public.auth_user_role() = 'admin')
   WITH CHECK (public.auth_user_role() = 'admin');
 
--- Tracked entities: all authenticated can read
-CREATE POLICY "All authenticated read entities"
+-- Tracked entities: org members can read their own org's entities
+CREATE POLICY "Org members read entities"
   ON tracked_entities FOR SELECT TO authenticated
-  USING (true);
+  USING (organization_id = public.auth_user_org_id());
 
 CREATE POLICY "Admins manage entities"
   ON tracked_entities FOR ALL TO authenticated
   USING (public.auth_user_role() = 'admin')
   WITH CHECK (public.auth_user_role() = 'admin');
 
--- Entity links: all authenticated can read
-CREATE POLICY "All authenticated read entity links"
+-- Entity links: org members can read links for their own entities
+CREATE POLICY "Org members read entity links"
   ON entity_intel_links FOR SELECT TO authenticated
-  USING (true);
+  USING (
+    EXISTS (
+      SELECT 1
+      FROM tracked_entities e
+      WHERE e.id = entity_intel_links.entity_id
+        AND e.organization_id = public.auth_user_org_id()
+    )
+  );
 
 CREATE POLICY "Admins manage entity links"
   ON entity_intel_links FOR ALL TO authenticated
@@ -194,10 +203,10 @@ CREATE POLICY "Users create own events"
   ON portal_events FOR INSERT TO authenticated
   WITH CHECK (user_id = auth.uid());
 
--- Digests: all authenticated can read
-CREATE POLICY "All authenticated read digests"
+-- Digests: org members can read their own org's digests
+CREATE POLICY "Org members read digests"
   ON weekly_digests FOR SELECT TO authenticated
-  USING (true);
+  USING (organization_id = public.auth_user_org_id());
 
 CREATE POLICY "Admins manage digests"
   ON weekly_digests FOR ALL TO authenticated

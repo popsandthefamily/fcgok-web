@@ -1,9 +1,20 @@
 import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
+import { rateLimit } from '@/lib/utils/rate-limit';
 
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
+  const auth = await getAuthedUser();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!auth.orgId) return NextResponse.json({ error: 'No organization' }, { status: 400 });
+
+  const limited = rateLimit(`market-snapshot:${auth.id}`, 20, 60 * 60 * 1000);
+  if (!limited.success) {
+    return NextResponse.json({ error: 'Rate limit exceeded. Try again later.' }, { status: 429 });
+  }
+
   if (!process.env.ANTHROPIC_API_KEY && !process.env.GROQ_API_KEY && !process.env.GEMINI_API_KEY) {
     return NextResponse.json({ error: 'No AI provider configured.' }, { status: 503 });
   }
@@ -17,6 +28,7 @@ export async function POST(request: Request) {
 
   try {
     const service = await createServiceClient();
+    const orgSlug = auth.orgSlug;
 
     // Resolve the org's configured industry as fallback asset type
     let resolvedAssetType = assetType;
@@ -46,6 +58,7 @@ export async function POST(request: Request) {
       .from('intel_items')
       .select('summary')
       .or(orClauses)
+      .or(orgSlug ? `client_visibility.cs.{${orgSlug}},client_visibility.cs.{all}` : 'client_visibility.cs.{all}')
       .not('summary', 'is', null)
       .order('relevance_score', { ascending: false })
       .limit(15);

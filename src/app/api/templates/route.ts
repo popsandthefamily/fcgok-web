@@ -91,11 +91,13 @@ export async function GET() {
 
   const supabase = await createServiceClient();
 
-  let { data: templates, error } = await supabase
+  const templatesRes = await supabase
     .from('outreach_templates')
     .select('*')
     .eq('organization_id', auth.orgId)
     .order('created_at', { ascending: true });
+  let templates = templatesRes.data;
+  const error = templatesRes.error;
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

@@ -1,14 +1,19 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import type { WeeklyDigest } from '@/lib/types';
 import DigestToggle from './DigestToggle';
 
 export const metadata = { title: 'Weekly Digest' };
 
 export default async function DigestPage() {
+  const auth = await getAuthedUser();
+  if (!auth?.orgId) return null;
+
   const supabase = await createServiceClient();
   const { data: digests } = await supabase
     .from('weekly_digests')
     .select('*')
+    .eq('organization_id', auth.orgId)
     .order('week_start', { ascending: false });
 
   const items = (digests as WeeklyDigest[] | null) ?? [];

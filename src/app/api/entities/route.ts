@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 
 export async function GET(request: Request) {
+  const auth = await getAuthedUser();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!auth.orgId) return NextResponse.json({ entities: [] });
+
   const supabase = await createServiceClient();
 
   const url = new URL(request.url);
@@ -11,6 +16,7 @@ export async function GET(request: Request) {
   let query = supabase
     .from('tracked_entities')
     .select('*')
+    .eq('organization_id', auth.orgId)
     .order('last_activity_at', { ascending: false, nullsFirst: false });
 
   if (status) query = query.eq('status', status);
@@ -23,12 +29,17 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const auth = await getAuthedUser();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (auth.role !== 'admin') return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+  if (!auth.orgId) return NextResponse.json({ error: 'No organization' }, { status: 400 });
+
   const supabase = await createServiceClient();
   const body = await request.json();
 
   const { data, error } = await supabase
     .from('tracked_entities')
-    .insert(body)
+    .insert({ ...body, organization_id: auth.orgId })
     .select()
     .single();
 

@@ -1,10 +1,17 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
 export default async function PortalDashboard() {
+  const auth = await getAuthedUser();
+  if (!auth?.orgId) return null;
+
   const supabase = await createServiceClient();
+  const visibilityOr = auth.orgSlug
+    ? `client_visibility.cs.{${auth.orgSlug}},client_visibility.cs.{all}`
+    : 'client_visibility.cs.{all}';
 
   // Fetch high-priority items (relevance > 0.8, last 7 days)
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
@@ -12,6 +19,7 @@ export default async function PortalDashboard() {
   const { data: highPriority } = await supabase
     .from('intel_items')
     .select('*')
+    .or(visibilityOr)
     .gte('relevance_score', 0.8)
     .gte('ingested_at', weekAgo)
     .or('category.neq.distress,category.is.null')
@@ -24,6 +32,7 @@ export default async function PortalDashboard() {
   const { data: distressItems } = await supabase
     .from('intel_items')
     .select('*')
+    .or(visibilityOr)
     .eq('category', 'distress')
     .gte('published_at', twoWeeksAgo)
     .order('published_at', { ascending: false })
@@ -33,17 +42,20 @@ export default async function PortalDashboard() {
   const { count: weekTotal } = await supabase
     .from('intel_items')
     .select('*', { count: 'exact', head: true })
+    .or(visibilityOr)
     .gte('ingested_at', weekAgo);
 
   const { count: highRelevanceCount } = await supabase
     .from('intel_items')
     .select('*', { count: 'exact', head: true })
+    .or(visibilityOr)
     .gte('relevance_score', 0.7)
     .gte('ingested_at', weekAgo);
 
   const { count: curatedCount } = await supabase
     .from('intel_items')
     .select('*', { count: 'exact', head: true })
+    .or(visibilityOr)
     .eq('is_curated', true)
     .gte('ingested_at', weekAgo);
 
@@ -51,6 +63,7 @@ export default async function PortalDashboard() {
   const { data: sentimentData } = await supabase
     .from('intel_items')
     .select('ai_analysis')
+    .or(visibilityOr)
     .gte('ingested_at', weekAgo)
     .not('ai_analysis', 'is', null);
 
@@ -66,6 +79,7 @@ export default async function PortalDashboard() {
   const { data: activeEntities } = await supabase
     .from('tracked_entities')
     .select('*')
+    .eq('organization_id', auth.orgId)
     .eq('status', 'active')
     .order('last_activity_at', { ascending: false })
     .limit(6);

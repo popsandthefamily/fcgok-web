@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import type { TrackedEntity, EntityStatus, EntityType } from '@/lib/types';
 import Link from 'next/link';
 
@@ -13,12 +14,17 @@ export default async function InvestorRadarPage({
   const params = await searchParams;
   const activeStatus = params.status ?? null;
   const activeType = params.type ?? null;
+  const auth = await getAuthedUser();
+  if (!auth?.orgId) {
+    return null;
+  }
 
   const supabase = await createServiceClient();
 
   let query = supabase
     .from('tracked_entities')
     .select('*')
+    .eq('organization_id', auth.orgId)
     .order('last_activity_at', { ascending: false, nullsFirst: false });
 
   if (activeStatus) {

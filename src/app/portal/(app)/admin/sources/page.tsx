@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthedUser } from '@/lib/supabase/auth-helper';
 import RefreshButton from './RefreshButton';
 
 export const dynamic = 'force-dynamic';
@@ -54,6 +55,9 @@ interface SourceHealth {
 }
 
 export default async function SourcesPage() {
+  const auth = await getAuthedUser();
+  if (!auth?.orgSlug) return null;
+
   const supabase = await createServiceClient();
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
@@ -67,7 +71,7 @@ export default async function SourcesPage() {
     // fine here since we only add .eq() chains and return.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const applyItemFilter = (q: any) => {
-      let qq = q.eq('source', filter.source);
+      let qq = q.eq('source', filter.source).or(`client_visibility.cs.{${auth.orgSlug}},client_visibility.cs.{all}`);
       if (filter.category) qq = qq.eq('category', filter.category);
       if (filter.subtype) qq = qq.eq('metadata->>subtype', filter.subtype);
       return qq;
@@ -78,6 +82,7 @@ export default async function SourcesPage() {
         .from('scrape_runs')
         .select('ran_at')
         .eq('source', source)
+        .eq('org_slug', auth.orgSlug)
         .order('ran_at', { ascending: false })
         .limit(1),
       applyItemFilter(
@@ -103,6 +108,7 @@ export default async function SourcesPage() {
         .from('scrape_runs')
         .select('*', { count: 'exact', head: true })
         .eq('source', source)
+        .eq('org_slug', auth.orgSlug)
         .not('error', 'is', null)
         .gte('ran_at', weekAgo),
     ]);

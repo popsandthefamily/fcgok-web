@@ -2,28 +2,28 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Broken Bow Business Services — Websites, SEO & Property Management',
+  title: 'Business Owner Capital Portal — Investor Materials & Market Intelligence',
   description:
-    'Cabin website design, local SEO, property management, and marketing for tourism businesses in Broken Bow and Hochatown, Oklahoma. Built by the team behind hocha.town.',
+    'Investor-ready materials, market snapshots, outreach templates, and capital partner intelligence for business owners and developers raising capital.',
   openGraph: {
-    title: 'Business Services — Broken Bow & Hochatown',
-    description: 'Cabin websites, local SEO, property management, and marketing for tourism businesses in Broken Bow and Hochatown.',
+    title: 'Business Owner Capital Portal',
+    description: 'Investor-ready materials, market snapshots, outreach templates, and capital partner intelligence for owners raising capital.',
     url: 'https://fcgok.com/businesses',
   },
   twitter: {
-    title: 'Business Services — Broken Bow & Hochatown',
-    description: 'Cabin websites, local SEO, property management, and marketing for tourism businesses in Broken Bow and Hochatown.',
+    title: 'Business Owner Capital Portal',
+    description: 'Investor-ready materials, market snapshots, outreach templates, and capital partner intelligence for owners raising capital.',
   },
   alternates: { canonical: 'https://fcgok.com/businesses' },
 };
 
 const SERVICES = [
-  { num: '01', title: 'Websites that book', body: 'Custom booking sites and guest experience apps built on the same stack as hocha.town — Next.js, AI, native mobile.' },
-  { num: '02', title: 'Show up on Google', body: 'Local SEO and Google Business profile optimization that gets you found when visitors search for things to do in Broken Bow.' },
-  { num: '03', title: 'Property management', body: 'Full-service STR management — listing optimization, guest communication, cleaning coordination, and maintenance.' },
-  { num: '04', title: 'Brand & visual identity', body: 'Logo design, visual identity, signage, and print materials that help you stand out in a crowded cabin market.' },
-  { num: '05', title: 'Professional photography', body: 'Real estate, commercial, and event photography. Great photos are the first impression for every cabin listing.' },
-  { num: '06', title: 'Get listed on hocha.town', body: "Your business in front of tourists at the moment they're deciding where to eat, what to do, and where to stay." },
+  { num: '01', title: 'Investor-ready materials', body: 'Build pitch decks, prospectuses, and offering memoranda from structured deal facts instead of starting from a blank page.' },
+  { num: '02', title: 'Market snapshots', body: 'Generate branded, source-informed summaries that help investors understand the market, asset class, and thesis.' },
+  { num: '03', title: 'Capital partner radar', body: 'Track lenders, equity investors, brokers, funds, and strategic partners with status, fit, and recent activity.' },
+  { num: '04', title: 'Outreach templates', body: 'Use reusable email templates, placeholder fills, send logs, and reply tracking to keep follow-up disciplined.' },
+  { num: '05', title: 'Comps and support data', body: 'Capture transaction comps and extract structured deal evidence from relevant intel in one workspace.' },
+  { num: '06', title: 'Readiness workflow', body: 'See what is missing before outreach: materials, market support, target list, and active conversations.' },
 ];
 
 export default function BusinessesPage() {
@@ -38,12 +38,12 @@ export default function BusinessesPage() {
           color: 'var(--cream)', fontWeight: 400, lineHeight: 1.2,
           maxWidth: 620, marginBottom: '1.5rem',
         }}>
-          Grow your business with tools built{' '}
-          <em>for this market.</em>
+          Raise capital with materials built{' '}
+          <em>for investor conversations.</em>
         </h1>
         <p style={{ color: 'rgba(244,241,234,0.7)', fontSize: 17, maxWidth: 500, lineHeight: 1.7, fontWeight: 300 }}>
-          We build and operate in the same market you do. Whether you need more bookings,
-          better tech, or a sounding board — we speak the same language.
+          Turn your deal facts, market knowledge, and target list into a cleaner capital
+          raise process — from first deck to investor follow-up.
         </p>
       </section>
 
@@ -60,7 +60,7 @@ export default function BusinessesPage() {
         </div>
       </section>
 
-      {/* ── HOCHA.TOWN CTA ─────────────────────────────────────────── */}
+      {/* ── PORTAL CTA ─────────────────────────────────────────────── */}
       <section className="mobile-stack mobile-nomargin mobile-pad" style={{
         margin: '0 3rem 5rem',
         background: 'var(--forest)',
@@ -71,20 +71,20 @@ export default function BusinessesPage() {
         <div>
           <span className="section-label section-label--light">The Platform Advantage</span>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: 'var(--cream)', fontWeight: 400, marginBottom: '1rem' }}>
-            When you work with us, you get listed on hocha.town.
+            One workspace for the messy middle of a raise.
           </h2>
           <p style={{ color: 'rgba(244,241,234,0.7)', lineHeight: 1.8, fontWeight: 300 }}>
-            Hocha.town features an AI trip planner, event listings, and local guides — putting
-            your business in front of tourists at the moment they&apos;re deciding where to eat,
-            what to do, and where to stay.
+            The portal keeps materials, market context, outreach, comps, and investor tracking
+            in one place so business owners can move from idea to credible investor conversation
+            without duct-taping spreadsheets and docs together.
           </p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '1rem' }}>
-          <a href="https://hocha.town" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: 'inline-flex', width: 'fit-content' }}>
-            Visit hocha.town &rarr;
-          </a>
+          <Link href="#contact" className="btn-primary" style={{ display: 'inline-flex', width: 'fit-content' }}>
+            Request Portal Access &rarr;
+          </Link>
           <p style={{ fontSize: 13, color: 'rgba(244,241,234,0.4)', lineHeight: 1.6 }}>
-            AI trip planner &middot; Burn ban widget &middot; STR tax calculator &middot; iOS app
+            Deck builder &middot; Market snapshots &middot; Investor radar &middot; Outreach tracking
           </p>
         </div>
       </section>
@@ -95,7 +95,7 @@ export default function BusinessesPage() {
           Ready to grow?
         </h2>
         <p style={{ fontSize: 16, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '2rem' }}>
-          Whether it&apos;s a new cabin company or a restaurant that&apos;s been here for years — let&apos;s figure out what&apos;s next.
+          Tell us what you&apos;re raising for, what materials you already have, and who you need to reach.
         </p>
 
         <form action="https://formspree.io/f/xnjgkbrq" method="POST" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -112,8 +112,8 @@ export default function BusinessesPage() {
             </div>
           </div>
           <div>
-            <label className="form-label" htmlFor="biz-message">Tell us about your business</label>
-            <textarea className="form-textarea" id="biz-message" name="message" rows={4} placeholder="What kind of business, what you need help with..." />
+            <label className="form-label" htmlFor="biz-message">Tell us about the raise</label>
+            <textarea className="form-textarea" id="biz-message" name="message" rows={4} placeholder="Deal size, use of funds, target investors, current materials..." />
           </div>
           <button type="submit" className="btn-primary" style={{ width: 'fit-content' }}>
             Send Message
