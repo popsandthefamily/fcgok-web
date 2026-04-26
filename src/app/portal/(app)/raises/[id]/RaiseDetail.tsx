@@ -142,6 +142,20 @@ export default function RaiseDetail({
         </p>
       </div>
 
+      {/* Engagement */}
+      <div className="portal-card" style={{ marginBottom: '1rem' }}>
+        <div className="portal-card-header">
+          <span className="portal-card-title">Engagement</span>
+          <Link href={`/portal/raises/${raise.id}/engagement`} className="portal-btn portal-btn-ghost" style={{ fontSize: 12, padding: '4px 10px' }}>
+            View leaderboard →
+          </Link>
+        </div>
+        <p style={{ fontSize: 13, color: '#6b7280', margin: 0, lineHeight: 1.6 }}>
+          Who's actually opening emails, clicking links, and viewing materials.
+          Tracked via tokenized share links and "Send via app" outreach.
+        </p>
+      </div>
+
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
         <button
           onClick={handleDelete}
